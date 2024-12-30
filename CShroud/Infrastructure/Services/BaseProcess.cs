@@ -8,8 +8,8 @@ public class BaseProcess : IProcess
     private readonly Process _process;
     public bool IsRunning => _process.HasExited;
 
-    public event EventHandler ProcessExited;
-    public event EventHandler ProcessStarted;
+    public event EventHandler ProcessExited = delegate { };
+    public event EventHandler ProcessStarted = delegate { };
 
     public BaseProcess(ProcessStartInfo processStartInfo)
     {
@@ -18,7 +18,6 @@ public class BaseProcess : IProcess
         _process.Exited += OnProcessExited!;
 
 
-        
         _process.OutputDataReceived += (sender, e) =>
         {
             if (!string.IsNullOrEmpty(e.Data))
@@ -26,7 +25,6 @@ public class BaseProcess : IProcess
                 Console.WriteLine("[STDOUT] " + e.Data); // Print each line of standard output
             }
         };
-        
     }
 
     public void Start()

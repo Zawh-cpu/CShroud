@@ -2,6 +2,6 @@
 
 public class VpnCoreConfig
 {
-    public string Path { get; set; }
-    public string Link { get; set; }
+    public required string Path { get; set; }
+    public required string Link { get; set; }
 }

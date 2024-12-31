@@ -9,6 +9,7 @@ public class VpnCore: IVpnCore
     private readonly BaseProcess _process;
     private IProcessManager _processManager;
     private VpnCoreConfig _vpnConfig;
+    public bool IsRunning => _process.IsRunning;
     
     public VpnCore(VpnCoreConfig vpnConfig, IProcessManager processManager)
     {
@@ -29,6 +30,23 @@ public class VpnCore: IVpnCore
         _processManager.Register(_process);
         
         _process.Start();
+    }
+
+    private void MakeRequest()
+    {
+        try
+        {
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+    }
+
+    public void SystemInfo()
+    {
+        
     }
 
 

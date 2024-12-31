@@ -11,6 +11,7 @@
       <Folder Include="Core\Domain\Services\" />
       <Folder Include="Infrastructure\" />
       <Folder Include="Presentation\" />
+      <Folder Include="Protos\" />
     </ItemGroup>
 
     <ItemGroup>

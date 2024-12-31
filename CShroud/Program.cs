@@ -10,9 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<VpnCoreConfig>(builder.Configuration.GetSection("VpnCore"));
 builder.Services.AddSingleton<IProcessManager, ProcessManager>();
 builder.Services.AddSingleton<IVpnCore, VpnCore>();
+builder.Services.AddSingleton<IBaseRepository, BaseRepository>();
 builder.Services.AddSingleton<ICore, Core>();
 
-builder.Services.AddGrpc(); 
+builder.Services.AddGrpc();
 
 var app = builder.Build();
 

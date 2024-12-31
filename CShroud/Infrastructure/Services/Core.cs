@@ -6,11 +6,13 @@ namespace CShroud.Infrastructure.Services;
 public class Core : ICore
 {
     private readonly IServiceProvider _serviceProvider;
+    private IBaseRepository _baseRepository;
     public static string WorkingDir = Environment.CurrentDirectory;
     
-    public Core(IServiceProvider serviceProvider)
+    public Core(IServiceProvider serviceProvider, IBaseRepository repo)
     {
         _serviceProvider = serviceProvider;
+        _baseRepository = repo;
     }
 
     public static string BuildPath(params string[] paths)
@@ -29,10 +31,7 @@ public class Core : ICore
     public void Start()
     {
         var processManager = _serviceProvider.GetRequiredService<IProcessManager>();
-        
-        while (true)
-        {
-            
-        }
+        // _baseRepository = _serviceProvider.GetRequiredService<IBaseRepository>();
+        Console.WriteLine(_baseRepository.Ping());
     }
 }

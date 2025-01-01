@@ -1,3 +1,4 @@
+using CShroud.Infrastructure.Data.Entities;
 using Google.Protobuf;
 using Xray.Common.Serial;
 
@@ -15,4 +16,6 @@ public interface IVpnRepository
             Value = serializedMessage
         };
     }
+
+    void AddUser(Xray.Common.Protocol.User user, Protocol protocol);
 }

@@ -12,6 +12,7 @@ builder.Services.Configure<VpnCoreConfig>(builder.Configuration.GetSection("VpnC
 builder.Services.AddSingleton<IProcessManager, ProcessManager>();
 builder.Services.AddSingleton<IVpnCore, VpnCore>();
 builder.Services.AddSingleton<IBaseRepository, BaseRepository>();
+builder.Services.AddSingleton<IVpnRepository, VpnRepository>();
 builder.Services.AddSingleton<IProtocolHandlerFactory, ProtocolHandlerFactory>();
 builder.Services.AddSingleton<ICore, Core>();
 

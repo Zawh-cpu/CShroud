@@ -1,3 +1,5 @@
+using CShroud.Core.Domain.Handlers;
+using CShroud.Infrastructure.Data.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using CShroud.Infrastructure.Interfaces;
 
@@ -9,10 +11,24 @@ public class Core : ICore
     private IBaseRepository _baseRepository;
     public static string WorkingDir = Environment.CurrentDirectory;
     
-    public Core(IServiceProvider serviceProvider, IBaseRepository repo)
+    public Core(IServiceProvider serviceProvider, IBaseRepository repo, IVpnRepository vpnRepo)
     {
         _serviceProvider = serviceProvider;
         _baseRepository = repo;
+
+        var user = new Xray.Common.Protocol.User()
+        {
+            Level = 0,
+            Email = "popa_fwff",
+            Account = new VlessHandler().MakeAccount("4141414124141", new Dictionary<string, string>())
+        };
+        vpnRepo.AddUser(user, new Protocol()
+        {
+            Id = "4114124",
+            Port = 444,
+            PublicKey = "fwwefweff",
+            URIArgs = null
+        });
     }
 
     public static string BuildPath(params string[] paths)

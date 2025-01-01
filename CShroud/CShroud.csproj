@@ -8,13 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Protobuf Include="Protos\Xray\**\*.proto" GrpcServices="Client" ProtoRoot="Protos/Xray"/>
+        <Protobuf Include="Presentation\Protos\Xray\**\*.proto" GrpcServices="Client" ProtoRoot="Presentation/Protos/Xray"/>
+        <Protobuf Include="Presentation\Protos\Server\**\*.proto" GrpcServices="Server" ProtoRoot="Presentation/Protos/Server"/>
     </ItemGroup>
     
     <ItemGroup>
       <Folder Include="Core\Domain\Services\" />
-      <Folder Include="Presentation\" />
-      <Folder Include="Protos\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -27,6 +26,7 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="9.0.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.2" />
     </ItemGroup>
 

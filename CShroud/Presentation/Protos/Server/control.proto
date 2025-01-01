@@ -1,18 +1,18 @@
-import Goo
-
 syntax = "proto3";
 
 option csharp_namespace = "CShroud.Presentation.Protos.Server";
 
 package control;
 
-service Control {
-  rpc CreateUser(CreateUserRequest) returns (default.Empty);
-  rpc AddClient(AddClientRequest) returns (AddClientResponse);
-  rpc DelClient(RemClientRequest) returns (default.Empty);
+import "google/protobuf/empty.proto";
 
-  rpc EnableKey(KeyRequest) returns (default.Empty);
-  rpc DisableKey(KeyRequest) returns (default.Empty);
+service Control {
+  rpc CreateUser(CreateUserRequest) returns (google.protobuf.Empty);
+  rpc AddClient(AddClientRequest) returns (AddClientResponse);
+  rpc DelClient(RemClientRequest) returns (google.protobuf.Empty);
+
+  rpc EnableKey(KeyRequest) returns (google.protobuf.Empty);
+  rpc DisableKey(KeyRequest) returns (google.protobuf.Empty);
 }
 
 message CreateUserRequest {

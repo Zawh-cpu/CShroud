@@ -1,8 +1,8 @@
 namespace CShroud.Infrastructure.Data.Entities;
 
+using CShroud.Infrastructure.Data;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
 
 public class User
 {
@@ -19,24 +19,24 @@ public class User
     public String? Password { get; set; }
     
     
-    public UInt64? TelegramId { get; set; }
+    public ulong? TelegramId { get; set; }
     
     [Required] public int RoleId { get; set; } = 1;
     
-    // [ForeignKey("RoleId")]
-    // public SQL.Models.Role? Role { get; set; }
+    [ForeignKey("RoleId")]
+    public Role? Role { get; set; }
     
     [Required] public int RateId { get; set; } = 1;
     
-    // [ForeignKey("RateId")]
-    // public SQL.Models.Rate? Rate { get; set; }
+    [ForeignKey("RateId")]
+    public Entities.Rate? Rate { get; set; }
     
-    // public List<SQL.Models.Key> Keys { get; set; } = new List<SQL.Models.Key>();
+    public List<Entities.Key> Keys { get; set; } = new();
     
     public DateTime? PayedUntil { get; set; }
     
-    public DateTime JoinedAt { get; set; } = DateTime.UtcNow.AddHours(3);
-    public DateTime? TelegramJoinedAt { get; set; } = DateTime.UtcNow.AddHours(3);
+    public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? TelegramJoinedAt { get; set; } = DateTime.UtcNow;
     
     public bool IsActive { get; set; } = true;
 

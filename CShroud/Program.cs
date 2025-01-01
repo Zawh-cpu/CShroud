@@ -1,4 +1,6 @@
 ﻿using CShroud.Core.Domain.Entities;
+using CShroud.Core.Domain.Interfaces;
+using CShroud.Core.Domain.Services;
 using CShroud.Infrastructure.Interfaces;
 using CShroud.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +13,7 @@ builder.Services.Configure<VpnCoreConfig>(builder.Configuration.GetSection("VpnC
 builder.Services.AddSingleton<IProcessManager, ProcessManager>();
 builder.Services.AddSingleton<IVpnCore, VpnCore>();
 builder.Services.AddSingleton<IBaseRepository, BaseRepository>();
+builder.Services.AddSingleton<IProtocolHandlerFactory, ProtocolHandlerFactory>();
 builder.Services.AddSingleton<ICore, Core>();
 
 builder.Services.AddGrpc();

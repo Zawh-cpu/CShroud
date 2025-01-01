@@ -7,6 +7,10 @@ namespace CShroud.Infrastructure.Data;
 public class ApplicationContext : DbContext
 {
     public DbSet<User> Users { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<Rate> Rates { get; set; }
+    public DbSet<Protocol> Protocols { get; set; }
+    public DbSet<Key> Keys { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

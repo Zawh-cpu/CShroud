@@ -5,10 +5,14 @@ using CShroud.Infrastructure.Interfaces;
 using CShroud.Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<VpnCoreConfig>(builder.Configuration.GetSection("VpnCore"));
+builder.Services.AddSingleton(resolver =>
+    resolver.GetRequiredService<IOptions<VpnCoreConfig>>().Value);
+
 builder.Services.AddSingleton<IProcessManager, ProcessManager>();
 builder.Services.AddSingleton<IVpnCore, VpnCore>();
 builder.Services.AddSingleton<IBaseRepository, BaseRepository>();

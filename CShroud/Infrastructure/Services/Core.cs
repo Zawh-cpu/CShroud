@@ -22,13 +22,14 @@ public class Core : ICore
             Email = "popa_fwff",
             Account = new VlessHandler().MakeAccount("4141414124141", new Dictionary<string, string>())
         };
+        
         vpnRepo.AddUser(user, new Protocol()
         {
-            Id = "4114124",
+            Id = "vless",
             Port = 444,
             PublicKey = "fwwefweff",
             URIArgs = null
-        });
+        }).GetAwaiter().GetResult();
     }
 
     public static string BuildPath(params string[] paths)

@@ -1,6 +1,7 @@
 using CShroud.Core.Domain.Entities;
 using CShroud.Infrastructure.Data.Entities;
 using CShroud.Infrastructure.Interfaces;
+using Grpc.Core;
 using Grpc.Net.Client;
 using Xray.App.Proxyman.Command;
 
@@ -20,8 +21,37 @@ public class VpnRepository : IVpnRepository
         _channel = GrpcChannel.ForAddress(_vpnCoreConfig.Link);
     }
     
+    public async Task<TResponse?> MakeRequest<TRequest, TResponse>(Func<TRequest, AsyncUnaryCall<TResponse>> grpcMethod, TRequest request)
+    {
+        try
+        {
+            var call = grpcMethod(request);
+        
+            // Дождаться ответа
+            var response = await call.ResponseAsync;
+        
+            // Получить статус
+            var status = call.GetStatus();
+
+            if (status.StatusCode != Grpc.Core.StatusCode.OK)
+            {
+                Console.WriteLine($"gRPC error: {status.StatusCode} - {status.Detail}");
+                return default; // Возвращаем null, если ошибка
+            }
+
+            return response; // Возвращаем успешный ответ
+        }
+        catch (RpcException ex)
+        {
+            Console.WriteLine($"gRPC RpcException: {ex.Status.StatusCode} - {ex.Status.Detail}");
+        }
+
+        return default; // Возвращаем null в случае ошибки
+    }
+
+
     
-    public void AddUser(Xray.Common.Protocol.User user, Protocol protocol)
+    public async Task AddUser(Xray.Common.Protocol.User user, Protocol protocol)
     {
         var client = new HandlerService.HandlerServiceClient(_channel);
         
@@ -30,12 +60,13 @@ public class VpnRepository : IVpnRepository
             User = user
         };
         
-        var result = client.AlterInbound(new AlterInboundRequest()
+        var request = new AlterInboundRequest()
         {
             Tag = $"inbound-{protocol.Id}",
             Operation = IVpnRepository.ToTypedMessage(userCmd)
-        });
-        
-        Console.WriteLine(result);
+        };
+
+        AlterInboundResponse result = await MakeRequest(client.AlterInboundAsync, request);
+        // Console.WriteLine(result.GetStatus().StatusCode.GetType());
     }
 }

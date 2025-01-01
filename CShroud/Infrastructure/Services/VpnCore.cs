@@ -29,7 +29,7 @@ public class VpnCore: IVpnCore
         _process = new BaseProcess(processStartInfo);
         _processManager.Register(_process);
         
-        _process.Start();
+        // _process.Start();
     }
 
     private void MakeRequest()

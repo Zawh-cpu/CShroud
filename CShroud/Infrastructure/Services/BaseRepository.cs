@@ -46,6 +46,12 @@ public class BaseRepository : IBaseRepository
     {
         return await _context.Protocols.FirstOrDefaultAsync(p => p.Id == id);
     }
+
+    public async Task AddKeyAsync(Key key)
+    {
+        await _context.Keys.AddAsync(key);
+        await _context.SaveChangesAsync();
+    }
     
     public async Task SaveAsync()
     {

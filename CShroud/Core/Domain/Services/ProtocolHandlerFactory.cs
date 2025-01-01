@@ -1,4 +1,5 @@
 using CShroud.Core.Domain.Interfaces;
+using CShroud.Core.Domain.Handlers;
 
 namespace CShroud.Core.Domain.Services;
 
@@ -6,10 +7,10 @@ public class ProtocolHandlerFactory : IProtocolHandlerFactory
 {
     private Dictionary<string, Func<IProtocolHandler>> _handlers = new Dictionary<string, Func<IProtocolHandler>>()
     {
-        { "vless",  }
+        { "vless", () => new VlessHandler() }
     };
-    public Func<IProtocolHandler>? Analyze(string protocolId)
+    public bool Analyze(string protocolId, out Func<IProtocolHandler>? handler)
     {
-        return _handlers.TryGetValue(protocolId, out var handler) ? handler : null;
+        return _handlers.TryGetValue(protocolId, out handler);
     }
 }

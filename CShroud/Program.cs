@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Загрузка конфигурации из appsettings.json
 builder.Services.Configure<VpnCoreConfig>(builder.Configuration.GetSection("VpnCore"));
 builder.Services.AddSingleton<IProcessManager, ProcessManager>();
 builder.Services.AddSingleton<IVpnCore, VpnCore>();

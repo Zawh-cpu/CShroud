@@ -1,3 +1,5 @@
+using CShroud.Core.Domain.Interfaces;
+using CShroud.Core.Domain.Services;
 using CShroud.Infrastructure.Data.Entities;
 using CShroud.Infrastructure.Interfaces;
 using CShroud.Presentation.Protos.Server;
@@ -20,13 +22,15 @@ public class ControlService : Control.ControlBase
     private readonly GrpcChannel _channel;
     private readonly Infrastructure.Services.Core _core;
     private readonly IBaseRepository _baseRepository;
+    private readonly IProtocolHandlerFactory _protocolHandlerFactory;
 
-    public ControlService(ILogger<ControlService> logger, GrpcChannel channel, Infrastructure.Services.Core core, IBaseRepository baseRepository)
+    public ControlService(ILogger<ControlService> logger, GrpcChannel channel, Infrastructure.Services.Core core, IBaseRepository baseRepository, IProtocolHandlerFactory protocolHandlerFactory)
     {
         _logger = logger;
         _channel = channel;
         _core = core;
         _baseRepository = baseRepository;
+        _protocolHandlerFactory = protocolHandlerFactory;
     }
 
     public override async Task<Empty> CreateUser(CreateUserRequest request, ServerCallContext context)
@@ -66,16 +70,17 @@ public class ControlService : Control.ControlBase
             throw new RpcException(new Status(StatusCode.InvalidArgument, "Protocol with this id doesn't exists"));
         }
         
-        if (!_core.DefinedProtocols.TryGetValue(request.ProtocolId, out Func<IProtocol>? protocolToolsFactory))
+        if (!_protocolHandlerFactory.Analyze(request.ProtocolId, out var protocolToolsFactory))
         {
             throw new RpcException(new Status(StatusCode.InvalidArgument, "Protocol with this id doesn't exists"));
         }
 
-        IProtocol protocolTools = protocolToolsFactory.Invoke();
+        IProtocolHandler protocolTools = protocolToolsFactory!.Invoke();
         
         var client = new HandlerService.HandlerServiceClient(_channel);
 
         var parsedArgs = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.Args);
+        
         
         var uuid = Guid.NewGuid().ToString();
         
@@ -89,13 +94,7 @@ public class ControlService : Control.ControlBase
             }
         };
         
-        _ = client.AlterInbound(new AlterInboundRequest()
-        {
-            Tag = $"inbound-{protocol.Id}",
-            Operation = Core.ToTypedMessage(userCmd)
-        });
-        
-        var key = new Key()
+        var key = new CShroud.Infrastructure.Data.Entities.Key()
         {
             UserId = user.Id,
             Uuid = uuid,
@@ -104,11 +103,10 @@ public class ControlService : Control.ControlBase
             Port = protocol.Port,
             Name = request.Name.Substring(0, Math.Min(request.Name.Length, 96))
         };
+
+        await _baseRepository.AddKeyAsync(key);
         
-        session.Keys.Add(key);
-        session.SaveChanges();
-        
-        return Task.FromResult(new AddClientResponse()
+        return await Task.FromResult(new AddClientResponse()
         {
             Id = (uint)key.Id
         });

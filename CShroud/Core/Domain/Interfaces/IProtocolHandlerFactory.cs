@@ -2,5 +2,5 @@ namespace CShroud.Core.Domain.Interfaces;
 
 public interface IProtocolHandlerFactory
 {
-    Func<IProtocolHandler>? Analyze(string protocolId);
+    bool Analyze(string protocolId, out Func<IProtocolHandler>? protocolHandler);
 }

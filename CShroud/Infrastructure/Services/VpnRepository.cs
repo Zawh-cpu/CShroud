@@ -21,37 +21,33 @@ public class VpnRepository : IVpnRepository
         _channel = GrpcChannel.ForAddress(_vpnCoreConfig.Link);
     }
     
-    public async Task<TResponse?> MakeRequest<TRequest, TResponse>(Func<TRequest, AsyncUnaryCall<TResponse>> grpcMethod, TRequest request)
+    private async Task<TResponse?> MakeRequest<TRequest, TResponse>(Func<TRequest, CallOptions, AsyncUnaryCall<TResponse>> grpcMethod, TRequest request)
     {
         try
         {
-            var call = grpcMethod(request);
-        
-            // Дождаться ответа
+            var call = grpcMethod(request, new CallOptions());
             var response = await call.ResponseAsync;
-        
-            // Получить статус
             var status = call.GetStatus();
 
             if (status.StatusCode != Grpc.Core.StatusCode.OK)
             {
                 Console.WriteLine($"gRPC error: {status.StatusCode} - {status.Detail}");
-                return default; // Возвращаем null, если ошибка
+                return default;
             }
 
-            return response; // Возвращаем успешный ответ
+            return response;
         }
         catch (RpcException ex)
         {
             Console.WriteLine($"gRPC RpcException: {ex.Status.StatusCode} - {ex.Status.Detail}");
         }
 
-        return default; // Возвращаем null в случае ошибки
+        return default;
     }
 
 
     
-    public async Task AddUser(Xray.Common.Protocol.User user, Protocol protocol)
+    public async Task<bool> AddUser(Xray.Common.Protocol.User user, Protocol protocol)
     {
         var client = new HandlerService.HandlerServiceClient(_channel);
         
@@ -66,7 +62,26 @@ public class VpnRepository : IVpnRepository
             Operation = IVpnRepository.ToTypedMessage(userCmd)
         };
 
-        AlterInboundResponse result = await MakeRequest(client.AlterInboundAsync, request);
-        // Console.WriteLine(result.GetStatus().StatusCode.GetType());
+        var result = await MakeRequest(client.AlterInboundAsync, request);
+        if (result != null) return true;
+        return false;
+    }
+
+    public async Task<bool> DelUser(Key key)
+    {
+        var client = new HandlerService.HandlerServiceClient(_channel);
+
+        var request = new AlterInboundRequest()
+        {
+            Tag = $"inbound-{key.ProtocolId}",
+            Operation = IVpnRepository.ToTypedMessage(new RemoveUserOperation()
+            {
+                Email = $"{key.UserId}_{key.Uuid}"
+            })
+        };
+        
+        var result = await MakeRequest(client.AlterInboundAsync, request);
+        if (result != null) return true;
+        return false;
     }
 }

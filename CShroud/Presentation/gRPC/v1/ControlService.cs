@@ -20,15 +20,15 @@ public class ControlService : Control.ControlBase
 {
     private readonly ILogger<ControlService> _logger;
     private readonly GrpcChannel _channel;
-    private readonly Infrastructure.Services.Core _core;
     private readonly IBaseRepository _baseRepository;
+    private readonly IVpnRepository _vpnRepository;
     private readonly IProtocolHandlerFactory _protocolHandlerFactory;
 
-    public ControlService(ILogger<ControlService> logger, GrpcChannel channel, Infrastructure.Services.Core core, IBaseRepository baseRepository, IProtocolHandlerFactory protocolHandlerFactory)
+    public ControlService(ILogger<ControlService> logger, GrpcChannel channel, IVpnRepository vpnRepository, IBaseRepository baseRepository, IProtocolHandlerFactory protocolHandlerFactory)
     {
         _logger = logger;
         _channel = channel;
-        _core = core;
+        _vpnRepository = vpnRepository;
         _baseRepository = baseRepository;
         _protocolHandlerFactory = protocolHandlerFactory;
     }
@@ -48,7 +48,7 @@ public class ControlService : Control.ControlBase
         
         await _baseRepository.AddUserAsync(user);
 
-        return await Task.FromResult(new Empty());
+        return new Empty();
     }
     
     public override async Task<AddClientResponse> AddClient(AddClientRequest request, ServerCallContext context)
@@ -83,16 +83,19 @@ public class ControlService : Control.ControlBase
         
         
         var uuid = Guid.NewGuid().ToString();
-        
-        var userCmd = new AddUserOperation()
+
+        var vpnUser = new Xray.Common.Protocol.User()
         {
-            User = new Xray.Common.Protocol.User()
-            {
-                Level = user.Rate.VPNLevel,
-                Email = $"{user.Id}_{uuid}",
-                Account = protocolTools.MakeAccount(uuid, parsedArgs)
-            }
+            Level = user.Rate.VPNLevel,
+            Email = $"{user.Id}_{uuid}",
+            Account = protocolTools.MakeAccount(uuid, parsedArgs)
         };
+
+        if (!await _vpnRepository.AddUser(vpnUser, protocol))
+        {
+            throw new RpcException(new Status(StatusCode.Cancelled, "Server error"));
+        }
+        
         
         var key = new CShroud.Infrastructure.Data.Entities.Key()
         {
@@ -106,35 +109,30 @@ public class ControlService : Control.ControlBase
 
         await _baseRepository.AddKeyAsync(key);
         
-        return await Task.FromResult(new AddClientResponse()
+        return new AddClientResponse()
         {
             Id = (uint)key.Id
-        });
+        };
     }
 
-    /*
-    public override Task<Empty> DelClient(RemClientRequest request, ServerCallContext context)
+    
+    public override async Task<Empty> DelClient(RemClientRequest request, ServerCallContext context)
     {
-        ApplicationContext session = new ApplicationContext();
-        Key? key = session.Keys.Where(key => key.Id == request.KeyId && key.UserId == request.UserId).SingleOrDefault();
-        if (key != null)
+        Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(request.KeyId);
+        if (key == null)
         {
-            
-            var client = new HandlerService.HandlerServiceClient(_channel);
-            _ = client.AlterInbound(new AlterInboundRequest()
-            {
-                Tag = $"inbound-{key.ProtocolId}",
-                Operation = Core.ToTypedMessage(new RemoveUserOperation()
-                {
-                    Email = $"{key.UserId}_{key.Uuid}"
-                })
-            });
-            
-            session.Keys.Remove(key);
-            session.SaveChanges();
+            return new Empty();
         }
+
+        if (key.UserId != request.UserId)
+        {
+            return new Empty();
+        }
+
+        _ = await _vpnRepository.DelUser(key);
+        await _baseRepository.DelKeyAsync(key);
         
-        return Task.FromResult(new Empty());
+        return new Empty();
     }
     
     public override Task<Empty> EnableKey(KeyRequest request, ServerCallContext context)
@@ -164,6 +162,7 @@ public class ControlService : Control.ControlBase
         return Task.FromResult(new Empty());
     }
     
+    /*
     public override Task<Empty> DisableKey(KeyRequest request, ServerCallContext context)
     {
         ApplicationContext session = new ApplicationContext();

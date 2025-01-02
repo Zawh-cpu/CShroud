@@ -13,6 +13,8 @@ public interface IBaseRepository
     Task<User?> GetUserAsync(uint id, params Expression<Func<User, object>>[] includes);
     Task<Protocol?> GetProtocolAsync(string id);
     Task AddKeyAsync(Key key);
-    Task SaveAsync();
+    Task<Key?> GetKeyAsync(uint id);
+    Task DelKeyAsync(Key key);
 
+    Task SaveAsync();
 }

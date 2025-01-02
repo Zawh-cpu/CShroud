@@ -52,6 +52,17 @@ public class BaseRepository : IBaseRepository
         await _context.Keys.AddAsync(key);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<Key?> GetKeyAsync(uint id)
+    {
+        return await _context.Keys.FirstOrDefaultAsync(k => k.Id == id);
+    }
+    
+    public async Task DelKeyAsync(Key key)
+    {
+        _context.Keys.Remove(key);
+        await _context.SaveChangesAsync();
+    }
     
     public async Task SaveAsync()
     {

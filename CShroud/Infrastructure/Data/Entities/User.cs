@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class User
 {
     [Key]
-    public int Id { get; set; }
+    public uint Id { get; set; }
     
     [MaxLength(96)]
     public string? Nickname { get; set; }

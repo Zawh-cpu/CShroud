@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 public class Rate
 {
     [Key]
-    public int Id { get; set; }
+    public uint Id { get; set; }
     
     [MaxLength(24)]
     public string? Name { get; set; }

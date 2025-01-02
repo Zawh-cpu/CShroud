@@ -1,4 +1,5 @@
 using CShroud.Core.Domain.Entities;
+using CShroud.Core.Domain.Interfaces;
 using CShroud.Infrastructure.Data.Entities;
 using CShroud.Infrastructure.Interfaces;
 using Grpc.Core;
@@ -12,11 +13,13 @@ public class VpnRepository : IVpnRepository
     private GrpcChannel _channel;
     private readonly IVpnCore _vpnCore;
     private readonly VpnCoreConfig _vpnCoreConfig;
+    private readonly IProtocolHandlerFactory _protocolHandlerFactory;
     
-    public VpnRepository(IVpnCore vpnCore, VpnCoreConfig vpnCoreConfig)
+    public VpnRepository(IVpnCore vpnCore, VpnCoreConfig vpnCoreConfig, IProtocolHandlerFactory protocolHandlerFactory)
     {
         _vpnCore = vpnCore;
         _vpnCoreConfig = vpnCoreConfig;
+        _protocolHandlerFactory = protocolHandlerFactory;
         
         _channel = GrpcChannel.ForAddress(_vpnCoreConfig.Link);
     }
@@ -44,21 +47,25 @@ public class VpnRepository : IVpnRepository
 
         return default;
     }
-
-
     
-    public async Task<bool> AddUser(Xray.Common.Protocol.User user, Protocol protocol)
+    public async Task<bool> AddKey(uint vpnLevel, string uuid, string protocolId)
     {
         var client = new HandlerService.HandlerServiceClient(_channel);
+        if (!_protocolHandlerFactory.Analyze(protocolId, out var protocolFactory)) return false;
         
         var userCmd = new AddUserOperation()
         {
-            User = user
+            User = new Xray.Common.Protocol.User()
+            {
+                Level = vpnLevel,
+                Email = uuid,
+                Account = protocolFactory!.Invoke().MakeAccount(uuid, new System.Collections.Generic.Dictionary<string, string>())
+            }
         };
         
         var request = new AlterInboundRequest()
         {
-            Tag = $"inbound-{protocol.Id}",
+            Tag = $"inbound-{protocolId}",
             Operation = IVpnRepository.ToTypedMessage(userCmd)
         };
 
@@ -67,16 +74,16 @@ public class VpnRepository : IVpnRepository
         return false;
     }
 
-    public async Task<bool> DelUser(Key key)
+    public async Task<bool> DelKey(string uuid, string protocolId)
     {
         var client = new HandlerService.HandlerServiceClient(_channel);
 
         var request = new AlterInboundRequest()
         {
-            Tag = $"inbound-{key.ProtocolId}",
+            Tag = $"inbound-{protocolId}",
             Operation = IVpnRepository.ToTypedMessage(new RemoveUserOperation()
             {
-                Email = $"{key.UserId}_{key.Uuid}"
+                Email = uuid
             })
         };
         

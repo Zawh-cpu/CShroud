@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 public class Key
 {
     [System.ComponentModel.DataAnnotations.Key]
-    public int Id { get; set; }
+    public uint Id { get; set; }
     
     public required string Uuid { get; set; }
     
@@ -18,10 +18,7 @@ public class Key
     public required string ProtocolId { get; set; }
     public Protocol? Protocol { get; set; }
     
-    public int Port { get; set; }
-    public string? Attributes { get; set; }
-    
-    public required int UserId { get; set; }
+    public required uint UserId { get; set; }
     public User? User { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

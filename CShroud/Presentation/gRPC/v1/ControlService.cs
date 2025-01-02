@@ -22,9 +22,10 @@ public class ControlService : Control.ControlBase
     private readonly GrpcChannel _channel;
     private readonly IBaseRepository _baseRepository;
     private readonly IVpnRepository _vpnRepository;
+    private readonly IKeyService _keyService;
     private readonly IProtocolHandlerFactory _protocolHandlerFactory;
 
-    public ControlService(ILogger<ControlService> logger, GrpcChannel channel, IVpnRepository vpnRepository, IBaseRepository baseRepository, IProtocolHandlerFactory protocolHandlerFactory)
+    public ControlService(ILogger<ControlService> logger, GrpcChannel channel, IVpnRepository vpnRepository, IBaseRepository baseRepository, IProtocolHandlerFactory protocolHandlerFactory, IKeyService keyService)
     {
         _logger = logger;
         _channel = channel;
@@ -53,7 +54,7 @@ public class ControlService : Control.ControlBase
     
     public override async Task<AddClientResponse> AddClient(AddClientRequest request, ServerCallContext context)
     {
-        User? user = await _baseRepository.GetUserAsync(request.UserId, x => x.Keys, x => x.Rate);
+        User? user = await _baseRepository.GetUserAsync(request.UserId, x => x.Keys, x => x.Rate!);
         if (user == null)
         {
             throw new RpcException(new Status(StatusCode.Unauthenticated, "User with this id doesn't exists"));
@@ -70,44 +71,17 @@ public class ControlService : Control.ControlBase
             throw new RpcException(new Status(StatusCode.InvalidArgument, "Protocol with this id doesn't exists"));
         }
         
-        if (!_protocolHandlerFactory.Analyze(request.ProtocolId, out var protocolToolsFactory))
-        {
-            throw new RpcException(new Status(StatusCode.InvalidArgument, "Protocol with this id doesn't exists"));
-        }
-
-        IProtocolHandler protocolTools = protocolToolsFactory!.Invoke();
-        
-        var client = new HandlerService.HandlerServiceClient(_channel);
-
-        var parsedArgs = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.Args);
-        
-        
-        var uuid = Guid.NewGuid().ToString();
-
-        var vpnUser = new Xray.Common.Protocol.User()
-        {
-            Level = user.Rate.VPNLevel,
-            Email = $"{user.Id}_{uuid}",
-            Account = protocolTools.MakeAccount(uuid, parsedArgs)
-        };
-
-        if (!await _vpnRepository.AddUser(vpnUser, protocol))
-        {
-            throw new RpcException(new Status(StatusCode.Cancelled, "Server error"));
-        }
-        
-        
         var key = new CShroud.Infrastructure.Data.Entities.Key()
         {
             UserId = user.Id,
-            Uuid = uuid,
+            Uuid = Guid.NewGuid().ToString(),
             LocationId = "frankfurt",
             ProtocolId = protocol.Id,
-            Port = protocol.Port,
             Name = request.Name.Substring(0, Math.Min(request.Name.Length, 96))
         };
 
         await _baseRepository.AddKeyAsync(key);
+        await _vpnRepository.AddKey(user.Rate.VPNLevel, key.Uuid, key.ProtocolId);
         
         return new AddClientResponse()
         {
@@ -129,7 +103,7 @@ public class ControlService : Control.ControlBase
             return new Empty();
         }
 
-        _ = await _vpnRepository.DelUser(key);
+        _ = await _vpnRepository.DelKey(key.Uuid, key.ProtocolId);
         await _baseRepository.DelKeyAsync(key);
         
         return new Empty();
@@ -139,50 +113,42 @@ public class ControlService : Control.ControlBase
     {
         Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(request.KeyId);
         if (key == null || key.UserId != request.UserId) throw new RpcException(new Status(StatusCode.InvalidArgument, "Key with this id doesn't exists"));
-        
-        User? user = session.Users.Include(x => x.Rate).Where(user => user.Id == request.UserId).SingleOrDefault();
+
+        User? user = await _baseRepository.GetUserAsync(request.UserId, x => x.Rate!);
         if (user == null) throw new RpcException(new Status(StatusCode.InvalidArgument, "User with this id doesn't exists"));
 
-        int enabledKeys = session.Keys.AsNoTracking().Where(k => k.UserId == user.Id && k.IsActive).Count();
+        int enabledKeys = await _baseRepository.CountKeysAsync(user.Id);
         if (enabledKeys >= user.Rate!.MaxKeys) throw new RpcException(new Status(StatusCode.Cancelled, "Max enabled keys reached"));
 
         if (!key.IsActive)
         {
-            if (Utils.Utils.EnableKey(_core, user, key))
-            {
-                key.IsActive = true;
-                session.SaveChanges();
-                return Task.FromResult(new Empty());
-            }
             
-            throw new RpcException((new Status(StatusCode.Aborted, "Unknown error occured.")));
+            if (!await _keyService.EnableKey(user, key))
+            {
+                throw new RpcException((new Status(StatusCode.Aborted, "Unknown error occured.")));
+            }
         }
                 
-        return Task.FromResult(new Empty());
+        return new Empty();
     }
     
-    /*
-    public override Task<Empty> DisableKey(KeyRequest request, ServerCallContext context)
+    
+    public override async Task<Empty> DisableKey(KeyRequest request, ServerCallContext context)
     {
-        ApplicationContext session = new ApplicationContext();
-        Key? key = session.Keys.Where(key => key.Id == request.KeyId && key.UserId == request.UserId).SingleOrDefault();
-        if (key == null) throw new RpcException(new Status(StatusCode.InvalidArgument, "Key with this id doesn't exists"));
-        
-        User? user = session.Users.Include(x => x.Rate).Where(user => user.Id == request.UserId).SingleOrDefault();
+        Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(request.KeyId);
+        if (key == null || key.UserId != request.UserId) throw new RpcException(new Status(StatusCode.InvalidArgument, "Key with this id doesn't exists"));
+
+        User? user = await _baseRepository.GetUserAsync(request.UserId, x => x.Rate!);
         if (user == null) throw new RpcException(new Status(StatusCode.InvalidArgument, "User with this id doesn't exists"));
 
         if (key.IsActive)
         {
-            if (Utils.Utils.DisableKey(_core.XrayCoreChannel, key))
+            if (!await _keyService.DisableKey(key))
             {
-                key.IsActive = false;
-                session.SaveChanges();
-                return Task.FromResult(new Empty());
+                throw new RpcException((new Status(StatusCode.Aborted, "Unknown error occured.")));
             }
-            
-            throw new RpcException((new Status(StatusCode.Aborted, "Unknown error occured.")));
         }
                 
-        return Task.FromResult(new Empty());
-    }*/
+        return new Empty();
+    }
 }

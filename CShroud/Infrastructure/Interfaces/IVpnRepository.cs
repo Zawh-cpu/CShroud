@@ -17,6 +17,7 @@ public interface IVpnRepository
         };
     }
 
-    Task<bool> AddUser(Xray.Common.Protocol.User user, Protocol protocol);
-    Task<bool> DelUser(Key key);
+    Task<bool> AddKey(uint vpnLevel, string uuid, string protocolId);
+
+    Task<bool> DelKey(string uuid, string protocolId);
 }

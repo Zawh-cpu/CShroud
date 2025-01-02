@@ -63,6 +63,11 @@ public class BaseRepository : IBaseRepository
         _context.Keys.Remove(key);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<int> CountKeysAsync(uint userId, bool active = true)
+    {
+        return await _context.Keys.AsNoTracking().Where(k => k.UserId == userId && k.IsActive == active).CountAsync();
+    }
     
     public async Task SaveAsync()
     {

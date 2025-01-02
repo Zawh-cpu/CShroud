@@ -7,7 +7,7 @@ public class Protocol
 {
     [Key] public required string Id { get; set; }
 
-    public int Port { get; set; }
+    public uint Port { get; set; }
     
     public required string PublicKey { get; set; }
     

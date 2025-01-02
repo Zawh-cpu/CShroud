@@ -6,7 +6,7 @@ namespace CShroud.Infrastructure.Data.Entities;
 public class Role
 {
     [Key]
-    public int Id { get; set; }
+    public uint Id { get; set; }
     
     [MaxLength(24)]
     public string? Name { get; set; }

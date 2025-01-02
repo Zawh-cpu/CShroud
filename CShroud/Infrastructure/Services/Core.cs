@@ -16,20 +16,7 @@ public class Core : ICore
         _serviceProvider = serviceProvider;
         _baseRepository = repo;
 
-        var user = new Xray.Common.Protocol.User()
-        {
-            Level = 0,
-            Email = "popa_fwff",
-            Account = new VlessHandler().MakeAccount("4141414124141", new Dictionary<string, string>())
-        };
-        
-        vpnRepo.AddUser(user, new Protocol()
-        {
-            Id = "vless",
-            Port = 444,
-            PublicKey = "fwwefweff",
-            URIArgs = null
-        }).GetAwaiter().GetResult();
+        vpnRepo.AddKey(0, "311314124124", "vless").GetAwaiter().GetResult();
     }
 
     public static string BuildPath(params string[] paths)

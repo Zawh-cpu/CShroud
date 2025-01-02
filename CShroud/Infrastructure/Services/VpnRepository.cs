@@ -5,6 +5,7 @@ using CShroud.Infrastructure.Interfaces;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Xray.App.Proxyman.Command;
+using Xray.App.Stats.Command;
 
 namespace CShroud.Infrastructure.Services;
 
@@ -90,5 +91,11 @@ public class VpnRepository : IVpnRepository
         var result = await MakeRequest(client.AlterInboundAsync, request);
         if (result != null) return true;
         return false;
+    }
+
+    public async Task<SysStatsResponse?> GetSysStat()
+    {
+        var client = new Xray.App.Stats.Command.StatsService.StatsServiceClient(_channel);
+        return await MakeRequest(client.GetSysStatsAsync, new Xray.App.Stats.Command.SysStatsRequest());
     }
 }

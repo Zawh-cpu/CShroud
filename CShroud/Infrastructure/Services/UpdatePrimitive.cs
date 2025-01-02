@@ -15,13 +15,10 @@ public class UpdatePrimitive : IUpdatePrimitive
     
     public string GlobalParamsHash { get; }
     public UpdateBytes ProtoGlobalParams { get; }
-    
-    private GlobalParams _globalParams;
 
     public UpdatePrimitive(GlobalParams globalParams)
     {
         var serializedGlobalParams = JsonConvert.SerializeObject(globalParams);
-        _globalParams = globalParams;
         GlobalParamsHash = ComputeJsonHash(serializedGlobalParams);
         ProtoGlobalParams = new UpdateBytes()
         {

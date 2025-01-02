@@ -10,8 +10,12 @@ using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<VpnCoreConfig>(builder.Configuration.GetSection("VpnCore"));
+builder.Services.Configure<GlobalParams>(builder.Configuration.GetSection("GlobalParams"));
+
 builder.Services.AddSingleton(resolver =>
     resolver.GetRequiredService<IOptions<VpnCoreConfig>>().Value);
+builder.Services.AddSingleton(resolver =>
+    resolver.GetRequiredService<IOptions<GlobalParams>>().Value);
 
 builder.Services.AddSingleton<IProcessManager, ProcessManager>();
 builder.Services.AddSingleton<IVpnCore, VpnCore>();

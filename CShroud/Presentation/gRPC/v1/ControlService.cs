@@ -32,6 +32,7 @@ public class ControlService : Control.ControlBase
         _vpnRepository = vpnRepository;
         _baseRepository = baseRepository;
         _protocolHandlerFactory = protocolHandlerFactory;
+        _keyService = keyService;
     }
 
     public override async Task<Empty> CreateUser(CreateUserRequest request, ServerCallContext context)

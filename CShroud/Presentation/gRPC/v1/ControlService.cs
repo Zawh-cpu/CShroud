@@ -135,11 +135,10 @@ public class ControlService : Control.ControlBase
         return new Empty();
     }
     
-    public override Task<Empty> EnableKey(KeyRequest request, ServerCallContext context)
+    public override async Task<Empty> EnableKey(KeyRequest request, ServerCallContext context)
     {
-        ApplicationContext session = new ApplicationContext();
-        Key? key = session.Keys.Where(key => key.Id == request.KeyId && key.UserId == request.UserId).SingleOrDefault();
-        if (key == null) throw new RpcException(new Status(StatusCode.InvalidArgument, "Key with this id doesn't exists"));
+        Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(request.KeyId);
+        if (key == null || key.UserId != request.UserId) throw new RpcException(new Status(StatusCode.InvalidArgument, "Key with this id doesn't exists"));
         
         User? user = session.Users.Include(x => x.Rate).Where(user => user.Id == request.UserId).SingleOrDefault();
         if (user == null) throw new RpcException(new Status(StatusCode.InvalidArgument, "User with this id doesn't exists"));

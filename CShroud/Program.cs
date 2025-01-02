@@ -3,6 +3,7 @@ using CShroud.Core.Domain.Interfaces;
 using CShroud.Core.Domain.Services;
 using CShroud.Infrastructure.Interfaces;
 using CShroud.Infrastructure.Services;
+using CShroud.Presentation.gRPC.v1;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -17,12 +18,15 @@ builder.Services.AddSingleton(resolver =>
 builder.Services.AddSingleton(resolver =>
     resolver.GetRequiredService<IOptions<GlobalParams>>().Value);
 
+builder.Services.AddSingleton<IUpdatePrimitive, UpdatePrimitive>();
+
 builder.Services.AddSingleton<IProcessManager, ProcessManager>();
 builder.Services.AddSingleton<IVpnCore, VpnCore>();
 builder.Services.AddSingleton<IBaseRepository, BaseRepository>();
 builder.Services.AddSingleton<IVpnRepository, VpnRepository>();
 
 builder.Services.AddSingleton<IKeyService, KeyService>();
+builder.Services.AddSingleton<IPlanner, Planner>();
 
 builder.Services.AddSingleton<IProtocolHandlerFactory, ProtocolHandlerFactory>();
 builder.Services.AddSingleton<ICore, Core>();
@@ -30,6 +34,11 @@ builder.Services.AddSingleton<ICore, Core>();
 builder.Services.AddGrpc();
 
 var app = builder.Build();
+
+var apiV1Group = app.MapGroup("/api/v1");
+apiV1Group.MapGrpcService<ControlService>();
+apiV1Group.MapGrpcService<MachineService>();
+apiV1Group.MapGrpcService<UpdateService>();
 
 // var vpnCoreConfig = builder.Configuration.GetSection("VpnCore");
 // Console.WriteLine($"Path: {vpnCoreConfig["Path"]}, Link: {vpnCoreConfig["Link"]}");

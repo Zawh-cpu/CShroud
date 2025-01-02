@@ -2,6 +2,7 @@ using CShroud.Core.Domain.Handlers;
 using CShroud.Infrastructure.Data.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using CShroud.Infrastructure.Interfaces;
+using CShroud.Infrastructure.Tasks;
 
 namespace CShroud.Infrastructure.Services;
 
@@ -9,14 +10,19 @@ public class Core : ICore
 {
     private readonly IServiceProvider _serviceProvider;
     private IBaseRepository _baseRepository;
+    private IPlanner _planner;
     public static string WorkingDir = Environment.CurrentDirectory;
     
-    public Core(IServiceProvider serviceProvider, IBaseRepository repo, IVpnRepository vpnRepo)
+    public Core(IServiceProvider serviceProvider, IBaseRepository repo, IVpnRepository vpnRepo, IPlanner planner)
     {
         _serviceProvider = serviceProvider;
         _baseRepository = repo;
+        _planner = planner;
 
-        vpnRepo.AddKey(0, "311314124124", "vless").GetAwaiter().GetResult();
+        var task = new TestTask(DateTime.Now.AddSeconds(5));
+        _planner.AddTask(task);
+        
+        // vpnRepo.AddKey(0, "311314124124", "vless").GetAwaiter().GetResult();
     }
 
     public static string BuildPath(params string[] paths)

@@ -19,16 +19,14 @@ using Xray.App.Proxyman.Command;
 public class ControlService : Control.ControlBase
 {
     private readonly ILogger<ControlService> _logger;
-    private readonly GrpcChannel _channel;
     private readonly IBaseRepository _baseRepository;
     private readonly IVpnRepository _vpnRepository;
     private readonly IKeyService _keyService;
     private readonly IProtocolHandlerFactory _protocolHandlerFactory;
 
-    public ControlService(ILogger<ControlService> logger, GrpcChannel channel, IVpnRepository vpnRepository, IBaseRepository baseRepository, IProtocolHandlerFactory protocolHandlerFactory, IKeyService keyService)
+    public ControlService(ILogger<ControlService> logger, IVpnRepository vpnRepository, IBaseRepository baseRepository, IProtocolHandlerFactory protocolHandlerFactory, IKeyService keyService)
     {
         _logger = logger;
-        _channel = channel;
         _vpnRepository = vpnRepository;
         _baseRepository = baseRepository;
         _protocolHandlerFactory = protocolHandlerFactory;
@@ -72,7 +70,7 @@ public class ControlService : Control.ControlBase
             throw new RpcException(new Status(StatusCode.InvalidArgument, "Protocol with this id doesn't exists"));
         }
         
-        var key = new CShroud.Infrastructure.Data.Entities.Key()
+        var key = new Infrastructure.Data.Entities.Key()
         {
             UserId = user.Id,
             Uuid = Guid.NewGuid().ToString(),
@@ -86,7 +84,7 @@ public class ControlService : Control.ControlBase
         
         return new AddClientResponse()
         {
-            Id = (uint)key.Id
+            Id = key.Id
         };
     }
 

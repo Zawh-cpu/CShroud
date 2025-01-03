@@ -21,12 +21,12 @@ public class User
     
     public ulong? TelegramId { get; set; }
     
-    [Required] public int RoleId { get; set; } = 1;
+    [Required] public uint RoleId { get; set; } = 1;
     
     [ForeignKey("RoleId")]
     public Role? Role { get; set; }
     
-    [Required] public int RateId { get; set; } = 1;
+    [Required] public uint RateId { get; set; } = 1;
     
     [ForeignKey("RateId")]
     public Entities.Rate? Rate { get; set; }

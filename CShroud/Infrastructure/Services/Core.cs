@@ -14,7 +14,7 @@ public class Core : ICore
     private IPlanner _planner;
     public static string WorkingDir = Environment.CurrentDirectory;
     
-    public Core(IServiceProvider serviceProvider, IBaseRepository repo, IVpnRepository vpnRepo, IVpnCore vpnCore, IPlanner planner)
+    public Core(IServiceProvider serviceProvider, IBaseRepository repo, IVpnRepository vpnRepo, IVpnCore vpnCore, IPlanner planner, IKeyService keySerivce)
     {
         _serviceProvider = serviceProvider;
         _baseRepository = repo;

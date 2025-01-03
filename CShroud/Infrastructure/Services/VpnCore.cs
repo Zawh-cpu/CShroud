@@ -40,14 +40,14 @@ public class VpnCore: IVpnCore
     {
         _process.Start();
     }
+    
+    private void OnProcessStarted(object? sender, EventArgs e)
+    {
+        VpnStarted?.Invoke(this, e);
+    }
 
     private void OnProcessStopped(object? sender, EventArgs e)
     {
         VpnStopped?.Invoke(this, e);
-    }
-
-    private void OnProcessStarted(object? sender, EventArgs e)
-    {
-        VpnStarted?.Invoke(this, e);
     }
 }

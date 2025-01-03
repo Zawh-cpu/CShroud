@@ -16,6 +16,7 @@ public interface IBaseRepository
     Task<Key?> GetKeyAsync(uint id);
     Task DelKeyAsync(Key key);
     Task<int> CountKeysAsync(uint userId, bool active = true);
+    Task<List<User>> GetAllActiveKeysByUserAsync();
 
     Task SaveAsync();
 }

@@ -26,6 +26,7 @@ builder.Services.AddSingleton<IBaseRepository, BaseRepository>();
 builder.Services.AddSingleton<IVpnRepository, VpnRepository>();
 
 builder.Services.AddSingleton<IKeyService, KeyService>();
+
 builder.Services.AddSingleton<IPlanner, Planner>();
 
 builder.Services.AddSingleton<IProtocolHandlerFactory, ProtocolHandlerFactory>();

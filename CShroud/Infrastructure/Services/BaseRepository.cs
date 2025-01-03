@@ -68,6 +68,11 @@ public class BaseRepository : IBaseRepository
     {
         return await _context.Keys.AsNoTracking().Where(k => k.UserId == userId && k.IsActive == active).CountAsync();
     }
+
+    public async Task<List<User>> GetAllActiveKeysByUserAsync()
+    {
+        return await _context.Users.Where(u => u.RateId > 1).Include(u => u.Rate).Include(u => u.Keys.Where(k => k.IsActive == true)).ToListAsync();
+    }
     
     public async Task SaveAsync()
     {

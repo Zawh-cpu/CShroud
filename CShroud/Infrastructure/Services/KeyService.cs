@@ -9,16 +9,30 @@ public class KeyService : IKeyService
 {
     private readonly IVpnRepository _vpnRepository;
     private readonly IBaseRepository _baseRepository;
-    private readonly IProtocolHandlerFactory _protocolHandlerFactory;
+    private readonly IVpnCore _vpnCore;
     private HashSet<string> _activeKeys = new();
     
-    public KeyService(IVpnRepository vpnRepository, IBaseRepository baseRepository, IProtocolHandlerFactory protocolHandlerFactory)
+    public KeyService(IVpnRepository vpnRepository, IBaseRepository baseRepository, IVpnCore vpnCore)
     {
         _vpnRepository = vpnRepository;
         _baseRepository = baseRepository;
-        _protocolHandlerFactory = protocolHandlerFactory;
+        _vpnCore = vpnCore;
+
+        _vpnCore.VpnStarted += (object? sender, EventArgs e) => Task.Run(async() => await LoadActiveKeysOnStart(sender, e));
     }
 
+    private async Task LoadActiveKeysOnStart(object? sender, EventArgs e)
+    {
+        var users = await _baseRepository.GetAllActiveKeysByUserAsync();
+        foreach (var user in users)
+        {
+            foreach (var key in user.Keys)
+            {
+                await _vpnRepository.AddKey(user.Rate!.VPNLevel, key.Uuid, key.ProtocolId);
+            }
+        }
+    }
+    
     public async Task<bool> EnableKey(User user, Key key)
     {
         if (!await _vpnRepository.AddKey(user.Rate!.VPNLevel, key.Uuid, key.ProtocolId)) return false;

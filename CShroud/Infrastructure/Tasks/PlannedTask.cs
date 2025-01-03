@@ -11,7 +11,7 @@ public class PlannedTask
         PlannedTime = plannedTime;
     }
 
-    public virtual void Action(IPlanner planner)
+    public virtual async Task Action(IPlanner planner)
     {
     }
 }

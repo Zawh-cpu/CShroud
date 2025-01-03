@@ -34,11 +34,18 @@ builder.Services.AddSingleton<ICore, Core>();
 builder.Services.AddGrpc();
 
 var app = builder.Build();
-
+/*
 var apiV1Group = app.MapGroup("/api/v1");
 apiV1Group.MapGrpcService<ControlService>();
 apiV1Group.MapGrpcService<MachineService>();
 apiV1Group.MapGrpcService<UpdateService>();
+*/
+
+
+app.MapGrpcService<UpdateService>();
+app.MapGrpcService<ControlService>();
+app.MapGrpcService<MachineService>();
+
 
 // var vpnCoreConfig = builder.Configuration.GetSection("VpnCore");
 // Console.WriteLine($"Path: {vpnCoreConfig["Path"]}, Link: {vpnCoreConfig["Link"]}");

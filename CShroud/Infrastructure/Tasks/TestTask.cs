@@ -11,8 +11,9 @@ public class TestTask : IPlannedTask
         PlannedTime = plannedTime;
     }
 
-    public void Action(IPlanner planner)
+    public Task Action(IPlanner planner)
     {
         Console.WriteLine("Action");
+        return Task.CompletedTask;
     }
 }

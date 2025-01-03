@@ -23,6 +23,8 @@ public class Planner : IPlanner
         _plannedTasks.Add(task);
         _plannedTasks.Sort((item1, item2) => item1.PlannedTime.CompareTo(item2.PlannedTime));
 
+        Console.WriteLine(_plannedTasks);
+        
         if (RuntimeTask.IsCompleted)
         {
             RuntimeTask = Task.Run(CheckLoop);
@@ -63,14 +65,14 @@ public class Planner : IPlanner
                     }
 
                     _plannedTasks.Remove(task);
-                    task.Action(this);
+                    await task.Action(this);
                 }
 
                 if (_plannedTasks.Count != startCount)
                 {
                     _plannedTasks.Sort((item1, item2) => item1.PlannedTime.CompareTo(item2.PlannedTime));
                 }
-
+                
                 if (delay > 0)
                 {
                     await Task.Delay(delay, _cts.Token);

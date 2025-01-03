@@ -18,9 +18,6 @@ public class Core : ICore
         _serviceProvider = serviceProvider;
         _baseRepository = repo;
         _planner = planner;
-
-        var task = new TestTask(DateTime.Now.AddSeconds(5));
-        _planner.AddTask(task);
         
         // vpnRepo.AddKey(0, "311314124124", "vless").GetAwaiter().GetResult();
     }
@@ -40,6 +37,8 @@ public class Core : ICore
 
     public void Start()
     {
+        var task = new TestTask(DateTime.UtcNow.AddSeconds(5));
+        _planner.AddTask(task);
         var processManager = _serviceProvider.GetRequiredService<IProcessManager>();
         // _baseRepository = _serviceProvider.GetRequiredService<IBaseRepository>();
         Console.WriteLine(_baseRepository.Ping());

@@ -3,5 +3,5 @@ namespace CShroud.Infrastructure.Interfaces;
 public interface IPlannedTask
 {
     DateTime PlannedTime { get; set; }
-    void Action(IPlanner planner);
+    Task Action(IPlanner planner);
 }

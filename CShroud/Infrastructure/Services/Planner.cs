@@ -65,7 +65,16 @@ public class Planner : IPlanner
                     }
 
                     _plannedTasks.Remove(task);
-                    await task.Action(this);
+                    try
+                    {
+                        await task.Action(this, currentTime);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                        Console.WriteLine(ex.Message);
+                    }
+                    
                 }
 
                 if (_plannedTasks.Count != startCount)

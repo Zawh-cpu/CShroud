@@ -32,22 +32,5 @@ public class VpnCore: IVpnCore
         // _process.Start();
     }
 
-    private void MakeRequest()
-    {
-        try
-        {
-
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-    }
-
-    public void SystemInfo()
-    {
-        
-    }
-
 
 }

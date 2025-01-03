@@ -10,13 +10,15 @@ public class Core : ICore
 {
     private readonly IServiceProvider _serviceProvider;
     private IBaseRepository _baseRepository;
+    private IVpnCore _vpnCore;
     private IPlanner _planner;
     public static string WorkingDir = Environment.CurrentDirectory;
     
-    public Core(IServiceProvider serviceProvider, IBaseRepository repo, IVpnRepository vpnRepo, IPlanner planner)
+    public Core(IServiceProvider serviceProvider, IBaseRepository repo, IVpnRepository vpnRepo, IVpnCore vpnCore, IPlanner planner)
     {
         _serviceProvider = serviceProvider;
         _baseRepository = repo;
+        _vpnCore = vpnCore;
         _planner = planner;
         
         // vpnRepo.AddKey(0, "311314124124", "vless").GetAwaiter().GetResult();
@@ -37,7 +39,7 @@ public class Core : ICore
 
     public void Start()
     {
-        var task = new TestTask(DateTime.UtcNow.AddSeconds(5));
+        var task = new TestTask(DateTime.UtcNow.AddSeconds(5), _vpnCore);
         _planner.AddTask(task);
         var processManager = _serviceProvider.GetRequiredService<IProcessManager>();
         // _baseRepository = _serviceProvider.GetRequiredService<IBaseRepository>();

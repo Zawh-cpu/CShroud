@@ -17,7 +17,6 @@ public class TestTask : IPlannedTask
     {
         Console.WriteLine("SSSSS");
         Console.WriteLine($"Action: {_vpnCore.IsRunning}");
-        planner.AddTask(new TestTask(currentTime.AddSeconds(5), _vpnCore));
-        return;
+        // planner.AddTask(new TestTask(currentTime.AddSeconds(5), _vpnCore));
     }
 }

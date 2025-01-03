@@ -3,4 +3,5 @@
 public interface IVpnCore
 {
     bool IsRunning { get; }
+    void Start();
 }

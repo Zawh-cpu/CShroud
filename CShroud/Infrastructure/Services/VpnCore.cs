@@ -32,5 +32,14 @@ public class VpnCore: IVpnCore
         // _process.Start();
     }
 
+    public void Start()
+    {
+        _process.Start();
+        
+    }
 
+    private void LoadData()
+    {
+        
+    }
 }

@@ -39,6 +39,7 @@ public class Core : ICore
 
     public void Start()
     {
+        _vpnCore.Start();
         var task = new TestTask(DateTime.UtcNow.AddSeconds(5), _vpnCore);
         _planner.AddTask(task);
         var processManager = _serviceProvider.GetRequiredService<IProcessManager>();

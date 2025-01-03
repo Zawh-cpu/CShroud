@@ -23,12 +23,12 @@ public class MachineService : Machine.MachineBase
         return Task.FromResult(new PingAnswer() { Status = 1});
     }
     
-    // public override async Task<Xray.App.Stats.Command.SysStatsResponse> GetSysStat(Empty request, ServerCallContext context)
-    public override Task<Xray.App.Stats.Command.SysStatsResponse> GetSysStat(Empty request, ServerCallContext context)
+    public override async Task<Xray.App.Stats.Command.SysStatsResponse> GetSysStat(Empty request, ServerCallContext context)
+    // public override Task<Xray.App.Stats.Command.SysStatsResponse> GetSysStat(Empty request, ServerCallContext context)
     {
-        throw new RpcException(new Status(StatusCode.Unimplemented, "offline"));
+        // throw new RpcException(new Status(StatusCode.Unimplemented, "offline"));
         
-        /*
+        
         var resp = await _vpnRepository.GetSysStat();
         if (resp == null)
         {
@@ -36,6 +36,6 @@ public class MachineService : Machine.MachineBase
         }
 
         return resp;
-        */
+        
     }
 }

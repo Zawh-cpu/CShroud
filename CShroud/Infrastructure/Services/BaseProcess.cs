@@ -12,20 +12,22 @@ public class BaseProcess : IProcess
     public event EventHandler ProcessExited = delegate { };
     public event EventHandler ProcessStarted = delegate { };
 
-    public BaseProcess(ProcessStartInfo processStartInfo)
+    public BaseProcess(ProcessStartInfo processStartInfo, bool debug=false)
     {
         _process = new Process();
         _process.StartInfo = processStartInfo;
         _process.Exited += OnProcessExited!;
 
-
-        _process.OutputDataReceived += (sender, e) =>
+        if (debug)
         {
-            if (!string.IsNullOrEmpty(e.Data))
+            _process.OutputDataReceived += (sender, e) =>
             {
-                Console.WriteLine("[STDOUT] " + e.Data); // Print each line of standard output
-            }
-        };
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    Console.WriteLine("[STDOUT] " + e.Data); // Print each line of standard output
+                }
+            };
+        }
     }
 
     public void Start()
@@ -45,6 +47,7 @@ public class BaseProcess : IProcess
         }
     }
     
+    /*
     private bool IsProcessRunning()
     {
         try
@@ -58,6 +61,7 @@ public class BaseProcess : IProcess
             return false;
         }
     }
+    */
     
     private void OnProcessExited(object sender, EventArgs e)
     {

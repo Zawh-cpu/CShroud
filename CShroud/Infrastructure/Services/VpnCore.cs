@@ -10,6 +10,8 @@ public class VpnCore: IVpnCore
     private IProcessManager _processManager;
     private VpnCoreConfig _vpnConfig;
     public bool IsRunning => _process.IsRunning;
+    public event EventHandler VpnStopped = delegate { };
+    public event EventHandler VpnStarted = delegate { };
     
     public VpnCore(VpnCoreConfig vpnConfig, IProcessManager processManager)
     {
@@ -27,19 +29,25 @@ public class VpnCore: IVpnCore
         };
 
         _process = new BaseProcess(processStartInfo);
-        _processManager.Register(_process);
         
-        // _process.Start();
+        _process.ProcessStarted += OnProcessStarted;
+        _process.ProcessExited += OnProcessStopped;
+        
+        _processManager.Register(_process);
     }
 
     public void Start()
     {
         _process.Start();
-        
     }
 
-    private void LoadData()
+    private void OnProcessStopped(object? sender, EventArgs e)
     {
-        
+        VpnStopped?.Invoke(this, e);
+    }
+
+    private void OnProcessStarted(object? sender, EventArgs e)
+    {
+        VpnStarted?.Invoke(this, e);
     }
 }

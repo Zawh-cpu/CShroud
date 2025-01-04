@@ -11,6 +11,7 @@ public interface IBaseRepository
     Task<bool> UserExistsAsync(ulong telegramId);
     Task AddUserAsync(User user);
     Task<User?> GetUserAsync(uint id, params Expression<Func<User, object>>[] includes);
+    Task ExplicitLoadAsync<T>(T entity, params Expression<Func<T, object>>[] navigationProperties) where T : class;
     Task<Protocol?> GetProtocolAsync(string id);
     Task AddKeyAsync(Key key);
     Task<Key?> GetKeyAsync(uint id);

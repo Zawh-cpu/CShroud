@@ -4,8 +4,5 @@ namespace CShroud.Infrastructure.Interfaces;
 
 public interface IRateManager
 {
-    public void UpdateRate(User user, uint newRateId)
-    {
-        
-    }
+    Task UpdateRate(User user);
 }

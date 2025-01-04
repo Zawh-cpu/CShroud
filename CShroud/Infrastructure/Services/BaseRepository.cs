@@ -29,7 +29,46 @@ public class BaseRepository : IBaseRepository
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
     }
+    
+    private static string GetPropertyName<T>(Expression<Func<T, object>> propertyExpression)
+    {
+        if (propertyExpression.Body is MemberExpression member)
+        {
+            return member.Member.Name;
+        }
 
+        if (propertyExpression.Body is UnaryExpression unary && unary.Operand is MemberExpression unaryMember)
+        {
+            return unaryMember.Member.Name;
+        }
+
+        throw new InvalidOperationException("Invalid navigation property expression.");
+    }
+    
+    public async Task ExplicitLoadAsync<T>(
+        T entity,
+        params Expression<Func<T, object>>[] navigationProperties
+    ) where T : class
+    {
+        foreach (var navigationProperty in navigationProperties)
+        {
+            string propertyName = GetPropertyName(navigationProperty);
+
+            var entry = _context.Entry(entity);
+            
+            var isCollection = entry.Metadata.FindNavigation(propertyName)?.IsCollection ?? false;
+
+            if (isCollection)
+            {
+                await entry.Collection(propertyName).LoadAsync();
+            }
+            else
+            {
+                await entry.Reference(propertyName).LoadAsync();
+            }
+        }
+    }
+    
     public async Task<User?> GetUserAsync(uint id, params Expression<Func<User, object>>[] includes)
     {
         IQueryable<User> query = _context.Users;

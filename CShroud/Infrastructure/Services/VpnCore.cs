@@ -28,7 +28,7 @@ public class VpnCore: IVpnCore
             CreateNoWindow = false
         };
 
-        _process = new BaseProcess(processStartInfo);
+        _process = new BaseProcess(processStartInfo, debug: true);
         
         _process.ProcessStarted += OnProcessStarted;
         _process.ProcessExited += OnProcessStopped;

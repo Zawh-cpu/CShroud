@@ -23,11 +23,13 @@ public class KeyService : IKeyService
 
     private async Task LoadActiveKeysOnStart(object? sender, EventArgs e)
     {
+        Console.WriteLine("Loading Active Keys");
         var users = await _baseRepository.GetAllActiveKeysByUserAsync();
         foreach (var user in users)
         {
             foreach (var key in user.Keys)
             {
+                Console.WriteLine($"Key: {key.Id} {key.Uuid}");
                 await _vpnRepository.AddKey(user.Rate!.VPNLevel, key.Uuid, key.ProtocolId);
             }
         }

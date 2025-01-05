@@ -13,10 +13,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<VpnCoreConfig>(builder.Configuration.GetSection("VpnCore"));
 builder.Services.Configure<GlobalParams>(builder.Configuration.GetSection("GlobalParams"));
 
+builder.Services.Configure<BaseConfig>(builder.Configuration.GetSection("BaseConfig"));
+
 builder.Services.AddSingleton(resolver =>
     resolver.GetRequiredService<IOptions<VpnCoreConfig>>().Value);
 builder.Services.AddSingleton(resolver =>
-    resolver.GetRequiredService<IOptions<GlobalParams>>().Value);
+    resolver.GetRequiredService<IOptions<GlobalParams>>().Value);;
+builder.Services.AddSingleton(resolver =>
+    resolver.GetRequiredService<IOptions<BaseConfig>>().Value);
 
 builder.Services.AddSingleton<IUpdatePrimitive, UpdatePrimitive>();
 

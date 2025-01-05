@@ -14,7 +14,7 @@ public class RateManager : IRateManager
         _keyService = keyService;
     }
     
-    public async Task UpdateRate(User user)
+    public async Task UpdateRate(User user, bool save = true)
     {
         if (user.Rate!.MaxKeys >= await _baseRepository.CountKeysAsync(user.Id)) return;
 
@@ -27,7 +27,7 @@ public class RateManager : IRateManager
 
             for (var i = user.Keys!.Count - 1; i >= user.Rate!.MaxKeys; i--)
             {
-                await _keyService.DisableKey(user.Keys![i]);
+                await _keyService.DisableKey(user.Keys![i], save: save);
             }
         }
     }

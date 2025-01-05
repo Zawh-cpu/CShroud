@@ -4,5 +4,5 @@ namespace CShroud.Infrastructure.Interfaces;
 
 public interface IRateManager
 {
-    Task UpdateRate(User user);
+    Task UpdateRate(User user, bool save = true);
 }

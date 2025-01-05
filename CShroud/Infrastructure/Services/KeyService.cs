@@ -33,20 +33,21 @@ public class KeyService : IKeyService
         }
     }
     
-    public async Task<bool> EnableKey(User user, Key key)
+    public async Task<bool> EnableKey(User user, Key key, bool save = true)
     {
         if (!await _vpnRepository.AddKey(user.Rate!.VPNLevel, key.Uuid, key.ProtocolId)) return false;
         key.IsActive = true;
-        await _baseRepository.SaveAsync();
+        if (save) await _baseRepository.SaveAsync();
         
         return true;
     }
 
-    public async Task<bool> DisableKey(Key key)
+    public async Task<bool> DisableKey(Key key, bool save = true)
     {
         if (!await _vpnRepository.DelKey(key.Uuid, key.ProtocolId)) return false;
         key.IsActive = false;
-        await _baseRepository.SaveAsync();
+        
+        if (save) await _baseRepository.SaveAsync();
         
         return true;
     }

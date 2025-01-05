@@ -113,6 +113,11 @@ public class BaseRepository : IBaseRepository
         return await _context.Users.Where(u => u.RateId > 1).Include(u => u.Rate).Include(u => u.Keys.Where(k => k.IsActive == true)).ToListAsync();
     }
     
+    public async Task<List<User>> GetUsersPayedUntilAsync(DateTime date)
+    {
+        return await _context.Users.Where(u => u.PayedUntil <= date).ToListAsync();
+    }
+    
     public async Task SaveAsync()
     {
         await _context.SaveChangesAsync();

@@ -1,6 +1,7 @@
 using CShroud.Infrastructure.Interfaces;
 using System.Collections.Generic;
 using CShroud.Core.Domain.Interfaces;
+using CShroud.Infrastructure.Data;
 using CShroud.Infrastructure.Data.Entities;
 
 namespace CShroud.Infrastructure.Services;
@@ -23,33 +24,29 @@ public class KeyService : IKeyService
 
     private async Task LoadActiveKeysOnStart(object? sender, EventArgs e)
     {
-        Console.WriteLine("Loading Active Keys");
-        var users = await _baseRepository.GetAllActiveKeysByUserAsync();
+        var context = new ApplicationContext();
+        var users = await _baseRepository.GetAllActiveKeysByUserAsync(context);
         foreach (var user in users)
         {
             foreach (var key in user.Keys)
             {
-                Console.WriteLine($"Key: {key.Id} {key.Uuid}");
                 await _vpnRepository.AddKey(user.Rate!.VPNLevel, key.Uuid, key.ProtocolId);
             }
         }
     }
     
-    public async Task<bool> EnableKey(User user, Key key, bool save = true)
+    public async Task<bool> EnableKey(User user, Key key)
     {
         if (!await _vpnRepository.AddKey(user.Rate!.VPNLevel, key.Uuid, key.ProtocolId)) return false;
         key.IsActive = true;
-        if (save) await _baseRepository.SaveAsync();
         
         return true;
     }
 
-    public async Task<bool> DisableKey(Key key, bool save = true)
+    public async Task<bool> DisableKey(Key key)
     {
         if (!await _vpnRepository.DelKey(key.Uuid, key.ProtocolId)) return false;
         key.IsActive = false;
-        
-        if (save) await _baseRepository.SaveAsync();
         
         return true;
     }

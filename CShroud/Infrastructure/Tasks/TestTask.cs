@@ -15,8 +15,11 @@ public class TestTask : IPlannedTask
 
     public async Task Action(IPlanner planner, DateTime currentTime)
     {
-        Console.WriteLine("SSSSS");
-        Console.WriteLine($"Action: {_vpnCore.IsRunning}");
-        // planner.AddTask(new TestTask(currentTime.AddSeconds(5), _vpnCore));
+        if (_vpnCore.IsRunning == false)
+        {
+            Console.WriteLine("VpnCore strangely is not running. Trying to restart it.");
+            _vpnCore.Start();
+        }
+        planner.AddTask(new TestTask(currentTime.AddMinutes(15), _vpnCore));
     }
 }

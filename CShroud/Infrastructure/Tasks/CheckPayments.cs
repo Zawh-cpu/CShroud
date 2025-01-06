@@ -1,4 +1,5 @@
 using System.Text.Json;
+using CShroud.Infrastructure.Data;
 using CShroud.Infrastructure.Interfaces;
 
 namespace CShroud.Infrastructure.Tasks;
@@ -23,9 +24,10 @@ public class CheckPayments : IPlannedTask
 
     public virtual async Task Action(IPlanner planner, DateTime currentTime)
     {
+        var dbContext = new ApplicationContext();
         var checkingTime = PlannedTime.AddDays(-4);
-        // var users = session.Users.Where(user => user.PayedUntil <= checkingTime).ToList();
-        var users = await _baseRepository.GetUsersPayedUntilAsync(checkingTime);
+        
+        var users = await _baseRepository.GetUsersPayedUntilAsync(dbContext, checkingTime);
         var triggeredDates = new List<int>() { 4, 2, 1};
         var results = new List<Dictionary<string, object>>();
         
@@ -36,7 +38,7 @@ public class CheckPayments : IPlannedTask
             {
                 user.RateId = 1;
                 user.PayedUntil = null;
-                await _rateManager.UpdateRate(user, save: false);
+                await _rateManager.UpdateRate(dbContext, user);
             }
 
             if (triggeredDates.Contains(different.Value.Days) || different.Value.Days < 0)
@@ -54,7 +56,7 @@ public class CheckPayments : IPlannedTask
 
         if (results.Any())
         {
-            await _baseRepository.SaveAsync();
+            await dbContext.SaveChangesAsync();
             _telegramManager.RateNotification(JsonSerializer.Serialize(results));
         }
         

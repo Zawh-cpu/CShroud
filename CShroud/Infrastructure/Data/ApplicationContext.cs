@@ -15,6 +15,6 @@ public class ApplicationContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(
-            "Host=localhost;Port=5432;Database=server;Username=crimsonshroud;Password=billieguess2Aikvbvj.kiaRH!iHOghi483ih1!89539709ih0!");
+            "Host=localhost;Port=5432;Database=server;Username=zwhnet;Password=billieguess2Aikvbvj.kiaRH!iHOghi483ih1!89539709ih0!");
     }
 }

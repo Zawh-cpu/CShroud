@@ -1,6 +1,3 @@
-using CShroud.Core.Domain.Handlers;
-using CShroud.Infrastructure.Data.Entities;
-using Microsoft.Extensions.DependencyInjection;
 using CShroud.Infrastructure.Interfaces;
 using CShroud.Infrastructure.Tasks;
 
@@ -8,20 +5,22 @@ namespace CShroud.Infrastructure.Services;
 
 public class Core : ICore
 {
-    private readonly IServiceProvider _serviceProvider;
-    private IBaseRepository _baseRepository;
-    private IVpnCore _vpnCore;
-    private IPlanner _planner;
+    private readonly IBaseRepository _baseRepository;
+    private readonly IRateManager _rateManager;
+    private readonly IKeyService _keySerivce;
+    private readonly ITelegramManager _telegramManager;
+    private readonly IVpnCore _vpnCore;
+    private readonly IPlanner _planner;
     public static string WorkingDir = Environment.CurrentDirectory;
     
-    public Core(IServiceProvider serviceProvider, IBaseRepository repo, IVpnRepository vpnRepo, IVpnCore vpnCore, IPlanner planner, IKeyService keySerivce)
+    public Core(IBaseRepository baseRepository, IRateManager rateManager, IVpnCore vpnCore, IPlanner planner, IKeyService keySerivce, ITelegramManager telegramManager)
     {
-        _serviceProvider = serviceProvider;
-        _baseRepository = repo;
+        _baseRepository = baseRepository;
+        _rateManager = rateManager;
         _vpnCore = vpnCore;
         _planner = planner;
-        
-        // vpnRepo.AddKey(0, "311314124124", "vless").GetAwaiter().GetResult();
+        _keySerivce = keySerivce;
+        _telegramManager = telegramManager;
     }
 
     public static string BuildPath(params string[] paths)
@@ -42,8 +41,8 @@ public class Core : ICore
         _vpnCore.Start();
         var task = new TestTask(DateTime.UtcNow.AddSeconds(5), _vpnCore);
         _planner.AddTask(task);
-        var processManager = _serviceProvider.GetRequiredService<IProcessManager>();
-        // _baseRepository = _serviceProvider.GetRequiredService<IBaseRepository>();
-        Console.WriteLine(_baseRepository.Ping());
+
+        var checkPaymentsTask = new CheckPayments(DateTime.UtcNow.AddSeconds(5), _baseRepository, _keySerivce, _rateManager, _telegramManager);
+        _planner.AddTask(checkPaymentsTask);
     }
 }

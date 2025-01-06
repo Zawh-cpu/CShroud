@@ -1,5 +1,6 @@
 using CShroud.Core.Domain.Interfaces;
 using CShroud.Core.Domain.Services;
+using CShroud.Infrastructure.Data;
 using CShroud.Infrastructure.Data.Entities;
 using CShroud.Infrastructure.Interfaces;
 using CShroud.Presentation.Protos.Server;
@@ -35,7 +36,8 @@ public class ControlService : Control.ControlBase
 
     public override async Task<Empty> CreateUser(CreateUserRequest request, ServerCallContext context)
     {
-        if (await _baseRepository.UserExistsAsync(request.TelegramId))
+        var dbContext = new ApplicationContext();
+        if (await _baseRepository.UserExistsAsync(dbContext, request.TelegramId))
         {
             throw new RpcException(new Status(StatusCode.Cancelled, "User already exists"));
         }
@@ -46,14 +48,17 @@ public class ControlService : Control.ControlBase
             TelegramId = request.TelegramId
         };
         
-        await _baseRepository.AddUserAsync(user);
-
+        await dbContext.Users.AddAsync(user);
+        await dbContext.SaveChangesAsync();
+        
         return new Empty();
     }
     
     public override async Task<AddClientResponse> AddClient(AddClientRequest request, ServerCallContext context)
     {
-        User? user = await _baseRepository.GetUserAsync(request.UserId, x => x.Keys, x => x.Rate!);
+        var dbContext = new ApplicationContext();
+        
+        User? user = await _baseRepository.GetUserAsync(dbContext, request.UserId, x => x.Keys, x => x.Rate!);
         if (user == null)
         {
             throw new RpcException(new Status(StatusCode.Unauthenticated, "User with this id doesn't exists"));
@@ -65,7 +70,7 @@ public class ControlService : Control.ControlBase
             throw new RpcException(new Status(StatusCode.Cancelled, "Max keys reached"));
         }
         
-        Protocol? protocol = await _baseRepository.GetProtocolAsync(request.ProtocolId);
+        Protocol? protocol = await _baseRepository.GetProtocolAsync(dbContext, request.ProtocolId);
         if (protocol == null)
         {
             throw new RpcException(new Status(StatusCode.InvalidArgument, "Protocol with this id doesn't exists"));
@@ -80,7 +85,8 @@ public class ControlService : Control.ControlBase
             Name = request.Name.Substring(0, Math.Min(request.Name.Length, 96))
         };
 
-        await _baseRepository.AddKeyAsync(key);
+        await dbContext.Keys.AddAsync(key);
+        await dbContext.SaveChangesAsync();
         await _vpnRepository.AddKey(user.Rate.VPNLevel, key.Uuid, key.ProtocolId);
         
         return new AddClientResponse()
@@ -92,7 +98,9 @@ public class ControlService : Control.ControlBase
     
     public override async Task<Empty> DelClient(RemClientRequest request, ServerCallContext context)
     {
-        Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(request.KeyId);
+        var dbContext = new ApplicationContext();
+        
+        Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(dbContext, request.KeyId);
         if (key == null)
         {
             return new Empty();
@@ -104,20 +112,23 @@ public class ControlService : Control.ControlBase
         }
 
         _ = await _vpnRepository.DelKey(key.Uuid, key.ProtocolId);
-        await _baseRepository.DelKeyAsync(key);
+        dbContext.Remove(key);
+        await dbContext.SaveChangesAsync();
         
         return new Empty();
     }
     
     public override async Task<Empty> EnableKey(KeyRequest request, ServerCallContext context)
     {
-        Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(request.KeyId);
+        var dbContext = new ApplicationContext();
+        
+        Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(dbContext, request.KeyId);
         if (key == null || key.UserId != request.UserId) throw new RpcException(new Status(StatusCode.InvalidArgument, "Key with this id doesn't exists"));
 
-        User? user = await _baseRepository.GetUserAsync(request.UserId, x => x.Rate!);
+        User? user = await _baseRepository.GetUserAsync(dbContext, request.UserId, x => x.Rate!);
         if (user == null) throw new RpcException(new Status(StatusCode.InvalidArgument, "User with this id doesn't exists"));
 
-        int enabledKeys = await _baseRepository.CountKeysAsync(user.Id);
+        int enabledKeys = await _baseRepository.CountKeysAsync(dbContext, user.Id);
         if (enabledKeys >= user.Rate!.MaxKeys) throw new RpcException(new Status(StatusCode.Cancelled, "Max enabled keys reached"));
 
         if (!key.IsActive)
@@ -127,6 +138,8 @@ public class ControlService : Control.ControlBase
             {
                 throw new RpcException((new Status(StatusCode.Aborted, "Unknown error occured.")));
             }
+            
+            await dbContext.SaveChangesAsync();
         }
                 
         return new Empty();
@@ -135,10 +148,12 @@ public class ControlService : Control.ControlBase
     
     public override async Task<Empty> DisableKey(KeyRequest request, ServerCallContext context)
     {
-        Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(request.KeyId);
+        var dbContext = new ApplicationContext();
+        
+        Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(dbContext, request.KeyId);
         if (key == null || key.UserId != request.UserId) throw new RpcException(new Status(StatusCode.InvalidArgument, "Key with this id doesn't exists"));
 
-        User? user = await _baseRepository.GetUserAsync(request.UserId, x => x.Rate!);
+        User? user = await _baseRepository.GetUserAsync(dbContext, request.UserId, x => x.Rate!);
         if (user == null) throw new RpcException(new Status(StatusCode.InvalidArgument, "User with this id doesn't exists"));
 
         if (key.IsActive)
@@ -147,6 +162,8 @@ public class ControlService : Control.ControlBase
             {
                 throw new RpcException((new Status(StatusCode.Aborted, "Unknown error occured.")));
             }
+            
+            await dbContext.SaveChangesAsync();
         }
                 
         return new Empty();

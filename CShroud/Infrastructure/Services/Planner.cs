@@ -22,8 +22,6 @@ public class Planner : IPlanner
         
         _plannedTasks.Add(task);
         _plannedTasks.Sort((item1, item2) => item1.PlannedTime.CompareTo(item2.PlannedTime));
-
-        Console.WriteLine(_plannedTasks);
         
         if (RuntimeTask.IsCompleted)
         {

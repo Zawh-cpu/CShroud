@@ -30,6 +30,7 @@ builder.Services.AddSingleton<IBaseRepository, BaseRepository>();
 builder.Services.AddSingleton<IVpnRepository, VpnRepository>();
 
 builder.Services.AddSingleton<IKeyService, KeyService>();
+builder.Services.AddSingleton<IRateManager, RateManager>();
 builder.Services.AddSingleton<ITelegramManager, TelegramManager>();
 
 builder.Services.AddSingleton<IPlanner, Planner>();
@@ -41,7 +42,7 @@ builder.Services.AddGrpc();
 
 var app = builder.Build();
 
-var apiV1Group = app.MapGroup("/api/v1");
+var apiV1Group = app.MapGroup("");
 apiV1Group.MapGrpcService<ControlService>();
 apiV1Group.MapGrpcService<MachineService>();
 apiV1Group.MapGrpcService<UpdateService>();

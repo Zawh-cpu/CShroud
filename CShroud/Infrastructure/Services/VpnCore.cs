@@ -21,14 +21,14 @@ public class VpnCore: IVpnCore
         var processStartInfo = new ProcessStartInfo
         {
             FileName = _vpnConfig.Path,
-            Arguments = "",
+            Arguments = _vpnConfig.Arguments,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
             CreateNoWindow = false
         };
 
-        _process = new BaseProcess(processStartInfo, debug: true);
+        _process = new BaseProcess(processStartInfo, debug: _vpnConfig.Debug);
         
         _process.ProcessStarted += OnProcessStarted;
         _process.ProcessExited += OnProcessStopped;

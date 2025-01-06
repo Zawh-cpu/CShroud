@@ -24,15 +24,20 @@ public class KeyService : IKeyService
 
     private async Task LoadActiveKeysOnStart(object? sender, EventArgs e)
     {
+        await Task.Delay(4000);
         var context = new ApplicationContext();
         var users = await _baseRepository.GetAllActiveKeysByUserAsync(context);
+        UInt32 c = 0;
         foreach (var user in users)
         {
             foreach (var key in user.Keys)
             {
                 await _vpnRepository.AddKey(user.Rate!.VPNLevel, key.Uuid, key.ProtocolId);
+                c++;
             }
         }
+        
+        Console.WriteLine($"[SYNCED] Loaded {c} active keys.");
     }
     
     public async Task<bool> EnableKey(User user, Key key)

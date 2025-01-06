@@ -64,7 +64,6 @@ public class ControlService : Control.ControlBase
             throw new RpcException(new Status(StatusCode.Unauthenticated, "User with this id doesn't exists"));
         }
         
-        Console.WriteLine($"User: {user.Id}, UserRateId: {user.RateId}, MaxKeys: {user.Rate!.MaxKeys}, CurrentKeys: {user.Keys.Count}");
         if (user.Keys.Count >= user.Rate!.MaxKeys)
         {
             throw new RpcException(new Status(StatusCode.Cancelled, "Max keys reached"));

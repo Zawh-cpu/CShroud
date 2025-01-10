@@ -1,6 +1,6 @@
 namespace CShroudApp.Infrastructure.Interfaces;
 
-public interface IVpnManager
+public interface IVpnService
 {
     void UpdateConfig();
     void Start();

@@ -1,3 +1,4 @@
+using CShroudApp.Core.Domain.Entities;
 using CShroudApp.Infrastructure.Interfaces;
 
 namespace CShroudApp.Infrastructure.Services;
@@ -6,9 +7,9 @@ public class ServerRepository: IServerRepository
 {
     private string _authToken = string.Empty;
 
-    public void ConnectToVpn(string token, string protocol)
+    public ConnectionAnswer GetVpnAccess(string token, string protocol)
     {
-        
+        return new ConnectionAnswer();
     }
 
     public bool Login()

@@ -5,12 +5,12 @@ namespace CShroudApp.Infrastructure.Services;
 
 public class Core : ICore
 {
-    private readonly IVpnManager _vpnManager;
+    private readonly IVpnService _vpnService;
     public static string WorkingDir = Environment.CurrentDirectory;
     
-    public Core(IVpnManager vpnManager)
+    public Core(IVpnService vpnService)
     {
-        _vpnManager = vpnManager;
+        _vpnService = vpnService;
     }
 
     public static string BuildPath(params string[] paths)
@@ -28,7 +28,7 @@ public class Core : ICore
 
     public void Start()
     {
-        _vpnManager.Start();
+        _vpnService.Start();
         
         while (true)
         {

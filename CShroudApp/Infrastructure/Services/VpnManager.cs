@@ -12,26 +12,13 @@ public class VpnManager : IVpnManager
 
     bool IsRunning => _process.IsRunning;
 
+    private IVpnCore _vpnCore;
     private IProxyManager _proxyManager;
-    private IProcessManager _processManager;
 
-    public VpnManager(IProxyManager proxyManager, IProcessManager processManager)
+    public VpnManager(IVpnCore vpnManager, IProxyManager proxyManager)
     {
+        _vpnCore = vpnManager;
         _proxyManager = proxyManager;
-        _processManager = processManager;
-
-        var processStartInfo = new ProcessStartInfo
-        {
-            FileName = VPN_PATH,
-            Arguments = "",
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = false
-        };
-
-        _process = new BaseProcess(processStartInfo);
-        _processManager.Register(_process);
 
         string modifiedJson = JsonConvert.SerializeObject(CreateDefaultConfig(), Formatting.Indented);
         File.WriteAllText("modified_config.json", modifiedJson);

@@ -6,9 +6,9 @@ public class ServerRepository: IServerRepository
 {
     private string _authToken = string.Empty;
 
-    public void ConnectToVpn(string token, string protocol)
+    public void GetVpnAccess(string token, string protocol)
     {
-        
+        var settings = _
     }
 
     public bool Login()

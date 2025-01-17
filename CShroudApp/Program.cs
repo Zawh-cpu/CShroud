@@ -2,18 +2,28 @@
 using CShroudApp.Infrastructure.Interfaces;
 using CShroudApp.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-var serviceCollection = new ServiceCollection();
+var host = Host.CreateApplicationBuilder();
 
-serviceCollection.AddSingleton<ApplicationConfig>(provider => new ApplicationConfig()
+host.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+host.Services.AddSingleton<ApplicationConfig>(provider => new ApplicationConfig()
 {
     WorkingFolder = Environment.CurrentDirectory
 });
 
-serviceCollection.AddSingleton<ICore, Core>();
 
-var serviceProvider = serviceCollection.BuildServiceProvider();
+host.Services.AddSingleton<VpnCoreConfig>(provider => new VpnCoreConfig());
 
-var core = serviceProvider.GetService<Core>()!;
+host.Services.AddSingleton<IProcessManager, ProcessManager>();
+host.Services.AddSingleton<IVpnCore, VpnCore>();
+host.Services.AddSingleton<IProxyManager, ProxyManager>();
+host.Services.AddSingleton<IVpnService, VpnService>();
+host.Services.AddSingleton<ICore, Core>();
+
+var app = host.Build();
+
+var core = app.Services.GetRequiredService<ICore>();
 core.Initialize();
 core.Start();

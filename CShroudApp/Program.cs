@@ -10,10 +10,22 @@ serviceCollection.AddSingleton<ApplicationConfig>(provider => new ApplicationCon
     WorkingFolder = Environment.CurrentDirectory
 });
 
+serviceCollection.AddSingleton<VpnCoreConfig>(provider => new VpnCoreConfig()
+{
+    Path = "",
+    Link = "",
+    Arguments = "",
+    Debug = false
+});
+
 serviceCollection.AddSingleton<ICore, Core>();
+serviceCollection.AddSingleton<IProcessManager, ProcessManager>();
+serviceCollection.AddSingleton<IVpnCore, VpnCore>();
+serviceCollection.AddSingleton<IProxyManager, ProxyManager>();
+serviceCollection.AddSingleton<IVpnService, VpnService>();
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 
-var core = serviceProvider.GetService<Core>()!;
+var core = serviceProvider.GetRequiredService<ICore>()!;
 core.Initialize();
 core.Start();

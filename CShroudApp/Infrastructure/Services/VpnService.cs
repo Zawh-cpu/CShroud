@@ -24,8 +24,14 @@ public class VpnService : IVpnService
         File.WriteAllText("modified_config.json", modifiedJson);
     }
 
-    public void Start() {}
-    public void Stop() {}
+    public void Start()
+    {
+        _proxyManager.Enable("localhost:7000");
+    }
+
+    public void Stop()
+    {
+    }
     public void UpdateConfig() {}
 
 }

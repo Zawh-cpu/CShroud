@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using CShroudApp.Infrastructure.Interfaces;
 
 namespace CShroudApp.Infrastructure.Services;
@@ -6,7 +5,6 @@ namespace CShroudApp.Infrastructure.Services;
 public class Core : ICore
 {
     private readonly IVpnService _vpnService;
-    public static string WorkingDir = Environment.CurrentDirectory;
     
     public Core(IVpnService vpnService)
     {
@@ -28,11 +26,6 @@ public class Core : ICore
 
     public void Start()
     {
-        _vpnService.Start();
-        
-        while (true)
-        {
-            
-        }
+        Console.WriteLine("CORE STARTED");
     }
 }

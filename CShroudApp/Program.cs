@@ -21,7 +21,8 @@ serviceCollection.AddSingleton<VpnCoreConfig>(provider => new VpnCoreConfig()
 serviceCollection.AddSingleton<ICore, Core>();
 serviceCollection.AddSingleton<IProcessManager, ProcessManager>();
 serviceCollection.AddSingleton<IVpnCore, VpnCore>();
-serviceCollection.AddSingleton<IProxyManager, ProxyManager>();
+serviceCollection.AddSingleton<IPlatformService, PlatformService>();
+serviceCollection.AddSingleton<IProxyService, ProxyService>();
 serviceCollection.AddSingleton<IVpnService, VpnService>();
 
 var serviceProvider = serviceCollection.BuildServiceProvider();

@@ -1,13 +1,13 @@
+namespace CShroudApp.Infrastructure.Platforms.Windows.Services;
+
 using System;
 using System.Runtime.Versioning;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using CShroudApp.Infrastructure.Interfaces;
 
-namespace CShroudApp.Infrastructure.Services;
-
 [SupportedOSPlatform("windows")]
-public class ProxyManager : IProxyManager
+public class WindowsProxyManager : IProxyManager
 {
     private const string REGISTRY_PATH = @"Software\Microsoft\Windows\CurrentVersion\Internet Settings";
 

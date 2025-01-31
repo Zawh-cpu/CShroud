@@ -6,10 +6,12 @@ namespace CShroudApp.Infrastructure.Services;
 public class Core : ICore
 {
     private readonly IVpnService _vpnService;
-    
-    public Core(IVpnService vpnService)
+    private readonly UiLoader _uiLoader;
+
+    public Core(IVpnService vpnService, UiLoader gui)
     {
         _vpnService = vpnService;
+        _uiLoader = gui;
     }
 
     public static string BuildPath(params string[] paths)
@@ -28,6 +30,6 @@ public class Core : ICore
     public void Start()
     {
         Console.WriteLine("CORE STARTED");
-        UiLoader.Run([]);
+        _uiLoader.Run([]);
     }
 }

@@ -1,49 +1,73 @@
-﻿using CShroudApp.Core.Domain.Entities;
+﻿using Avalonia;
+using CShroudApp.Core.Domain.Entities;
 using CShroudApp.Core.Services;
 using CShroudApp.Infrastructure.Interfaces;
 using CShroudApp.Infrastructure.Platforms.Linux.Services;
 using CShroudApp.Infrastructure.Platforms.Unsupported.Services;
 using CShroudApp.Infrastructure.Platforms.Windows.Services;
 using CShroudApp.Infrastructure.Services;
+using CShroudApp.Presentation.Ui;
 using Microsoft.Extensions.DependencyInjection;
 
-var serviceCollection = new ServiceCollection();
-
-serviceCollection.AddSingleton<ApplicationConfig>(provider => new ApplicationConfig()
+internal class Program
 {
-    WorkingFolder = Environment.CurrentDirectory
-});
 
-serviceCollection.AddSingleton<VpnCoreConfig>(provider => new VpnCoreConfig()
-{
-    Path = "",
-    Link = "",
-    Arguments = "",
-    Debug = false
-});
+    static int Main()
+    {
+        var serviceCollection = new ServiceCollection();
+
+        serviceCollection.AddSingleton<ApplicationConfig>(provider => new ApplicationConfig()
+        {
+            WorkingFolder = Environment.CurrentDirectory
+        });
+
+        serviceCollection.AddSingleton<VpnCoreConfig>(provider => new VpnCoreConfig()
+        {
+            Path = "",
+            Link = "",
+            Arguments = "",
+            Debug = false
+        });
 
 
-serviceCollection.AddSingleton<ICore, Core>();
-serviceCollection.AddSingleton<IProcessManager, ProcessManager>();
-serviceCollection.AddSingleton<IVpnCore, VpnCore>();
+        serviceCollection.AddSingleton<ICore, Core>();
+        serviceCollection.AddSingleton<IProcessManager, ProcessManager>();
+        serviceCollection.AddSingleton<IVpnCore, VpnCore>();
 
-switch (PlatformService.Platform)
-{
-    case Platform.Windows:
-        serviceCollection.AddSingleton<IProxyManager, WindowsProxyManager>();
-        break;
-    case Platform.Linux:
-        serviceCollection.AddSingleton<IProxyManager, LinuxProxyManager>();
-        break;
-    default:
-        serviceCollection.AddSingleton<IProxyManager, UnsupportedProxyManager>();
-        break;
+        switch (PlatformService.Platform)
+        {
+            case Platform.Windows:
+                serviceCollection.AddSingleton<IProxyManager, WindowsProxyManager>();
+                break;
+            case Platform.Linux:
+                serviceCollection.AddSingleton<IProxyManager, LinuxProxyManager>();
+                break;
+            default:
+                serviceCollection.AddSingleton<IProxyManager, UnsupportedProxyManager>();
+                break;
+        }
+
+        serviceCollection.AddSingleton<IVpnService, VpnService>();
+
+        serviceCollection.AddSingleton<UiLoader>();
+
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+
+        var core = serviceProvider.GetRequiredService<ICore>()!;
+        core.Initialize();
+        core.Start();
+
+        return 0;
+    }
+
+    [STAThread]
+    static void Run(string[] args) => BuildAvaloniaApp()
+        .StartWithClassicDesktopLifetime(args);
+
+    // Avalonia configuration, don't remove; also used by visual designer.
+    static AppBuilder BuildAvaloniaApp()
+        => AppBuilder.Configure<App>()
+            .UsePlatformDetect()
+            .WithInterFont()
+            .LogToTrace();    
 }
-
-serviceCollection.AddSingleton<IVpnService, VpnService>();
-
-var serviceProvider = serviceCollection.BuildServiceProvider();
-
-var core = serviceProvider.GetRequiredService<ICore>()!;
-core.Initialize();
-core.Start();

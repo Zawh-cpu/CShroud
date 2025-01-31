@@ -18,11 +18,17 @@ serviceCollection.AddSingleton<VpnCoreConfig>(provider => new VpnCoreConfig()
     Debug = false
 });
 
+
 serviceCollection.AddSingleton<ICore, Core>();
 serviceCollection.AddSingleton<IProcessManager, ProcessManager>();
 serviceCollection.AddSingleton<IVpnCore, VpnCore>();
-serviceCollection.AddSingleton<IPlatformService, PlatformService>();
-serviceCollection.AddSingleton<IProxyService, ProxyService>();
+/*serviceCollection.AddSingleton<IPlatformService>(platformService);
+
+switch (platformService.PlatformString)
+{
+    case "windows":
+}*/
+
 serviceCollection.AddSingleton<IVpnService, VpnService>();
 
 var serviceProvider = serviceCollection.BuildServiceProvider();

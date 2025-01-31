@@ -1,4 +1,5 @@
 using CShroudApp.Infrastructure.Interfaces;
+using CShroudApp.Presentation.Ui;
 
 namespace CShroudApp.Infrastructure.Services;
 
@@ -27,5 +28,6 @@ public class Core : ICore
     public void Start()
     {
         Console.WriteLine("CORE STARTED");
+        UiLoader.Run([]);
     }
 }

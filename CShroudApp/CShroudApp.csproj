@@ -22,7 +22,6 @@
 
     <ItemGroup>
       <Folder Include="Infrastructure\Platforms\Linux\Interfaces\" />
-      <Folder Include="Infrastructure\Platforms\Linux\Services\" />
       <Folder Include="Infrastructure\Platforms\Windows\Interfaces\" />
     </ItemGroup>
 

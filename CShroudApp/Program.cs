@@ -1,5 +1,9 @@
 ﻿using CShroudApp.Core.Domain.Entities;
+using CShroudApp.Core.Services;
 using CShroudApp.Infrastructure.Interfaces;
+using CShroudApp.Infrastructure.Platforms.Linux.Services;
+using CShroudApp.Infrastructure.Platforms.Unsupported.Services;
+using CShroudApp.Infrastructure.Platforms.Windows.Services;
 using CShroudApp.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,12 +26,19 @@ serviceCollection.AddSingleton<VpnCoreConfig>(provider => new VpnCoreConfig()
 serviceCollection.AddSingleton<ICore, Core>();
 serviceCollection.AddSingleton<IProcessManager, ProcessManager>();
 serviceCollection.AddSingleton<IVpnCore, VpnCore>();
-/*serviceCollection.AddSingleton<IPlatformService>(platformService);
 
-switch (platformService.PlatformString)
+switch (PlatformService.Platform)
 {
-    case "windows":
-}*/
+    case Platform.Windows:
+        serviceCollection.AddSingleton<IProxyManager, WindowsProxyManager>();
+        break;
+    case Platform.Linux:
+        serviceCollection.AddSingleton<IProxyManager, LinuxProxyManager>();
+        break;
+    default:
+        serviceCollection.AddSingleton<IProxyManager, UnsupportedProxyManager>();
+        break;
+}
 
 serviceCollection.AddSingleton<IVpnService, VpnService>();
 

@@ -3,7 +3,7 @@ using System;
 
 namespace CShroudApp.Presentation.Ui;
 
-sealed class Program
+sealed class UiLoader
 {
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized

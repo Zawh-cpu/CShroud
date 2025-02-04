@@ -61,13 +61,8 @@ internal class Program
     }
 
     [STAThread]
-    static void Run(string[] args) => BuildAvaloniaApp()
-        .StartWithClassicDesktopLifetime(args);
+    static void Run(string[] args) => UiLoader.Run(args);
 
     // Avalonia configuration, don't remove; also used by visual designer.
-    static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .WithInterFont()
-            .LogToTrace();    
+    static AppBuilder BuildAvaloniaApp() => UiLoader.BuildAvaloniaApp();    
 }

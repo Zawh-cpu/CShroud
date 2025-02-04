@@ -9,11 +9,11 @@ public sealed class UiLoader
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
     [STAThread]
-    public void Run(string[] args) => BuildAvaloniaApp()
+    public static void Run(string[] args) => BuildAvaloniaApp()
         .StartWithClassicDesktopLifetime(args);
 
     // Avalonia configuration, don't remove; also used by visual designer.
-    public AppBuilder BuildAvaloniaApp()
+    public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()

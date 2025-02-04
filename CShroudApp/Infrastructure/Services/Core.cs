@@ -30,6 +30,6 @@ public class Core : ICore
     public void Start()
     {
         Console.WriteLine("CORE STARTED");
-        _uiLoader.Run([]);
+        UiLoader.Run([]);
     }
 }

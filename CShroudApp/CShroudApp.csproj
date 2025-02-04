@@ -27,6 +27,13 @@
     <ItemGroup>
       <Folder Include="Infrastructure\Platforms\Linux\Interfaces\" />
       <Folder Include="Infrastructure\Platforms\Windows\Interfaces\" />
+      <Folder Include="Presentation\Assets\" />
     </ItemGroup>
 
+    <ItemGroup>
+        <None Update="Presentation\Assets\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+    
 </Project>

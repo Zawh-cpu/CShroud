@@ -7,14 +7,80 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="CShroudApp.Presentation.Ui.Views.MainWindow"
         x:DataType="viewModels:MainWindowViewModel"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
         Title="AvaloniaApplication1">
+    
+    <Window.Styles>
+        <!--<StyleInclude Source="/Presentation/Ui/Styles/Auth.axaml"/>-->
+        
+        <Style Selector="Window">
+            <Setter Property="Background" Value="Black"/>
+        </Style>
+        
+        <Style Selector="Panel.background">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <ImageBrush Stretch="UniformToFill" Source="C:\ProjectsClean\CShroud\CShroudApp\bin\Debug\net9.0\Presentation\Assets\421.jpg" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style Selector="Border.form">
+            <!--<Setter Property="Padding" Value="80, 30, 80, 30"/>-->
+            <Setter Property="Padding" Value="60, 30, 60, 30"/>
+            <Setter Property="Background" Value="#fff"></Setter>
+        </Style>
+        
+        <Style Selector="StackPanel.form.header">
+        </Style>
+        
+        <Style Selector="TextBlock.form.header.h1">
+            <Setter Property="FontSize" Value="21"></Setter>
+            <Setter Property="FontWeight" Value="700"></Setter>
+            <Setter Property="Foreground" Value="#FF000000"></Setter>
+        </Style>
+        
+        <Style Selector="TextBlock.form.header.description">
+            <Setter Property="FontSize" Value="14"></Setter>
+            <Setter Property="FontWeight" Value="600"></Setter>
+            <Setter Property="Foreground" Value="#88000000"></Setter>
+        </Style>
+        
+        <Style Selector="StackPanel.form.body">
+            <Setter Property="Background" Value="LimeGreen"></Setter>
+        </Style>
+        
+        <Style Selector="StackPanel.form.footer">
+            <Setter Property="Background" Value="Crimson"></Setter>
+        </Style>
 
+    </Window.Styles>
+    
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <viewModels:MainWindowViewModel/>
     </Design.DataContext>
-
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    
+    <Panel>
+        <Panel Classes="background"></Panel>
+        <Border Classes="form" HorizontalAlignment="Right">
+            <Grid RowDefinitions="Auto, *, Auto">
+            
+                <StackPanel Classes="form header" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Spacing="5">
+                    <TextBlock Classes="form header h1" Padding="0, 50, 0, 0">Авторизируйтесь.</TextBlock>
+                    <TextBlock Classes="form header description" >Давайте начнём вместе!</TextBlock>
+                </StackPanel>
+                
+                <StackPanel Classes="form body" Background="SpringGreen" Grid.Row="1">
+                    <TextBlock>ABOBUS</TextBlock>
+                </StackPanel>
+                
+                <StackPanel Classes="form footer" Grid.Row="2">
+                    <TextBlock>ABOBUS</TextBlock>
+                </StackPanel>
+            
+            </Grid>
+        </Border>
+    </Panel>
 
 </Window>

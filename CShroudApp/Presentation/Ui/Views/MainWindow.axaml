@@ -72,7 +72,15 @@
                 </StackPanel>
                 
                 <StackPanel Classes="form body" Background="SpringGreen" Grid.Row="1">
-                    <TextBlock>ABOBUS</TextBlock>
+                    <Grid ColumnDefinitions="*, *" Background="Red">
+                        <TextBlock Grid.Column="0" Background="Chartreuse" TextAlignment="Center">Credentials</TextBlock>
+                        <TextBlock Grid.Column="1" TextAlignment="Center" Background="Firebrick">Telegram</TextBlock>
+                    </Grid>
+                    <StackPanel>
+                        <TextBox>zawh</TextBox>
+                        <TextBox>123</TextBox>
+                        <Button>></Button>
+                    </StackPanel>
                 </StackPanel>
                 
                 <StackPanel Classes="form footer" Grid.Row="2">

@@ -21,7 +21,7 @@
         <Style Selector="Panel.background">
             <Setter Property="Background">
                 <Setter.Value>
-                    <ImageBrush Stretch="UniformToFill" Source="C:\ProjectsClean\CShroud\CShroudApp\bin\Debug\net9.0\Presentation\Assets\421.jpg" />
+                    <ImageBrush Stretch="UniformToFill" Source="avares://CShroudApp/Presentation/Assets/421.jpg" />
                 </Setter.Value>
             </Setter>
         </Style>
@@ -29,7 +29,7 @@
         <Style Selector="Border.form">
             <!--<Setter Property="Padding" Value="80, 30, 80, 30"/>-->
             <Setter Property="Padding" Value="60, 30, 60, 30"/>
-            <Setter Property="Background" Value="#fff"></Setter>
+            <Setter Property="Background" Value="#20000000"></Setter>
         </Style>
         
         <Style Selector="StackPanel.form.header">
@@ -42,7 +42,7 @@
         </Style>
         
         <Style Selector="TextBlock.form.header.description">
-            <Setter Property="FontSize" Value="14"></Setter>
+            <Setter Property="FontSize" Value="13"></Setter>
             <Setter Property="FontWeight" Value="600"></Setter>
             <Setter Property="Foreground" Value="#88000000"></Setter>
         </Style>
@@ -61,21 +61,24 @@
         <viewModels:MainWindowViewModel/>
     </Design.DataContext>
     
-    <Panel>
-        <Panel Classes="background"></Panel>
-        <Border Classes="form" HorizontalAlignment="Right">
+    <Grid ColumnDefinitions="Auto, Auto, Auto" HorizontalAlignment="Right">
+        <Panel Classes="background" Grid.Column="0" Background="Black"></Panel>
+        <Border Classes="form" HorizontalAlignment="Right" Grid.Column="1">
             <Grid RowDefinitions="Auto, *, Auto">
             
-                <StackPanel Classes="form header" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Spacing="5">
-                    <TextBlock Classes="form header h1" Padding="0, 50, 0, 0">Авторизируйтесь.</TextBlock>
-                    <TextBlock Classes="form header description" >Давайте начнём вместе!</TextBlock>
+                <StackPanel Classes="form header" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Spacing="2">
+                    <TextBlock Classes="form header h1" Padding="0, 50, 0, 0">Sign in.</TextBlock>
+                    <TextBlock Classes="form header description" >Lets start new save future!</TextBlock>
                 </StackPanel>
                 
                 <StackPanel Classes="form body" Background="SpringGreen" Grid.Row="1">
-                    <Grid ColumnDefinitions="*, *" Background="Red">
-                        <TextBlock Grid.Column="0" Background="Chartreuse" TextAlignment="Center">Credentials</TextBlock>
-                        <TextBlock Grid.Column="1" TextAlignment="Center" Background="Firebrick">Telegram</TextBlock>
-                    </Grid>
+                    <StackPanel>
+                        <Grid ColumnDefinitions="*, *" Background="Red">
+                            <TextBlock Grid.Column="0" Background="Chartreuse" TextAlignment="Center">Credentials</TextBlock>
+                            <TextBlock Grid.Column="1" TextAlignment="Center" Background="Firebrick">Telegram</TextBlock>
+                        </Grid>
+                        <Line Height="5" Fill="Black"></Line>
+                    </StackPanel>
                     <StackPanel>
                         <TextBox>zawh</TextBox>
                         <TextBox>123</TextBox>
@@ -89,6 +92,6 @@
             
             </Grid>
         </Border>
-    </Panel>
+    </Grid>
 
 </Window>

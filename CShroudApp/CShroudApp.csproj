@@ -36,4 +36,7 @@
         </None>
     </ItemGroup>
     
+    <ItemGroup>
+        <AvaloniaResource Include="Presentation\Assets\**"/>
+    </ItemGroup>
 </Project>

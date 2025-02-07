@@ -14,46 +14,7 @@
     <Window.Styles>
         <!--<StyleInclude Source="/Presentation/Ui/Styles/Auth.axaml"/>-->
         
-        <Style Selector="Window">
-            <Setter Property="Background" Value="Black"/>
-        </Style>
         
-        <Style Selector="Panel.background">
-            <Setter Property="Background">
-                <Setter.Value>
-                    <ImageBrush Stretch="UniformToFill" Source="avares://CShroudApp/Presentation/Assets/421.jpg" />
-                </Setter.Value>
-            </Setter>
-        </Style>
-        
-        <Style Selector="Border.form">
-            <!--<Setter Property="Padding" Value="80, 30, 80, 30"/>-->
-            <Setter Property="Padding" Value="60, 30, 60, 30"/>
-            <Setter Property="Background" Value="#20000000"></Setter>
-        </Style>
-        
-        <Style Selector="StackPanel.form.header">
-        </Style>
-        
-        <Style Selector="TextBlock.form.header.h1">
-            <Setter Property="FontSize" Value="21"></Setter>
-            <Setter Property="FontWeight" Value="700"></Setter>
-            <Setter Property="Foreground" Value="#FF000000"></Setter>
-        </Style>
-        
-        <Style Selector="TextBlock.form.header.description">
-            <Setter Property="FontSize" Value="13"></Setter>
-            <Setter Property="FontWeight" Value="600"></Setter>
-            <Setter Property="Foreground" Value="#88000000"></Setter>
-        </Style>
-        
-        <Style Selector="StackPanel.form.body">
-            <Setter Property="Background" Value="LimeGreen"></Setter>
-        </Style>
-        
-        <Style Selector="StackPanel.form.footer">
-            <Setter Property="Background" Value="Crimson"></Setter>
-        </Style>
 
     </Window.Styles>
     
@@ -61,37 +22,31 @@
         <viewModels:MainWindowViewModel/>
     </Design.DataContext>
     
-    <Grid ColumnDefinitions="Auto, Auto, Auto" HorizontalAlignment="Right">
-        <Panel Classes="background" Grid.Column="0" Background="Black"></Panel>
-        <Border Classes="form" HorizontalAlignment="Right" Grid.Column="1">
-            <Grid RowDefinitions="Auto, *, Auto">
-            
-                <StackPanel Classes="form header" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Spacing="2">
-                    <TextBlock Classes="form header h1" Padding="0, 50, 0, 0">Sign in.</TextBlock>
-                    <TextBlock Classes="form header description" >Lets start new save future!</TextBlock>
-                </StackPanel>
+    <Grid ColumnDefinitions="*, Auto">
+        <Grid Background="Black">
+            <Border Padding="25">
                 
-                <StackPanel Classes="form body" Background="SpringGreen" Grid.Row="1">
-                    <StackPanel>
-                        <Grid ColumnDefinitions="*, *" Background="Red">
-                            <TextBlock Grid.Column="0" Background="Chartreuse" TextAlignment="Center">Credentials</TextBlock>
-                            <TextBlock Grid.Column="1" TextAlignment="Center" Background="Firebrick">Telegram</TextBlock>
+                <Border CornerRadius="15" ClipToBounds="True">
+                    <Grid RowDefinitions="Auto, *">
+                        <Grid ColumnDefinitions="*, Auto" Height="24" Background="#ccc">
+                            <TextBlock TextAlignment="Center">Terminal [CrimsonShroud]</TextBlock>
                         </Grid>
-                        <Line Height="5" Fill="Black"></Line>
-                    </StackPanel>
-                    <StackPanel>
-                        <TextBox>zawh</TextBox>
-                        <TextBox>123</TextBox>
-                        <Button>></Button>
-                    </StackPanel>
-                </StackPanel>
+                        <Border Grid.Row="1" Background="Blue" Padding="2 4 2 0">
+                            <StackPanel>
+                                <TextBlock>
+                                    root@crimsonShroud:~$ make connect
+                                </TextBlock>
+                                <TextBlock>
+                                    [=====      ] 49% | ADDING FIRE...
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
                 
-                <StackPanel Classes="form footer" Grid.Row="2">
-                    <TextBlock>ABOBUS</TextBlock>
-                </StackPanel>
-            
-            </Grid>
-        </Border>
+            </Border>
+        </Grid>
+        <Grid Grid.Column="1" Width="200" Background="Aqua"></Grid>
     </Grid>
-
+    
 </Window>

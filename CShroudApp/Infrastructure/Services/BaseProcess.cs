@@ -27,6 +27,15 @@ public class BaseProcess : IProcess
                     Console.WriteLine("[STDOUT] " + e.Data); // Print each line of standard output
                 }
             };
+
+            _process.ErrorDataReceived += ((sender, e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    Console.WriteLine("[ERROR] " + e.Data);
+                }
+            });
+
         }
     }
 
@@ -66,6 +75,7 @@ public class BaseProcess : IProcess
     private void OnProcessExited(object sender, EventArgs e)
     {
         _isRunning = false;
+        Console.WriteLine("[!!!] PROCESS EXITED");
         ProcessExited?.Invoke(this, EventArgs.Empty);
     }
 }

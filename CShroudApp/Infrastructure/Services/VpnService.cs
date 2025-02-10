@@ -12,13 +12,18 @@ public class VpnService : IVpnService
 
     private IVpnCore _vpnCore;
     private IProxyManager _proxyManager;
+    private IServerRepository _serverRepository;
     
     public bool IsRunning => _vpnCore.IsRunning;
+    
+    public event EventHandler VpnStopped = delegate { };
+    public event EventHandler VpnStarted = delegate { };
 
-    public VpnService(IVpnCore vpnManager, IProxyManager proxyManager)
+    public VpnService(IVpnCore vpnManager, IProxyManager proxyManager, IServerRepository serverRepository)
     {
         _vpnCore = vpnManager;
         _proxyManager = proxyManager;
+        _serverRepository = serverRepository;
 
         string modifiedJson = JsonConvert.SerializeObject(SingBox.MakeDefaultConfig(), Formatting.Indented);
         File.WriteAllText("modified_config.json", modifiedJson);
@@ -26,12 +31,24 @@ public class VpnService : IVpnService
 
     public void Start()
     {
-        _proxyManager.Enable("localhost:7000");
+        //_serverRepository.MakeAVPNConnection();
+        if (!_vpnCore.IsRunning)
+        {
+            _vpnCore.Start();
+        }
+        
+        // _proxyManager.Enable("localhost:7000");
     }
 
     public void Stop()
     {
+        _proxyManager.Disable();
     }
-    public void UpdateConfig() {}
+
+    public void UpdateConfig()
+    {
+        if (_serverRepository != null) {}
+        //return false;
+    }
 
 }

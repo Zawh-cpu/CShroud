@@ -4,7 +4,7 @@ namespace CShroudApp.Infrastructure.Interfaces;
 
 public interface IServerRepository
 {
-    ConnectionAnswer GetVpnAccess(string token, string protocol);
+    bool MakeAVpnConnection(string token, string protocol, out ConnectionAnswer answer);
     bool Login();
     bool Logout();
 }

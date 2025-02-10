@@ -1,0 +1,249 @@
+{
+  "log": {
+      "level": "warn",
+      "timestamp": true
+  },
+  "dns": {
+      "servers": [
+          {
+              "tag": "remote",
+              "address": "8.8.8.8",
+              "strategy": "ipv4_only",
+              "detour": "proxy"
+          },
+          {
+              "tag": "local",
+              "address": "223.5.5.5",
+              "strategy": "ipv4_only",
+              "detour": "direct"
+          },
+          {
+              "tag": "block",
+              "address": "rcode://success"
+          },
+          {
+              "tag": "local_local",
+              "address": "223.5.5.5",
+              "detour": "direct"
+          }
+      ],
+      "rules": [
+          {
+              "server": "local_local",
+              "domain": [
+                  "frankfurt.reality.zawh.ru"
+              ]
+          },
+          {
+              "server": "remote",
+              "clash_mode": "Global"
+          },
+          {
+              "server": "local_local",
+              "clash_mode": "Direct"
+          },
+          {
+              "server": "local",
+              "rule_set": [
+                  "geosite-cn",
+                  "geosite-geolocation-cn"
+              ]
+          },
+          {
+              "server": "block",
+              "rule_set": [
+                  "geosite-category-ads-all"
+              ]
+          }
+      ],
+      "final": "remote"
+  },
+  "inbounds": [
+      {
+          "type": "socks",
+          "tag": "socks",
+          "listen": "127.0.0.1",
+          "listen_port": 10808,
+          "sniff": true,
+          "sniff_override_destination": true
+      },
+      {
+          "type": "http",
+          "tag": "http",
+          "listen": "127.0.0.1",
+          "listen_port": 10809,
+          "sniff": true,
+          "sniff_override_destination": true
+      }
+  ],
+  "outbounds": [
+      {
+          "type": "vless",
+          "tag": "proxy",
+          "server": "frankfurt.reality.zawh.ru",
+          "server_port": 443,
+          "uuid": "8d50da4e-fff4-4188-bbd1-7d620c7296f0",
+          "flow": "xtls-rprx-vision",
+          "packet_encoding": "xudp",
+          "tls": {
+              "enabled": true,
+              "server_name": "google.com",
+              "insecure": false,
+              "utls": {
+                  "enabled": true,
+                  "fingerprint": "random"
+              },
+              "reality": {
+                  "enabled": true,
+                  "public_key": "8AZQljbSjvPMPvcjizPM4JpTmcHBPWx_stM_h0gofEI",
+                  "short_id": "4ae60b64b5cd"
+              }
+          }
+      },
+      {
+          "type": "direct",
+          "tag": "direct"
+      },
+      {
+          "type": "block",
+          "tag": "block"
+      },
+      {
+          "type": "dns",
+          "tag": "dns_out"
+      }
+  ],
+  "route": {
+      "rules": [
+          {
+              "outbound": "proxy",
+              "clash_mode": "Global"
+          },
+          {
+              "outbound": "direct",
+              "clash_mode": "Direct"
+          },
+          {
+              "outbound": "dns_out",
+              "protocol": [
+                  "dns"
+              ]
+          },
+          {
+              "outbound": "direct",
+              "domain": [
+                  "example-example.com",
+                  "example-example2.com"
+              ],
+              "domain_suffix": [
+                  ".example-example.com",
+                  ".example-example2.com"
+              ]
+          },
+          {
+              "outbound": "block",
+              "network": [
+                  "udp"
+              ],
+              "port": [
+                  443
+              ]
+          },
+          {
+              "outbound": "block",
+              "rule_set": [
+                  "geosite-category-ads-all"
+              ]
+          },
+          {
+              "outbound": "direct",
+              "domain": [
+                  "dns.alidns.com",
+                  "doh.pub",
+                  "dot.pub",
+                  "doh.360.cn",
+                  "dot.360.cn"
+              ],
+              "domain_suffix": [
+                  ".dns.alidns.com",
+                  ".doh.pub",
+                  ".dot.pub",
+                  ".doh.360.cn",
+                  ".dot.360.cn"
+              ],
+              "rule_set": [
+                  "geosite-cn",
+                  "geosite-geolocation-cn"
+              ]
+          },
+          {
+              "outbound": "direct",
+              "ip_is_private": true,
+              "ip_cidr": [
+                  "223.5.5.5/32",
+                  "223.6.6.6/32",
+                  "2400:3200::1/128",
+                  "2400:3200:baba::1/128",
+                  "119.29.29.29/32",
+                  "1.12.12.12/32",
+                  "120.53.53.53/32",
+                  "2402:4e00::/128",
+                  "2402:4e00:1::/128",
+                  "180.76.76.76/32",
+                  "2400:da00::6666/128",
+                  "114.114.114.114/32",
+                  "114.114.115.115/32",
+                  "180.184.1.1/32",
+                  "180.184.2.2/32",
+                  "101.226.4.6/32",
+                  "218.30.118.6/32",
+                  "123.125.81.6/32",
+                  "140.207.198.6/32"
+              ],
+              "rule_set": [
+                  "geoip-cn"
+              ]
+          },
+          {
+              "outbound": "proxy",
+              "port_range": [
+                  "0:65535"
+              ]
+          }
+      ],
+      "rule_set": [
+          {
+              "tag": "geosite-category-ads-all",
+              "type": "local",
+              "format": "binary",
+              "path": "C:\\vpn\\v2rayN-With-Core\\bin\\srss\\geosite-category-ads-all.srs"
+          },
+          {
+              "tag": "geosite-cn",
+              "type": "local",
+              "format": "binary",
+              "path": "C:\\vpn\\v2rayN-With-Core\\bin\\srss\\geosite-cn.srs"
+          },
+          {
+              "tag": "geosite-geolocation-cn",
+              "type": "local",
+              "format": "binary",
+              "path": "C:\\vpn\\v2rayN-With-Core\\bin\\srss\\geosite-geolocation-cn.srs"
+          },
+          {
+              "tag": "geoip-cn",
+              "type": "local",
+              "format": "binary",
+              "path": "C:\\vpn\\v2rayN-With-Core\\bin\\srss\\geoip-cn.srs"
+          }
+      ]
+  },
+  "experimental": {
+      "cache_file": {
+          "enabled": true
+      },
+      "clash_api": {
+          "external_controller": "127.0.0.1:10814"
+      }
+  }
+}

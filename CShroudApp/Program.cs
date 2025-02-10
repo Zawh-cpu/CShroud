@@ -23,10 +23,10 @@ internal class Program
 
         serviceCollection.AddSingleton<VpnCoreConfig>(provider => new VpnCoreConfig()
         {
-            Path = "",
+            Path = "Presentation\\VPNCore\\sing-box.exe",
             Link = "",
-            Arguments = "",
-            Debug = false
+            Arguments = "run -c Presentation\\VPNCore\\config.json",
+            Debug = true
         });
 
 
@@ -46,7 +46,8 @@ internal class Program
                 serviceCollection.AddSingleton<IProxyManager, UnsupportedProxyManager>();
                 break;
         }
-
+        
+        serviceCollection.AddSingleton<IServerRepository, ServerRepository>();
         serviceCollection.AddSingleton<IVpnService, VpnService>();
 
         serviceCollection.AddSingleton<UiLoader>();

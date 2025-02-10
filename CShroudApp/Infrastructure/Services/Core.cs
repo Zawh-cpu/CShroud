@@ -6,11 +6,13 @@ namespace CShroudApp.Infrastructure.Services;
 public class Core : ICore
 {
     private readonly IVpnService _vpnService;
+    private readonly IVpnCore _vpnCore;
     private readonly UiLoader _uiLoader;
 
-    public Core(IVpnService vpnService, UiLoader gui)
+    public Core(IVpnService vpnService, IVpnCore vpnCore, UiLoader gui)
     {
         _vpnService = vpnService;
+        _vpnCore = vpnCore;
         _uiLoader = gui;
     }
 
@@ -30,6 +32,13 @@ public class Core : ICore
     public void Start()
     {
         Console.WriteLine("CORE STARTED");
-        UiLoader.Run([]);
+        _vpnService.Start();
+        // UiLoader.Run([]);
+
+        while (true)
+        {
+            Console.WriteLine(_vpnCore.IsRunning);
+            Task.Delay(10000).Wait();
+        };
     }
 }

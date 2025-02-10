@@ -3,18 +3,46 @@ using CShroudApp.Infrastructure.Interfaces;
 
 namespace CShroudApp.Infrastructure.Services;
 
+public struct Token
+{
+    public string Data;
+    public DateTime Expires;
+}
+
 public class ServerRepository: IServerRepository
 {
-    private string _authToken = string.Empty;
+    private Token? _authToken = null;
+    private Token? _refreshToken = null;
 
-    public ConnectionAnswer GetVpnAccess(string token, string protocol)
+    public bool MakeAVpnConnection(string token, string protocol, out ConnectionAnswer answer)
     {
-        return new ConnectionAnswer();
+        if (_authToken == null || _refreshToken == null)
+        {
+            answer = new ConnectionAnswer();
+            return false;
+        };
+        
+        answer = new ConnectionAnswer()
+        {
+            
+        };
+        return true;
     }
-
+    
     public bool Login()
     {
-        _authToken = "Token";
+        _authToken = new Token()
+        {
+            Data = "token",
+            Expires = DateTime.UtcNow.AddMinutes(5),
+        };
+
+        _refreshToken = new Token()
+        {
+            Data = "refresh_token",
+            Expires = DateTime.UtcNow.AddDays(3)
+        };
+        
         return true;
     }
 
@@ -22,7 +50,8 @@ public class ServerRepository: IServerRepository
     {
         // Retrieve the token
         // Forget the token
-        _authToken = string.Empty;
+        _authToken = null;
+        _refreshToken = null;
         return true;
     }
 }

@@ -28,10 +28,15 @@
       <Folder Include="Infrastructure\Platforms\Linux\Interfaces\" />
       <Folder Include="Infrastructure\Platforms\Windows\Interfaces\" />
       <Folder Include="Presentation\Assets\" />
+      <Folder Include="Presentation\VPNCore\" />
     </ItemGroup>
 
     <ItemGroup>
         <None Update="Presentation\Assets\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        
+        <None Update="Presentation\VPNCore\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>

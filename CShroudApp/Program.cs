@@ -18,14 +18,18 @@ internal class Program
 
         serviceCollection.AddSingleton<ApplicationConfig>(provider => new ApplicationConfig()
         {
-            WorkingFolder = Environment.CurrentDirectory
+            WorkingFolder = Environment.CurrentDirectory,
+            Settings = new SettingsConfig()
+            {
+                VpnMode = VpnMode.Proxy
+            }
         });
 
         serviceCollection.AddSingleton<VpnCoreConfig>(provider => new VpnCoreConfig()
         {
             Path = "Presentation\\VPNCore\\sing-box.exe",
-            Link = "",
-            Arguments = "run -c Presentation\\VPNCore\\config.json",
+            ConfigPath = "Presentation\\VPNCore\\config.json",
+            Arguments = $"run -c Presentation\\VPNCore\\config.json",
             Debug = true
         });
 

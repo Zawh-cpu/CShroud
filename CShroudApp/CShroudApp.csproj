@@ -37,7 +37,7 @@
         </None>
         
         <None Update="Presentation\VPNCore\**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
     

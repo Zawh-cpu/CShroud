@@ -40,6 +40,11 @@ public class VpnCore: IVpnCore
     {
         _process.Start();
     }
+
+    public void Kill()
+    {
+        _process.Kill();
+    }
     
     private void OnProcessStarted(object? sender, EventArgs e)
     {

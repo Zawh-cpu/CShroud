@@ -4,7 +4,7 @@ using System;
 using System.Runtime.Versioning;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
-using CShroudApp.Infrastructure.Interfaces;
+using CShroudApp.Core.Interfaces;
 
 [SupportedOSPlatform("windows")]
 public class WindowsProxyManager : IProxyManager

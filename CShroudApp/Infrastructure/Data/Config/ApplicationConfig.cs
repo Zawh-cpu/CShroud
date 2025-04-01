@@ -1,4 +1,4 @@
-﻿namespace CShroudApp.Core.Domain.Entities;
+﻿namespace CShroudApp.Infrastructure.Data.Config;
 
 public enum VpnMode
 {

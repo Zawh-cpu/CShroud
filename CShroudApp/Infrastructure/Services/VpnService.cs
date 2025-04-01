@@ -2,17 +2,10 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using CShroudApp.Core.Domain.Entities;
 using CShroudApp.Core.Domain.Generators;
-using CShroudApp.Infrastructure.Interfaces;
-using System.Linq;
+using CShroudApp.Core.Interfaces;
+using CShroudApp.Infrastructure.Data.Config;
 
 namespace CShroudApp.Infrastructure.Services;
-
-enum VpnMode
-{
-    Proxy,
-    Tun,
-    ProxyAndTun
-}
 
 public class VpnService : IVpnService
 {
@@ -76,7 +69,7 @@ public class VpnService : IVpnService
         var inbounds = new List<Dictionary<string, object>>();
         if (mode == VpnMode.Proxy || mode == VpnMode.ProxyAndTun)
         {
-            inbounds.Add(SingBox.MakeInboundSocks(),  SingBox.MakeInboundHTTP());
+            //inbounds.Add(SingBox.MakeInboundSocks(),  SingBox.MakeInboundHTTP());
         }
 
         if (mode == VpnMode.Tun || mode == VpnMode.ProxyAndTun)

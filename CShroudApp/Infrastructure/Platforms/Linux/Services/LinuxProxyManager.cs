@@ -1,5 +1,5 @@
 using System.Runtime.Versioning;
-using CShroudApp.Infrastructure.Interfaces;
+using CShroudApp.Core.Interfaces;
 
 namespace CShroudApp.Infrastructure.Platforms.Linux.Services;
 

@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using CShroudApp.Infrastructure.Interfaces;
+using CShroudApp.Core.Interfaces;
 
 namespace CShroudApp.Infrastructure.Services;
 

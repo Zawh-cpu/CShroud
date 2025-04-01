@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
-using CShroudApp.Core.Domain.Entities;
-using CShroudApp.Infrastructure.Interfaces;
+using CShroudApp.Infrastructure.Data.Config;
+using CShroudApp.Core.Interfaces;
 
 namespace CShroudApp.Infrastructure.Services;
 

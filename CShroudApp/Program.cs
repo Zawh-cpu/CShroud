@@ -1,7 +1,7 @@
 ﻿using Avalonia;
-using CShroudApp.Core.Domain.Entities;
+using CShroudApp.Infrastructure.Data.Config;
 using CShroudApp.Core.Services;
-using CShroudApp.Infrastructure.Interfaces;
+using CShroudApp.Core.Interfaces;
 using CShroudApp.Infrastructure.Platforms.Linux.Services;
 using CShroudApp.Infrastructure.Platforms.Unsupported.Services;
 using CShroudApp.Infrastructure.Platforms.Windows.Services;

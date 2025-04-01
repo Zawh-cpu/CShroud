@@ -1,6 +1,6 @@
 using CShroudApp.Core.Domain.Entities;
 
-namespace CShroudApp.Infrastructure.Interfaces;
+namespace CShroudApp.Core.Interfaces;
 
 public interface IServerRepository
 {

@@ -1,4 +1,5 @@
-using CShroudApp.Infrastructure.Interfaces;
+using CShroudApp.Infrastructure.Data.Config;
+using CShroudApp.Core.Interfaces;
 using CShroudApp.Presentation.Ui;
 
 namespace CShroudApp.Infrastructure.Services;
@@ -35,7 +36,7 @@ public class Core : ICore
     {
         Console.WriteLine("CORE STARTED");
         _serverRepository.Login();
-        _vpnService.Start();
+        _vpnService.Start(VpnMode.Proxy);
         // UiLoader.Run([]);
 
         while (true)

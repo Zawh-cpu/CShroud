@@ -2,7 +2,7 @@ using System.Buffers.Text;
 using System.Text;
 using System.Text.Json.Serialization;
 using CShroudApp.Core.Domain.Entities;
-using CShroudApp.Infrastructure.Interfaces;
+using CShroudApp.Core.Interfaces;
 using Newtonsoft.Json;
 
 namespace CShroudApp.Infrastructure.Services;

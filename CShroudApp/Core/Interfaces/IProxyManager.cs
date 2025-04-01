@@ -1,4 +1,4 @@
-namespace CShroudApp.Infrastructure.Interfaces;
+namespace CShroudApp.Core.Interfaces;
 
 public interface IProxyManager
 {

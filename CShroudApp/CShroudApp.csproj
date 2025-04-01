@@ -25,10 +25,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Core\Entities\" />
       <Folder Include="Infrastructure\Platforms\Linux\Interfaces\" />
       <Folder Include="Infrastructure\Platforms\Windows\Interfaces\" />
       <Folder Include="Presentation\Assets\" />
-      <Folder Include="Presentation\VPNCore\" />
     </ItemGroup>
 
     <ItemGroup>

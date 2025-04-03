@@ -1,73 +1,45 @@
 ﻿using Avalonia;
-using CShroudApp.Infrastructure.Data.Config;
-using CShroudApp.Core.Services;
-using CShroudApp.Core.Interfaces;
-using CShroudApp.Infrastructure.Platforms.Linux.Services;
-using CShroudApp.Infrastructure.Platforms.Unsupported.Services;
-using CShroudApp.Infrastructure.Platforms.Windows.Services;
-using CShroudApp.Infrastructure.Services;
-using CShroudApp.Presentation.Ui;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Data.Core.Plugins;
+using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 
-internal class Program
+public class App : Application
 {
-
-    static int Main()
+    public override void Initialize()
     {
-        var serviceCollection = new ServiceCollection();
-
-        serviceCollection.AddSingleton<ApplicationConfig>(provider => new ApplicationConfig()
-        {
-            WorkingFolder = Environment.CurrentDirectory,
-            Settings = new SettingsConfig()
-            {
-                VpnMode = VpnMode.Proxy
-            }
-        });
-
-        serviceCollection.AddSingleton<VpnCoreConfig>(provider => new VpnCoreConfig()
-        {
-            Path = "Presentation\\VPNCore\\sing-box.exe",
-            ConfigPath = "Presentation\\VPNCore\\config.json",
-            Arguments = $"run -c Presentation\\VPNCore\\config.json",
-            Debug = true
-        });
-
-
-        serviceCollection.AddSingleton<ICore, Core>();
-        serviceCollection.AddSingleton<IProcessManager, ProcessManager>();
-        serviceCollection.AddSingleton<IVpnCore, VpnCore>();
-
-        switch (PlatformService.Platform)
-        {
-            case Platform.Windows:
-                serviceCollection.AddSingleton<IProxyManager, WindowsProxyManager>();
-                break;
-            case Platform.Linux:
-                serviceCollection.AddSingleton<IProxyManager, LinuxProxyManager>();
-                break;
-            default:
-                serviceCollection.AddSingleton<IProxyManager, UnsupportedProxyManager>();
-                break;
-        }
-        
-        serviceCollection.AddSingleton<IServerRepository, ServerRepository>();
-        serviceCollection.AddSingleton<IVpnService, VpnService>();
-
-        serviceCollection.AddSingleton<UiLoader>();
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-
-        var core = serviceProvider.GetRequiredService<ICore>()!;
-        core.Initialize();
-        core.Start();
-
-        return 0;
+        AvaloniaXamlLoader.Load(this);
     }
 
-    [STAThread]
-    static void Run(string[] args) => UiLoader.Run(args);
+    public override void OnFrameworkInitializationCompleted()
+    {
+        // If you use CommunityToolkit, line below is needed to remove Avalonia data validation.
+        // Without this line you will get duplicate validations from both Avalonia and CT
+        BindingPlugins.DataValidators.RemoveAt(0);
 
-    // Avalonia configuration, don't remove; also used by visual designer.
-    static AppBuilder BuildAvaloniaApp() => UiLoader.BuildAvaloniaApp();    
+        // Register all the services needed for the application to run
+        var collection = new ServiceCollection();
+        collection.AddCommonServices();
+
+        // Creates a ServiceProvider containing services from the provided IServiceCollection
+        var services = collection.BuildServiceProvider();
+
+        var vm = services.GetRequiredService<MainViewModel>();
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.MainWindow = new MainWindow
+            {
+                DataContext = vm
+            };
+        }
+        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
+        {
+            singleViewPlatform.MainView = new MainView
+            {
+                DataContext = vm
+            };
+        }
+
+        base.OnFrameworkInitializationCompleted();
+    }
 }

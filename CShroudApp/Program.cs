@@ -1,45 +1,22 @@
-﻿using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core.Plugins;
-using Avalonia.Markup.Xaml;
+﻿using CShroudApp.Core.Entities.Vpn;
+using CShroudApp.Core.Interfaces;
+using CShroudApp.Infrastructure.Services;
+using CShroudApp.Infrastructure.VpnLayers;
 using Microsoft.Extensions.DependencyInjection;
 
-public class App : Application
-{
-    public override void Initialize()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+var services = new ServiceCollection();
 
-    public override void OnFrameworkInitializationCompleted()
-    {
-        // If you use CommunityToolkit, line below is needed to remove Avalonia data validation.
-        // Without this line you will get duplicate validations from both Avalonia and CT
-        BindingPlugins.DataValidators.RemoveAt(0);
+services.AddSingleton<IApiRepository, ApiRepository>();
+services.AddSingleton<IVpnCore, VpnCore>();
+services.AddSingleton<IVpnService, VpnService>();
 
-        // Register all the services needed for the application to run
-        var collection = new ServiceCollection();
-        collection.AddCommonServices();
 
-        // Creates a ServiceProvider containing services from the provided IServiceCollection
-        var services = collection.BuildServiceProvider();
+// Optional
+services.AddSingleton<IVpnCoreLayer, SingBoxLayer>();
 
-        var vm = services.GetRequiredService<MainViewModel>();
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = vm
-            };
-        }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        {
-            singleViewPlatform.MainView = new MainView
-            {
-                DataContext = vm
-            };
-        }
 
-        base.OnFrameworkInitializationCompleted();
-    }
-}
+
+var service = services.BuildServiceProvider();
+
+var vpnService = service.GetRequiredService<IVpnService>();
+vpnService.Enable(VpnMode.Proxy).GetAwaiter().GetResult();

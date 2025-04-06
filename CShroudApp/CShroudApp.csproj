@@ -28,26 +28,34 @@
 
     <ItemGroup>
       <Folder Include="Binaries\Cores\" />
-      <Folder Include="Core\Entities\" />
-      <Folder Include="Core\Interfaces\" />
       <Folder Include="Infrastructure\Data\Config\" />
-      <Folder Include="Infrastructure\Platforms\Linux\Interfaces\" />
-      <Folder Include="Infrastructure\Platforms\Windows\Interfaces\" />
-      <Folder Include="Infrastructure\Services\" />
-      <Folder Include="Presentation\VpnCores\" />
+      <Folder Include="Infrastructure\Platforms\Linux\Services\" />
+      <Folder Include="Infrastructure\Platforms\Windows\Services\" />
+      <Folder Include="Presentation\DTOs\" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="Presentation\Assets\**">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        
-        <None Update="Presentation\VPNCore\**">
+        <None Update="Binaries\**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
     
     <ItemGroup>
         <AvaloniaResource Include="Presentation\Assets\**"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Compile Update="Infrastructure\VpnLayers\SingBoxLayer.Vless.cs">
+        <DependentUpon>SingBoxLayer.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Infrastructure\VpnLayers\SingBoxLayer.NormalizeConfiguration.cs">
+        <DependentUpon>SingBoxLayer.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Infrastructure\VpnLayers\SingBoxLayer.Socks.cs">
+        <DependentUpon>SingBoxLayer.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Infrastructure\VpnLayers\SingBoxLayer.Http.cs">
+        <DependentUpon>SingBoxLayer.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

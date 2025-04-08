@@ -1,4 +1,6 @@
-﻿using CShroudApp.Core.Entities.Vpn;
+﻿using System.Reflection;
+using CShroudApp.Application.Factories;
+using CShroudApp.Core.Entities.Vpn;
 using CShroudApp.Core.Entities.Vpn.Bounds;
 using CShroudApp.Core.Interfaces;
 
@@ -17,10 +19,30 @@ public class VpnService : IVpnService
     
     public async Task Enable(VpnMode mode)
     {
+        if (_vpnCore.IsRunning) await _vpnCore.Disable();
+        
         var networkCredentials = await _apiRepository.ConnectToVpnNetworkAsync("de-frankfurt");
+        // Needs to check for support
+
+        var outbound = IVpnBoundFactory.CreateFromCredentials(networkCredentials);
+        
+        // REFLECTION
+        Type type = outbound.GetType();
+        PropertyInfo? propertyInfo;
+        propertyInfo = type.GetProperty("Fingerprint", BindingFlags.Public | BindingFlags.Instance);
+        if (propertyInfo != null)
+        {
+            propertyInfo.SetValue(outbound, "random");
+        }
+        
+        propertyInfo = type.GetProperty("PackageEncoding", BindingFlags.Public | BindingFlags.Instance);
+        if (propertyInfo != null)
+        {
+            propertyInfo.SetValue(outbound, "xudp");
+        }
         
         _vpnCore.ChangeMainInbound(mode);
-        _vpnCore.ChangeMainOutbound();
+        _vpnCore.ChangeMainOutbound(outbound);
         _vpnCore.SaveConfiguration();
         
         // _vpnCore.Enable();

@@ -1,4 +1,6 @@
-﻿namespace CShroudApp.Core.Entities.Vpn;
+﻿using Newtonsoft.Json.Linq;
+
+namespace CShroudApp.Core.Entities.Vpn;
 
 public class VpnNetworkCredentials
 {
@@ -10,5 +12,5 @@ public class VpnNetworkCredentials
     public required string ServerHost { get; set; }
     public required uint ServerPort { get; set; }
     public required DateTime Obtained { get; set; }
-    public required Dictionary<string, object> Credentials { get; set; }
+    public required JObject Credentials { get; set; }
 }

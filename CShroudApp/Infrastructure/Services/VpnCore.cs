@@ -1,29 +1,57 @@
-﻿using CShroudApp.Core.Entities.Vpn;
+﻿using System.Diagnostics;
+using CShroudApp.Core.Entities.Vpn;
 using CShroudApp.Core.Entities.Vpn.Bounds;
 using CShroudApp.Core.Interfaces;
+using CShroudApp.Infrastructure.Data.Config;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace CShroudApp.Infrastructure.Services;
 
 public class VpnCore : IVpnCore
 {
     private readonly IVpnCoreLayer _vpnCoreLayer;
-
+    private readonly IProcessManager _processManager;
+    private readonly BaseProcess _process;
+    private readonly PathConfig _pathConfig;
+    private readonly SettingsConfig  _settingsConfig;
+    
+    public bool IsRunning { get; } = true;
+    
     public bool IsSupportProtocol(VpnProtocol protocol) => _vpnCoreLayer.IsProtocolSupported(protocol);
     public void SaveConfiguration() => _vpnCoreLayer.SaveConfiguration();
 
-    public VpnCore(IVpnCoreLayer vpnCoreLayer)
+    public VpnCore(IVpnCoreLayer vpnCoreLayer, IProcessManager processManager, IOptions<PathConfig> pathConfig, IOptions<SettingsConfig> settingsConfig)
     {
         _vpnCoreLayer = vpnCoreLayer;
+        _processManager = processManager;
+        _pathConfig = pathConfig.Value;
+        _settingsConfig = settingsConfig.Value;
+        
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = _vpnConfig.Path,
+            Arguments = _vpnConfig.Arguments,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = false
+        };
+
+        //_process = new BaseProcess(processStartInfo, debug: _vpnConfig.Debug);
+        
+        //_process.ProcessStarted += OnProcessStarted;
+        //_process.ProcessExited += OnProcessStopped;
+        
+        //_processManager.Register(_process);
     }
 
-    public void Enable()
+    public async Task Enable()
     {
-        throw new NotImplementedException();
     }
 
-    public void Disable()
+    public async Task Disable()
     {
-        throw new NotImplementedException();
     }
 
     public void ChangeMainInbound(VpnMode mode)
@@ -55,11 +83,6 @@ public class VpnCore : IVpnCore
         _vpnCoreLayer.RemoveOutbound("main-net-", true);
         bound.Tag = "main-net-outbound";
         _vpnCoreLayer.AddOutbound(bound);
-    }
-
-    public bool IsRunning()
-    {
-        throw new NotImplementedException();
     }
 
     public event EventHandler? VpnEnabled;

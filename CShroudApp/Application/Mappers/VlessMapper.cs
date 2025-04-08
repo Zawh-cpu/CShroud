@@ -13,7 +13,6 @@ public static class VlessMapper
         Flow = dto.Flow,
         ServerName = dto.ServerName,
         Insecure = dto.Insecure,
-        Fingerprint = dto.Fingerprint,
         PublicKey = dto.PublicKey,
         ShortId = dto.ShortId,
     };

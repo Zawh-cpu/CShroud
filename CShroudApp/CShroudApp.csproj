@@ -19,7 +19,8 @@
       <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0-preview.2.25163.2" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.2" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.3" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.3" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.1" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
@@ -28,7 +29,6 @@
 
     <ItemGroup>
       <Folder Include="Binaries\Cores\" />
-      <Folder Include="Infrastructure\Data\Config\" />
       <Folder Include="Infrastructure\Platforms\Linux\Services\" />
       <Folder Include="Infrastructure\Platforms\Windows\Services\" />
       <Folder Include="Presentation\DTOs\" />
@@ -37,6 +37,9 @@
     <ItemGroup>
         <None Update="Binaries\**">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="appsettings.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
     

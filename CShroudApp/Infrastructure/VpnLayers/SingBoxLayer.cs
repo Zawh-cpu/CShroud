@@ -50,13 +50,14 @@ public partial class SingBoxLayer : IVpnCoreLayer
         _configurationPath = Path.Combine(Environment.CurrentDirectory, _pathConfig.Cores.SingBox.Path, "config.json");
         _configuration = JObject.Parse(File.ReadAllText(_configurationPath));
 
-        NormalizeConfiguration();
+        NormalizeConfiguration(_settingsConfig.Network.Dns.ForVpnServer, _settingsConfig.Network.Dns.ForLocalServer);
         _configuration["log"] = new JObject()
         {
             ["disabled"] = _settingsConfig.Debug != DebugType.None,
             ["level"] = (_settingsConfig.Debug == DebugType.None ? DebugType.Error : _settingsConfig.Debug).ToString().ToLower(),
             ["timestamp"] = true
         };
+        ApplyConfigToCoreConfiguration();
         SaveConfiguration();
 
         var workingPath = Path.Combine(Environment.CurrentDirectory, _pathConfig.Cores.SingBox.Path);

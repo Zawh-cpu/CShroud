@@ -4,7 +4,7 @@ namespace CShroudApp.Infrastructure.VpnLayers;
 
 public partial class SingBoxLayer
 {
-    private void NormalizeConfiguration()
+    private void NormalizeConfiguration(string forVpnDns, string forLocalDns)
     {
         _configuration["dns"] ??= new JObject()
         {
@@ -12,27 +12,15 @@ public partial class SingBoxLayer
             {
                 new JObject()
                 {
-                    ["tag"] = "remote",
-                    ["address"] = "1.1.1.1",
+                    ["tag"] = "remote_dns",
+                    ["address"] = forVpnDns,
                     // ["strategy"] = "ipv4_only",
                     ["detour"] = "main-net-outbound"
                 },
                 new JObject()
                 {
-                    ["tag"] = "cloudflare_dns",
-                    ["address"] = "1.1.1.1",
-                    ["detour"] = "direct",
-                },
-                new JObject()
-                {
-                    ["tag"] = "google_dns",
-                    ["address"] = "8.8.8.8",
-                    ["detour"] = "direct",
-                },
-                new JObject()
-                {
-                    ["tag"] = "alibaba_dns",
-                    ["address"] = "223.5.5.5",
+                    ["tag"] = "local_dns",
+                    ["address"] = forLocalDns,
                     ["detour"] = "direct",
                 },
                 new JObject()
@@ -52,11 +40,11 @@ public partial class SingBoxLayer
                 },*/
                 new JObject()
                 {
-                    ["server"] = "cloudflare_dns",
+                    ["server"] = "local_dns",
                     ["domain"] = new JArray()
                 }
             },
-            ["final"] = "remote",
+            ["final"] = "remote_dns",
         };
 
         _configuration["inbounds"] ??= new JArray();

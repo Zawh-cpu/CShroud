@@ -29,7 +29,6 @@
 
     <ItemGroup>
       <Folder Include="Infrastructure\Platforms\Linux\Services\" />
-      <Folder Include="Infrastructure\Platforms\Windows\Services\" />
       <Folder Include="Presentation\DTOs\" />
     </ItemGroup>
 
@@ -57,6 +56,9 @@
         <DependentUpon>SingBoxLayer.cs</DependentUpon>
       </Compile>
       <Compile Update="Infrastructure\VpnLayers\SingBoxLayer.Http.cs">
+        <DependentUpon>SingBoxLayer.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Infrastructure\VpnLayers\SingBoxLayer.ApplyConfigToCoreConfiguration.cs">
         <DependentUpon>SingBoxLayer.cs</DependentUpon>
       </Compile>
     </ItemGroup>

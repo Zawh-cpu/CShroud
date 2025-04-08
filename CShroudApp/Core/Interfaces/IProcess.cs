@@ -4,6 +4,8 @@ public interface IProcess
 {
     void Start();
     void Kill();
+
+    Task KillAsync();
     
     bool IsRunning { get; }
     

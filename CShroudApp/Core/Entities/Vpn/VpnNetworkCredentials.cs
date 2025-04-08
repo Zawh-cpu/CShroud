@@ -11,6 +11,11 @@ public class VpnNetworkCredentials
     
     public required string ServerHost { get; set; }
     public required uint ServerPort { get; set; }
+    
+    public required List<string> TransparentHosts { get; set; }
+    
+    public required string YourIPv4Address { get; set; }
+    
     public required DateTime Obtained { get; set; }
     public required JObject Credentials { get; set; }
 }

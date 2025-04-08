@@ -2,8 +2,18 @@
 
 namespace CShroudApp.Infrastructure.Data.Config;
 
+public enum DebugType
+{
+    None,
+    Debug,
+    Info,
+    Warning,
+    Error
+}
+
 public class SettingsConfig
 {
+    public DebugType Debug { get; set; } = DebugType.None;
     public SettingsNetworkConfig Network { get; set; } = new();
 }
 

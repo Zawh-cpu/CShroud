@@ -11,7 +11,7 @@ public class Vless : IVpnBound
 
     public string? Uuid { get; set; }
     public string? Flow { get; set; }
-    public string? PackageEncoding { get; set; }
+    public string? PacketEncoding { get; set; }
     public string? ServerName { get; set; }
     public bool? Insecure { get; set; }
     public string? Fingerprint { get; set; }

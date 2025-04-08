@@ -4,12 +4,11 @@ namespace CShroudApp.Core.Interfaces;
 
 public interface IVpnService
 {
-    Task Enable(VpnMode mode);
-    void Disable();
-    void IsEnabled();
+    Task EnableAsync(VpnMode mode);
+    Task DisableAsync();
     
-    bool IsRunning();
+    bool IsRunning { get; }
     
-    event EventHandler OnVpnEnabled;
-    event EventHandler OnVpnDisabled;
+    event EventHandler? VpnEnabled;
+    event EventHandler? VpnDisabled;
 }

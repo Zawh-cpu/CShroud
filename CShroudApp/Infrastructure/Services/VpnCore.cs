@@ -11,49 +11,41 @@ namespace CShroudApp.Infrastructure.Services;
 public class VpnCore : IVpnCore
 {
     private readonly IVpnCoreLayer _vpnCoreLayer;
-    private readonly IProcessManager _processManager;
-    private readonly BaseProcess _process;
-    private readonly PathConfig _pathConfig;
-    private readonly SettingsConfig  _settingsConfig;
-    
-    public bool IsRunning { get; } = true;
+
+    public bool IsRunning => _vpnCoreLayer.IsRunning;
     
     public bool IsSupportProtocol(VpnProtocol protocol) => _vpnCoreLayer.IsProtocolSupported(protocol);
+    public List<VpnProtocol> SupportedProtocols => _vpnCoreLayer.SupportedProtocols;
     public void SaveConfiguration() => _vpnCoreLayer.SaveConfiguration();
 
-    public VpnCore(IVpnCoreLayer vpnCoreLayer, IProcessManager processManager, IOptions<PathConfig> pathConfig, IOptions<SettingsConfig> settingsConfig)
+    public VpnCore(IVpnCoreLayer vpnCoreLayer)
     {
         _vpnCoreLayer = vpnCoreLayer;
-        _processManager = processManager;
-        _pathConfig = pathConfig.Value;
-        _settingsConfig = settingsConfig.Value;
-        
-        var processStartInfo = new ProcessStartInfo
+        _vpnCoreLayer.ProcessStarted += OnProcessStarted;
+        _vpnCoreLayer.ProcessExited += OnProcessStopped;
+    }
+
+    public async Task EnableAsync()
+    {
+        if (!IsRunning)
         {
-            FileName = _vpnConfig.Path,
-            Arguments = _vpnConfig.Arguments,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-            CreateNoWindow = false
-        };
-
-        //_process = new BaseProcess(processStartInfo, debug: _vpnConfig.Debug);
-        
-        //_process.ProcessStarted += OnProcessStarted;
-        //_process.ProcessExited += OnProcessStopped;
-        
-        //_processManager.Register(_process);
+            _vpnCoreLayer.StartProcess();
+        }
     }
 
-    public async Task Enable()
+    public async Task DisableAsync()
     {
+        if (IsRunning)
+        {
+            await _vpnCoreLayer.KillProcessAsync();
+        }
     }
 
-    public async Task Disable()
+    public void FixDnsIssues(List<string> transparentHosts)
     {
+        _vpnCoreLayer.FixDnsIssues(transparentHosts);
     }
-
+    
     public void ChangeMainInbound(VpnMode mode)
     {
 ;
@@ -63,7 +55,7 @@ public class VpnCore : IVpnCore
         {
             Tag = "main-net-socks",
             Host = "127.0.0.1",
-            Port = 10808,
+            Port = 10818,
             Sniff = true,
             SniffOverrideDestination = true
         });
@@ -72,17 +64,27 @@ public class VpnCore : IVpnCore
         {
             Tag = "main-net-http",
             Host = "127.0.0.1",
-            Port = 10809,
+            Port = 10819,
             Sniff = true,
             SniffOverrideDestination = true
         });
     }
-
+    
     public void ChangeMainOutbound(IVpnBound bound)
     {
         _vpnCoreLayer.RemoveOutbound("main-net-", true);
         bound.Tag = "main-net-outbound";
-        _vpnCoreLayer.AddOutbound(bound);
+        _vpnCoreLayer.AddOutbound(bound, 0);
+    }
+
+    private void OnProcessStarted(object? sender, EventArgs e)
+    {
+        VpnEnabled?.Invoke(this, e);
+    }
+
+    private void OnProcessStopped(object? sender, EventArgs e)
+    {
+        VpnDisabled?.Invoke(this, e);
     }
 
     public event EventHandler? VpnEnabled;

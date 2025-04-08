@@ -7,6 +7,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VpnCore = CShroudApp.Infrastructure.Services.VpnCore;
 
+void Aboba(object? ev, EventArgs args)
+{
+    Console.WriteLine("CShroud App -> VPN enabled");
+}
+
+void AbobaOff(object? ev, EventArgs args)
+{
+    Console.WriteLine("CShroud App -> VPN disabled/crashed");
+}
+
 var config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false)
     .AddEnvironmentVariables()
@@ -31,4 +41,10 @@ services.AddSingleton<IVpnCoreLayer, SingBoxLayer>();
 var service = services.BuildServiceProvider();
 
 var vpnService = service.GetRequiredService<IVpnService>();
-vpnService.Enable(VpnMode.Proxy).GetAwaiter().GetResult();
+vpnService.VpnEnabled += Aboba;
+vpnService.VpnDisabled += AbobaOff;
+vpnService.EnableAsync(VpnMode.Proxy).GetAwaiter().GetResult();
+while (true)
+{
+    
+}

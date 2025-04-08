@@ -15,23 +15,23 @@ public partial class SingBoxLayer
             ["server_port"] = vless.Port,
             ["uuid"] = vless.Uuid,
             ["flow"] = vless.Flow,
-            ["package_encoding"] = vless.PackageEncoding,
+            ["packet_encoding"] = vless.PacketEncoding,
             ["tls"] = new JObject()
             {
                 ["enabled"] = true,
                 ["server_name"] = vless.ServerName,
                 ["insecure"] = vless.Insecure,
-                ["utils"] = new JObject()
+                ["utls"] = new JObject()
                 {
                     ["enabled"] = true,
                     ["fingerprint"] = vless.Fingerprint,
+                },
+                ["reality"] = new JObject()
+                {
+                    ["enabled"] = true,
+                    ["public_key"] = vless.PublicKey,
+                    ["short_id"] = vless.ShortId
                 }
-            },
-            ["reality"] = new JObject()
-            {
-                ["enabled"] = true,
-                ["public_key"] = vless.PublicKey,
-                ["short_id"] = vless.ShortId
             }
         };
     }

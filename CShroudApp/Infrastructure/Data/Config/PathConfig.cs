@@ -7,5 +7,11 @@ public class PathConfig
 
 public class PathCoresConfig
 {
-    public string SingBox { get; set; } = "/Binaries/Cores/SingBox";
+    public PathCorePackConfig SingBox { get; set; } = new() {Path = "/Binaries/Cores/SingBox"};
+}
+
+public class PathCorePackConfig
+{
+    public required string Path { get; set; }
+    public string Args { get; set; } = "";
 }

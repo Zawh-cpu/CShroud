@@ -4,5 +4,5 @@ namespace CShroudApp.Core.Interfaces;
 
 public interface IApiRepository
 {
-    Task<VpnNetworkCredentials> ConnectToVpnNetworkAsync(string location);
+    Task<VpnNetworkCredentials> ConnectToVpnNetworkAsync(List<VpnProtocol> supportedProtocols, string location);
 }

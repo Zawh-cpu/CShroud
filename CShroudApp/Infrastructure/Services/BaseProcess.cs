@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using CShroudApp.Core.Interfaces;
+using CShroudApp.Infrastructure.Data.Config;
 
 namespace CShroudApp.Infrastructure.Services;
 
@@ -12,14 +13,15 @@ public class BaseProcess : IProcess
     public event EventHandler ProcessExited = delegate { };
     public event EventHandler ProcessStarted = delegate { };
 
-    public BaseProcess(ProcessStartInfo processStartInfo, bool debug=false)
+    public BaseProcess(ProcessStartInfo processStartInfo, DebugType debug = DebugType.None)
     {
         _process = new Process();
         _process.StartInfo = processStartInfo;
+        _process.EnableRaisingEvents = true;
         _process.Exited += OnProcessExited!;
-        _process.Disposed += OnProcessExited!;
+        // _process.Disposed += OnProcessExited!;
 
-        if (debug)
+        if (debug != DebugType.None)
         {
             _process.OutputDataReceived += (sender, e) =>
             {
@@ -56,11 +58,18 @@ public class BaseProcess : IProcess
             _process.Kill();
         }
     }
+
+    public async Task KillAsync()
+    {
+        if (_process.HasExited) return;
+        _process.Kill();
+        await _process.WaitForExitAsync();
+    }
     
     private void OnProcessExited(object sender, EventArgs e)
     {
+        Console.WriteLine($"PROCESS EXITED CODE -> {_process.ExitCode}");
         _isRunning = false;
-        Console.WriteLine("[!!!] PROCESS EXITED");
         ProcessExited?.Invoke(this, EventArgs.Empty);
     }
 }

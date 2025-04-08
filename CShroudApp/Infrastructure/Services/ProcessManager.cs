@@ -22,7 +22,15 @@ public class ProcessManager : IProcessManager
             process.Kill();
         }
     }
-    
+
+    public async Task KillAllAsync()
+    {
+        foreach (var process in _activeProcesses)
+        {
+            await process.KillAsync();
+        }
+    }
+
     private void StartProcessEvent(object? sender, EventArgs e)
     {
         if (sender == null) return;

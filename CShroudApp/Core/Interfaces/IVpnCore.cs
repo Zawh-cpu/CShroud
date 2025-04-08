@@ -5,8 +5,8 @@ namespace CShroudApp.Core.Interfaces;
 
 public interface IVpnCore
 {
-    Task Enable();
-    Task Disable();
+    Task EnableAsync();
+    Task DisableAsync();
     
     void ChangeMainInbound(VpnMode mode);
     void ChangeMainOutbound(IVpnBound bound);
@@ -14,8 +14,12 @@ public interface IVpnCore
     bool IsSupportProtocol(VpnProtocol protocol);
 
     void SaveConfiguration();
+
+    void FixDnsIssues(List<string> transparentHosts);
     
     bool IsRunning { get; }
+    
+    List<VpnProtocol> SupportedProtocols { get; }
     
     event EventHandler? VpnEnabled;
     event EventHandler? VpnDisabled;

@@ -28,7 +28,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Binaries\Cores\" />
       <Folder Include="Infrastructure\Platforms\Linux\Services\" />
       <Folder Include="Infrastructure\Platforms\Windows\Services\" />
       <Folder Include="Presentation\DTOs\" />

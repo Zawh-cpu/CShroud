@@ -6,7 +6,7 @@ namespace CShroudApp.Infrastructure.Services;
 
 public class ApiRepository : IApiRepository
 {
-    async public Task<VpnNetworkCredentials> ConnectToVpnNetworkAsync(string location)
+    async public Task<VpnNetworkCredentials> ConnectToVpnNetworkAsync(List<VpnProtocol> supportedProtocols, string location)
     {
         return new VpnNetworkCredentials()
         {
@@ -17,6 +17,11 @@ public class ApiRepository : IApiRepository
             Location = location,
             Obtained = DateTime.UtcNow,
             Protocol = VpnProtocol.Vless,
+            YourIPv4Address = "127.0.0.1",
+            TransparentHosts = new()
+            {
+                "frankfurt.reality.zawh.ru",
+            },
             Credentials = new JObject()
             {
                 ["Host"] = "frankfurt.reality.zawh.ru",

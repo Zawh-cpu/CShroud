@@ -16,11 +16,13 @@ public class VpnService : IVpnService
     public event EventHandler? VpnDisabled;
     
     private VpnMode _currentVpnMode = VpnMode.Disabled;
-
-    public VpnService(IVpnCore vpnCore, IApiRepository apiRepository)
+    private readonly IProxyManager _proxyManager;
+    
+    public VpnService(IVpnCore vpnCore, IApiRepository apiRepository, IProxyManager proxyManager)
     {
         _vpnCore = vpnCore;
         _apiRepository = apiRepository;
+        _proxyManager = proxyManager;
         
         _vpnCore.VpnDisabled += OnVpnDisabled;
         _vpnCore.VpnEnabled += OnVpnEnabled;
@@ -80,6 +82,7 @@ public class VpnService : IVpnService
         {
             // ENABLE PROXY VIA PROXY_MANAGER
             Console.WriteLine("[VPN->ENABLED] >>> PROXY->ON");
+            _proxyManager.EnableAsync("localhost:10000", new List<string>()).GetAwaiter().GetResult();
         }
 
         if (_currentVpnMode == VpnMode.Tun || _currentVpnMode == VpnMode.ProxyAndTun)

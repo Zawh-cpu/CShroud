@@ -2,6 +2,6 @@
 
 public interface IProxyManager
 {
-    Task Enable(string proxyAddress, List<string> excludedHosts);
-    Task Disable(string? oldAddress, List<string>? excludedHosts);
+    Task EnableAsync(string proxyAddress, List<string> excludedHosts);
+    Task DisableAsync(string? oldAddress, List<string>? excludedHosts);
 }

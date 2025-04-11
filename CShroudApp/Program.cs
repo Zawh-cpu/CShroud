@@ -1,6 +1,7 @@
 ﻿using CShroudApp.Core.Entities.Vpn;
 using CShroudApp.Core.Interfaces;
 using CShroudApp.Infrastructure.Data.Config;
+using CShroudApp.Infrastructure.Platforms.Windows.Services;
 using CShroudApp.Infrastructure.Services;
 using CShroudApp.Infrastructure.VpnLayers;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,20 @@ services.Configure<SettingsConfig>(config.GetSection("Settings"));
 services.AddSingleton<IProcessManager, ProcessManager>();
 services.AddSingleton<IApiRepository, ApiRepository>();
 services.AddSingleton<IVpnCore, VpnCore>();
+
+if (OperatingSystem.IsWindows())
+{
+    services.AddSingleton<IProxyManager, WindowsProxyManager>();
+} else if (OperatingSystem.IsLinux())
+{
+    
+}
+else
+{
+    Console.WriteLine("This platform currently is not supported. Sorry :(");
+    Environment.Exit(1);
+}
+
 services.AddSingleton<IVpnService, VpnService>();
 
 

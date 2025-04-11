@@ -18,7 +18,7 @@ public class WindowsProxyManager : IProxyManager
     private const int INTERNET_OPTION_SETTINGS_CHANGED = 39;
     private const int INTERNET_OPTION_REFRESH = 37;
 
-    public async Task Enable(string proxyAddress, List<string> excludedHosts)
+    public async Task EnableAsync(string proxyAddress, List<string> excludedHosts)
     {
         try
         {
@@ -37,7 +37,7 @@ public class WindowsProxyManager : IProxyManager
         }
     }
 
-    public async Task Disable(string? oldAddress, List<string>? excludedHosts)
+    public async Task DisableAsync(string? oldAddress, List<string>? excludedHosts)
     {
         try
         {

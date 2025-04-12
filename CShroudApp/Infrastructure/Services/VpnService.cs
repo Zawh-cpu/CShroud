@@ -3,6 +3,8 @@ using CShroudApp.Application.Factories;
 using CShroudApp.Core.Entities.Vpn;
 using CShroudApp.Core.Entities.Vpn.Bounds;
 using CShroudApp.Core.Interfaces;
+using CShroudApp.Infrastructure.Data.Config;
+using Microsoft.Extensions.Options;
 
 namespace CShroudApp.Infrastructure.Services;
 
@@ -18,11 +20,14 @@ public class VpnService : IVpnService
     private VpnMode _currentVpnMode = VpnMode.Disabled;
     private readonly IProxyManager _proxyManager;
     
-    public VpnService(IVpnCore vpnCore, IApiRepository apiRepository, IProxyManager proxyManager)
+    private SettingsConfig _settingsConfig;
+    
+    public VpnService(IVpnCore vpnCore, IApiRepository apiRepository, IProxyManager proxyManager, IOptions<SettingsConfig> settingsConfig)
     {
         _vpnCore = vpnCore;
         _apiRepository = apiRepository;
         _proxyManager = proxyManager;
+        _settingsConfig = settingsConfig.Value;
         
         _vpnCore.VpnDisabled += OnVpnDisabled;
         _vpnCore.VpnEnabled += OnVpnEnabled;
@@ -82,7 +87,7 @@ public class VpnService : IVpnService
         {
             // ENABLE PROXY VIA PROXY_MANAGER
             Console.WriteLine("[VPN->ENABLED] >>> PROXY->ON");
-            _proxyManager.EnableAsync("localhost:10000", new List<string>()).GetAwaiter().GetResult();
+            _proxyManager.EnableAsync(_settingsConfig.Proxy.Http, new List<string>()).GetAwaiter().GetResult();
         }
 
         if (_currentVpnMode == VpnMode.Tun || _currentVpnMode == VpnMode.ProxyAndTun)

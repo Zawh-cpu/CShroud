@@ -1,4 +1,5 @@
-﻿using CShroudApp.Core.Interfaces;
+﻿using CShroudApp.Core.Entities;
+using CShroudApp.Core.Interfaces;
 
 namespace CShroudApp.Infrastructure.Platforms.Windows.Services;
 
@@ -18,6 +19,31 @@ public class WindowsProxyManager : IProxyManager
     private const int INTERNET_OPTION_SETTINGS_CHANGED = 39;
     private const int INTERNET_OPTION_REFRESH = 37;
 
+    public ProxyStruct? GetProxyData()
+    {
+        try
+        {
+            using (RegistryKey? key = Registry.CurrentUser.OpenSubKey(REGISTRY_PATH))
+            {
+                if (key == null) return null;
+                var proxyStruct = new ProxyStruct()
+                {
+                    Enabled = (bool)(key.GetValue("ProxyEnable") ?? false),
+                    ExcludedHosts = new List<string>() {},
+                    Address = key.GetValue("ProxyAddress")?.ToString() ?? string.Empty,
+                };
+
+                return proxyStruct;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        
+        return null;
+    }
+    
     public async Task EnableAsync(string proxyAddress, List<string> excludedHosts)
     {
         try

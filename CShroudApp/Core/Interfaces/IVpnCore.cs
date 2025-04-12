@@ -8,13 +8,11 @@ public interface IVpnCore
     Task EnableAsync();
     Task DisableAsync();
     
-    void ClearMainInbound();
+    void ClearMainInbounds();
     void AddInbound(IVpnBound bound);
     void ChangeMainOutbound(IVpnBound bound);
     
     bool IsSupportProtocol(VpnProtocol protocol);
-
-    void SaveConfiguration();
 
     void FixDnsIssues(List<string> transparentHosts);
     

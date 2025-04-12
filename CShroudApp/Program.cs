@@ -3,7 +3,7 @@ using CShroudApp.Core.Interfaces;
 using CShroudApp.Infrastructure.Data.Config;
 using CShroudApp.Infrastructure.Platforms.Windows.Services;
 using CShroudApp.Infrastructure.Services;
-using CShroudApp.Infrastructure.VpnLayers;
+using CShroudApp.Infrastructure.VpnLayers.SingBox;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VpnCore = CShroudApp.Infrastructure.Services.VpnCore;
@@ -25,7 +25,6 @@ var config = new ConfigurationBuilder()
 
 var services = new ServiceCollection();
 
-services.Configure<PathConfig>(config.GetSection("Path"));
 services.Configure<SettingsConfig>(config.GetSection("Settings"));
 
 services.AddSingleton<IProcessManager, ProcessManager>();

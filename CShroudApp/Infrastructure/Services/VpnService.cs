@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using CShroudApp.Application.Factories;
+﻿using CShroudApp.Application.Factories;
 using CShroudApp.Core.Entities.Vpn;
 using CShroudApp.Core.Entities.Vpn.Bounds;
 using CShroudApp.Core.Interfaces;
@@ -10,124 +9,98 @@ namespace CShroudApp.Infrastructure.Services;
 
 public class VpnService : IVpnService
 {
-    private readonly IVpnCore _vpnCore;
-    private readonly IApiRepository _apiRepository;
-    public bool IsRunning => _vpnCore.IsRunning;
-    
     public event EventHandler? VpnEnabled;
     public event EventHandler? VpnDisabled;
     
-    private VpnMode _currentVpnMode = VpnMode.Disabled;
+    private readonly SettingsConfig _settingsConfig;
+    
+    private readonly IVpnCore _vpnCore;
+    private readonly IApiRepository _apiRepository;
     private readonly IProxyManager _proxyManager;
     
-    private SettingsConfig _settingsConfig;
-    
-    public VpnService(IVpnCore vpnCore, IApiRepository apiRepository, IProxyManager proxyManager, IOptions<SettingsConfig> settingsConfig)
+    public bool IsRunning => _vpnCore.IsRunning;
+
+
+    public VpnService(IOptions<SettingsConfig> settingsConfig,
+        IVpnCore vpnCore, IApiRepository apiRepository, IProxyManager proxyManager)
     {
+        _settingsConfig = settingsConfig.Value;
         _vpnCore = vpnCore;
         _apiRepository = apiRepository;
         _proxyManager = proxyManager;
-        _settingsConfig = settingsConfig.Value;
-        
-        _vpnCore.VpnDisabled += OnVpnDisabled;
-        _vpnCore.VpnEnabled += OnVpnEnabled;
-    }
-
-    public async Task UpdateCredentials()
-    {
-        
     }
     
+
     public async Task EnableAsync(VpnMode mode)
     {
-        if (_vpnCore.IsRunning) await _vpnCore.DisableAsync();
-        
-        _currentVpnMode = mode;
-        
-        var networkCredentials = await _apiRepository.ConnectToVpnNetworkAsync(_vpnCore.SupportedProtocols, "de-frankfurt");
-        if (!_vpnCore.IsSupportProtocol(networkCredentials.Protocol))
+        var credentials = await _apiRepository.ConnectToVpnNetworkAsync(_vpnCore.SupportedProtocols, "de-frankfurt");
+        if (credentials is null || !_vpnCore.IsSupportProtocol(credentials.Protocol))
         {
-            throw new InvalidOperationException("VPN protocol is not supported");
+            throw new NotSupportedException($"{(credentials is null ? "UNKNOWN" : credentials.Protocol.ToString())} is unsupported protocol");
         }
+        
+        var outbound = IVpnBoundFactory.CreateFromCredentials(credentials);
+        _vpnCore.ChangeMainOutbound(outbound);
 
-        var outbound = IVpnBoundFactory.CreateFromCredentials(networkCredentials);
-        
-        // REFLECTION
-        Type type = outbound.GetType();
-        PropertyInfo? propertyInfo;
-        propertyInfo = type.GetProperty("Fingerprint", BindingFlags.Public | BindingFlags.Instance);
-        if (propertyInfo != null)
-        {
-            propertyInfo.SetValue(outbound, "random");
-        }
-        
-        propertyInfo = type.GetProperty("PacketEncoding", BindingFlags.Public | BindingFlags.Instance);
-        if (propertyInfo != null)
-        {
-            propertyInfo.SetValue(outbound, "xudp");
-        }
-        
-        _vpnCore.ClearMainInbound();
+        _vpnCore.ClearMainInbounds();
         if (mode == VpnMode.Proxy || mode == VpnMode.ProxyAndTun)
         {
-            // var socksInboundDa
-            var socksInbound = new Socks()
+            if (_vpnCore.IsSupportProtocol(VpnProtocol.Http))
             {
-                Tag = "main-net-socks",
-                Host = "127.0.0.1",
-                Port = 10808,
-                Sniff = true,
-                SniffOverrideDestination = true
-            };
-        
-            var httpInbound = new Http()
+                var bound = new Http()
+                {
+                    Host = _settingsConfig.Network.Proxy.Http.Host,
+                    Port = _settingsConfig.Network.Proxy.Http.Port,
+                    Sniff = true,
+                    SniffOverrideDestination = true
+                };
+                
+                _vpnCore.AddInbound(bound);
+            }
+
+            if (_vpnCore.IsSupportProtocol(VpnProtocol.Socks))
             {
-                Tag = "main-net-http",
-                Host = "127.0.0.1",
-                Port = 10809,
-                Sniff = true,
-                SniffOverrideDestination = true
-            };
-            
-            _vpnCore.AddInbound(socksInbound);
-            _vpnCore.AddInbound(httpInbound);
+                var bound = new Socks()
+                {
+                    Host = _settingsConfig.Network.Proxy.Socks.Host,
+                    Port = _settingsConfig.Network.Proxy.Socks.Port,
+                    Sniff = true,
+                    SniffOverrideDestination = true
+                };
+                
+                _vpnCore.AddInbound(bound);
+            }
         }
-        
-        _vpnCore.ChangeMainOutbound(outbound);
-        _vpnCore.FixDnsIssues(networkCredentials.TransparentHosts);
-        _vpnCore.SaveConfiguration();
-        
+
+        if (mode == VpnMode.Tun || mode == VpnMode.ProxyAndTun)
+        {
+            // NEEDS TO IMPLEMENT
+            if (_vpnCore.IsSupportProtocol(VpnProtocol.Tun))
+            {
+                
+            }
+            else
+            {
+                
+            }
+        }
+
         await _vpnCore.EnableAsync();
     }
 
-    public async Task DisableAsync()
+
+    public Task DisableAsync()
     {
-        await _vpnCore.DisableAsync();
+        throw new NotImplementedException();
     }
 
     private void OnVpnEnabled(object? sender, EventArgs e)
     {
-        // Enable proxy/vpn interfaces
-        if (_currentVpnMode == VpnMode.Proxy || _currentVpnMode == VpnMode.ProxyAndTun)
-        {
-            // ENABLE PROXY VIA PROXY_MANAGER
-            Console.WriteLine("[VPN->ENABLED] >>> PROXY->ON");
-            _proxyManager.EnableAsync(_settingsConfig.Network.Proxy.Http, new List<string>()).GetAwaiter().GetResult();
-        }
-
-        if (_currentVpnMode == VpnMode.Tun || _currentVpnMode == VpnMode.ProxyAndTun)
-        {
-            // ENABLE TUN VIA TUN_MANAGER
-            Console.WriteLine("[VPN->ENABLED] >>> TUN->ON");
-        }
-        
         VpnEnabled?.Invoke(sender, e);
     }
-    
+
     private void OnVpnDisabled(object? sender, EventArgs e)
     {
-        // Disable proxy/vpn interfaces
-        _currentVpnMode = VpnMode.Disabled;
         VpnDisabled?.Invoke(sender, e);
     }
 }

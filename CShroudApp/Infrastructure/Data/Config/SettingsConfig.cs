@@ -1,8 +1,9 @@
 ﻿using CShroudApp.Core.Entities.Vpn;
+using Microsoft.Extensions.Configuration;
 
 namespace CShroudApp.Infrastructure.Data.Config;
 
-public enum DebugType
+public enum DebugMode
 {
     None,
     Debug,
@@ -11,42 +12,33 @@ public enum DebugType
     Error
 }
 
-public class SettingsConfig
-{
-    public DebugType Debug { get; set; } = DebugType.None;
-    public SettingsNetworkConfig Network { get; set; } = new();
-}
-
-public class SettingsNetworkConfig
-{
-    public VpnMode Mode { get; set; } = VpnMode.Proxy;
-    public VpnCore Core { get; set; } = VpnCore.SingBox;
-    public SettingsNetworkDnsConfig Dns { get; set; } = new();
-    public SettingsNetworkSplitTunneling SplitTunneling = new();
-    public SettingsProxyConfig Proxy = new();
-}
-
 public enum VpnCore
 {
     SingBox,
     Xray
 }
 
-public class SettingsNetworkSplitTunneling
+public class SettingsConfig
 {
-    public bool Enabled { get; set; } = true;
-    public string Mode { get; set; } = "Blacklist";
-    public List<string> AllowedApplications { get; set; } = new();
-}
+    public DebugMode DebugMode { get; set; } = DebugMode.None;
+    public NetworkObject Network { get; set; } = new();
 
-public class SettingsNetworkDnsConfig
-{
-    public string ForVpnServer { get; set; } = "1.1.1.1";
-    public string ForLocalServer { get; set; } = "8.8.8.8";
-}
+    public class NetworkObject
+    {
+        public VpnMode Mode { get; set; } = VpnMode.ProxyAndTun;
+        public VpnCore Core { get; set; } = VpnCore.SingBox;
+        public ProxyObject Proxy { get; set; } = new();
 
-public class SettingsProxyConfig
-{
-    public string Http { get; set; } = "127.0.0.1:10808";
-    public string Proxy { get; set; } = "127.0.0.1:1809";
+        public class ProxyObject
+        {
+            public ProxyData Http = new() { Host = "127.0.0.1", Port = 11808 };
+            public ProxyData Socks = new() { Host = "127.0.0.1", Port = 11809 };
+
+            public class ProxyData
+            {
+                public required string Host { get; set; }
+                public required uint Port { get; set; }
+            }
+        }
+    }
 }

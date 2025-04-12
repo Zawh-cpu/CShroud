@@ -10,10 +10,12 @@ public class BaseProcess : IProcess
     public bool IsRunning => _isRunning;
     private bool _isRunning = false;
 
+    public StreamWriter StandardInput => _process.StandardInput;
+
     public event EventHandler ProcessExited = delegate { };
     public event EventHandler ProcessStarted = delegate { };
 
-    public BaseProcess(ProcessStartInfo processStartInfo, DebugType debug = DebugType.None)
+    public BaseProcess(ProcessStartInfo processStartInfo, DebugMode debug = DebugMode.None)
     {
         _process = new Process();
         _process.StartInfo = processStartInfo;
@@ -21,7 +23,7 @@ public class BaseProcess : IProcess
         _process.Exited += OnProcessExited!;
         // _process.Disposed += OnProcessExited!;
 
-        if (debug != DebugType.None)
+        if (debug != DebugMode.None)
         {
             _process.OutputDataReceived += (sender, e) =>
             {

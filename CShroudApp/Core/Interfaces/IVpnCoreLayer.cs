@@ -12,7 +12,7 @@ public interface IVpnCoreLayer
     public void RemoveInbound(string tag, bool startsWithMode = false);
     public void RemoveOutbound(string tag, bool startsWithMode = false);
 
-    public void StartProcess();
+    public Task StartProcessAsync();
     public Task KillProcessAsync();
     
     public List<VpnProtocol> SupportedProtocols { get; }
@@ -23,6 +23,4 @@ public interface IVpnCoreLayer
     public event EventHandler? ProcessExited;
     
     public bool IsRunning { get; }
-
-    public void SaveConfiguration();
 }

@@ -7,6 +7,7 @@
         <Nullable>enable</Nullable>
 
         <IsAotCompatible>true</IsAotCompatible>
+        <EnableConfigurationBindingGenerator>true</EnableConfigurationBindingGenerator>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -21,6 +22,7 @@
       <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0-preview.2.25163.2" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.4" />
       <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="9.0.3" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.3" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
@@ -45,23 +47,5 @@
     
     <ItemGroup>
         <AvaloniaResource Include="Presentation\Assets\**"/>
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Compile Update="Infrastructure\VpnLayers\SingBoxLayer.Vless.cs">
-        <DependentUpon>SingBoxLayer.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Infrastructure\VpnLayers\SingBoxLayer.NormalizeConfiguration.cs">
-        <DependentUpon>SingBoxLayer.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Infrastructure\VpnLayers\SingBoxLayer.Socks.cs">
-        <DependentUpon>SingBoxLayer.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Infrastructure\VpnLayers\SingBoxLayer.Http.cs">
-        <DependentUpon>SingBoxLayer.cs</DependentUpon>
-      </Compile>
-      <Compile Update="Infrastructure\VpnLayers\SingBoxLayer.ApplyConfigToCoreConfiguration.cs">
-        <DependentUpon>SingBoxLayer.cs</DependentUpon>
-      </Compile>
     </ItemGroup>
 </Project>

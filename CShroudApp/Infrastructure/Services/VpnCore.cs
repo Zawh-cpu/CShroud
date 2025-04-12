@@ -16,7 +16,6 @@ public class VpnCore : IVpnCore
     
     public bool IsSupportProtocol(VpnProtocol protocol) => _vpnCoreLayer.IsProtocolSupported(protocol);
     public List<VpnProtocol> SupportedProtocols => _vpnCoreLayer.SupportedProtocols;
-    public void SaveConfiguration() => _vpnCoreLayer.SaveConfiguration();
 
     public VpnCore(IVpnCoreLayer vpnCoreLayer)
     {
@@ -29,7 +28,7 @@ public class VpnCore : IVpnCore
     {
         if (!IsRunning)
         {
-            _vpnCoreLayer.StartProcess();
+            await _vpnCoreLayer.StartProcessAsync();
         }
     }
 
@@ -46,7 +45,7 @@ public class VpnCore : IVpnCore
         _vpnCoreLayer.FixDnsIssues(transparentHosts);
     }
     
-    public void ClearMainInbound()
+    public void ClearMainInbounds()
     {
         _vpnCoreLayer.RemoveInbound("main-net-", true);
     }

@@ -9,6 +9,8 @@ public interface IProcess
     
     bool IsRunning { get; }
     
+    public StreamWriter StandardInput { get; }
+    
     event EventHandler ProcessExited;
     event EventHandler ProcessStarted;
 }

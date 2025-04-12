@@ -17,6 +17,8 @@ public class VpnService : IVpnService
     private readonly IVpnCore _vpnCore;
     private readonly IApiRepository _apiRepository;
     private readonly IProxyManager _proxyManager;
+
+    public VpnMode CurrentMode { get; private set; } = VpnMode.Disabled;
     
     public bool IsRunning => _vpnCore.IsRunning;
 
@@ -28,6 +30,9 @@ public class VpnService : IVpnService
         _vpnCore = vpnCore;
         _apiRepository = apiRepository;
         _proxyManager = proxyManager;
+        
+        _vpnCore.VpnEnabled += OnVpnEnabled;
+        _vpnCore.VpnDisabled += OnVpnDisabled;
     }
     
 
@@ -78,7 +83,10 @@ public class VpnService : IVpnService
             // NEEDS TO IMPLEMENT
             if (_vpnCore.IsSupportProtocol(VpnProtocol.Tun))
             {
-                
+                //var bound = new Tun()
+                //{
+                //
+                //};
             }
             else
             {
@@ -89,6 +97,8 @@ public class VpnService : IVpnService
         _vpnCore.ApplyConfiguration(_settingsConfig);
         _vpnCore.FixDnsIssues(credentials.TransparentHosts);
         await _vpnCore.EnableAsync();
+        
+        CurrentMode = mode;
     }
 
 
@@ -99,6 +109,17 @@ public class VpnService : IVpnService
 
     private void OnVpnEnabled(object? sender, EventArgs e)
     {
+        string proxyAddress;
+        if (_settingsConfig.Network.Proxy.Default == VpnProtocol.Socks)
+        {
+            proxyAddress = $"socks={_settingsConfig.Network.Proxy.Socks.Host}:{_settingsConfig.Network.Proxy.Socks.Port}";
+        }
+        else
+        {
+            proxyAddress = $"{_settingsConfig.Network.Proxy.Http.Host}:{_settingsConfig.Network.Proxy.Http.Port}";
+        }
+        
+        _proxyManager.EnableAsync(proxyAddress, _settingsConfig.Network.Proxy.ExcludedHosts).GetAwaiter().GetResult();
         VpnEnabled?.Invoke(sender, e);
     }
 

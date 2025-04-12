@@ -53,6 +53,12 @@ public class WindowsProxyManager : IProxyManager
                 if (key == null) throw new Exception("undefined_regedit_key");
                 key.SetValue("ProxyEnable", 1);
                 key.SetValue("ProxyServer", proxyAddress);
+                
+                if (excludedHosts.Any())
+                {
+                    string excluded = string.Join(";", excludedHosts);
+                    key.SetValue("ProxyOverride", excluded);
+                }
             }
             
             ApplySettings();
@@ -72,6 +78,7 @@ public class WindowsProxyManager : IProxyManager
                 if (key == null) throw new Exception("undefined_regedit_key");
                 key.SetValue("ProxyEnable", 0);
                 key.DeleteValue("ProxyServer", false);
+                key.DeleteValue("ProxyOverride", false);
             }
             
             ApplySettings();

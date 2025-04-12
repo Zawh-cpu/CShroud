@@ -5,6 +5,7 @@ using CShroudApp.Core.Interfaces;
 using CShroudApp.Infrastructure.Data.Config;
 using CShroudApp.Infrastructure.Data.Json.Policies;
 using CShroudApp.Infrastructure.Services;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -33,7 +34,7 @@ public partial class SingBoxLayer : IVpnCoreLayer
         { VpnProtocol.Socks, inbound => ParseSocksBound((Socks)inbound) },
     };
     
-    public SingBoxLayer(IProcessManager processManager)
+    public SingBoxLayer(IProcessManager processManager, IOptions<SettingsConfig> settings)
     {
         var processStartInfo = new ProcessStartInfo
         {
@@ -46,7 +47,7 @@ public partial class SingBoxLayer : IVpnCoreLayer
             CreateNoWindow = false
         };
         
-        _process = new BaseProcess(processStartInfo, DebugMode.Debug);
+        _process = new BaseProcess(processStartInfo, settings.Value.DebugMode);
         _process.ProcessExited += OnProcessExited;
         _process.ProcessStarted += OnProcessStarted;
         
@@ -149,7 +150,17 @@ public partial class SingBoxLayer : IVpnCoreLayer
             Tag = "dns_out"
         });
         
-        _configuration.Route
+        _configuration.Route.Rules.Add(new JObject()
+        {
+            ["outbound"] = "dns_out",
+            ["protocol"] = new JArray() { "dns" }
+        });
+        
+        _configuration.Route.Rules.Add(new JObject()
+        {
+            ["outbound"] = "main-net-outbound",
+            ["port_range"] = "0:65535"
+        });
     }
     
     public async Task KillProcessAsync()

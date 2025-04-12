@@ -12,7 +12,7 @@ public class SingBoxConfig
     public List<object> Endpoints { get; set; } = new();
     public List<BoundObject> Inbounds { get; set; } = new();
     public List<BoundObject> Outbounds { get; set; } = new();
-    public Dictionary<string, object> Route { get; set; } = new();
+    public RouteObject Route { get; set; } = new();
     public Dictionary<string, object> Experimental { get; set; } = new();
 
     public class LogObject

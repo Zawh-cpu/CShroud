@@ -31,8 +31,10 @@ public class SettingsConfig
 
         public class ProxyObject
         {
-            public ProxyData Http { get; set; } = new() { Host = "127.0.0.1", Port = 11808 };
-            public ProxyData Socks { get; set; } = new() { Host = "127.0.0.1", Port = 11809 };
+            public List<string> ExcludedHosts { get; set; } = new();
+            public VpnProtocol Default { get; set; } = VpnProtocol.Socks;
+            public ProxyData Http { get; set; } = new() { Host = "127.0.0.1", Port = 11809 };
+            public ProxyData Socks { get; set; } = new() { Host = "127.0.0.1", Port = 11808 };
 
             public class ProxyData
             {

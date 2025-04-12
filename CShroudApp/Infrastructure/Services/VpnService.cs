@@ -67,7 +67,32 @@ public class VpnService : IVpnService
             propertyInfo.SetValue(outbound, "xudp");
         }
         
-        _vpnCore.ChangeMainInbound(mode);
+        _vpnCore.ClearMainInbound();
+        if (mode == VpnMode.Proxy || mode == VpnMode.ProxyAndTun)
+        {
+            // var socksInboundDa
+            var socksInbound = new Socks()
+            {
+                Tag = "main-net-socks",
+                Host = "127.0.0.1",
+                Port = 10808,
+                Sniff = true,
+                SniffOverrideDestination = true
+            };
+        
+            var httpInbound = new Http()
+            {
+                Tag = "main-net-http",
+                Host = "127.0.0.1",
+                Port = 10809,
+                Sniff = true,
+                SniffOverrideDestination = true
+            };
+            
+            _vpnCore.AddInbound(socksInbound);
+            _vpnCore.AddInbound(httpInbound);
+        }
+        
         _vpnCore.ChangeMainOutbound(outbound);
         _vpnCore.FixDnsIssues(networkCredentials.TransparentHosts);
         _vpnCore.SaveConfiguration();
@@ -87,7 +112,7 @@ public class VpnService : IVpnService
         {
             // ENABLE PROXY VIA PROXY_MANAGER
             Console.WriteLine("[VPN->ENABLED] >>> PROXY->ON");
-            _proxyManager.EnableAsync(_settingsConfig.Proxy.Http, new List<string>()).GetAwaiter().GetResult();
+            _proxyManager.EnableAsync(_settingsConfig.Network.Proxy.Http, new List<string>()).GetAwaiter().GetResult();
         }
 
         if (_currentVpnMode == VpnMode.Tun || _currentVpnMode == VpnMode.ProxyAndTun)

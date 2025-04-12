@@ -8,7 +8,8 @@ public interface IVpnCore
     Task EnableAsync();
     Task DisableAsync();
     
-    void ChangeMainInbound(VpnMode mode);
+    void ClearMainInbound();
+    void AddInbound(IVpnBound bound);
     void ChangeMainOutbound(IVpnBound bound);
     
     bool IsSupportProtocol(VpnProtocol protocol);

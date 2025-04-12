@@ -23,6 +23,7 @@ public class SettingsNetworkConfig
     public VpnCore Core { get; set; } = VpnCore.SingBox;
     public SettingsNetworkDnsConfig Dns { get; set; } = new();
     public SettingsNetworkSplitTunneling SplitTunneling = new();
+    public SettingsProxyConfig Proxy = new();
 }
 
 public enum VpnCore
@@ -42,4 +43,10 @@ public class SettingsNetworkDnsConfig
 {
     public string ForVpnServer { get; set; } = "1.1.1.1";
     public string ForLocalServer { get; set; } = "8.8.8.8";
+}
+
+public class SettingsProxyConfig
+{
+    public string Http { get; set; } = "127.0.0.1:10808";
+    public string Proxy { get; set; } = "127.0.0.1:1809";
 }

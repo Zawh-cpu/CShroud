@@ -46,28 +46,14 @@ public class VpnCore : IVpnCore
         _vpnCoreLayer.FixDnsIssues(transparentHosts);
     }
     
-    public void ChangeMainInbound(VpnMode mode)
+    public void ClearMainInbound()
     {
-;
         _vpnCoreLayer.RemoveInbound("main-net-", true);
-        
-        _vpnCoreLayer.AddInbound(new Socks()
-        {
-            Tag = "main-net-socks",
-            Host = "127.0.0.1",
-            Port = 10818,
-            Sniff = true,
-            SniffOverrideDestination = true
-        });
-        
-        _vpnCoreLayer.AddInbound(new Http()
-        {
-            Tag = "main-net-http",
-            Host = "127.0.0.1",
-            Port = 10819,
-            Sniff = true,
-            SniffOverrideDestination = true
-        });
+    }
+
+    public void AddInbound(IVpnBound bound)
+    {
+        _vpnCoreLayer.AddInbound(bound);
     }
     
     public void ChangeMainOutbound(IVpnBound bound)

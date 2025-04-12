@@ -31,13 +31,13 @@ public class SettingsConfig
 
         public class ProxyObject
         {
-            public ProxyData Http = new() { Host = "127.0.0.1", Port = 11808 };
-            public ProxyData Socks = new() { Host = "127.0.0.1", Port = 11809 };
+            public ProxyData Http { get; set; } = new() { Host = "127.0.0.1", Port = 11808 };
+            public ProxyData Socks { get; set; } = new() { Host = "127.0.0.1", Port = 11809 };
 
             public class ProxyData
             {
-                public required string Host { get; set; }
-                public required uint Port { get; set; }
+                public string Host { get; set; } = "127.0.0.1";
+                public uint Port { get; set; } = 1000;
             }
         }
     }

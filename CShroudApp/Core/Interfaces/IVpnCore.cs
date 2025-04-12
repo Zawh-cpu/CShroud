@@ -1,5 +1,6 @@
 ﻿using CShroudApp.Core.Entities.Vpn;
 using CShroudApp.Core.Entities.Vpn.Bounds;
+using CShroudApp.Infrastructure.Data.Config;
 
 namespace CShroudApp.Core.Interfaces;
 
@@ -19,6 +20,8 @@ public interface IVpnCore
     bool IsRunning { get; }
     
     List<VpnProtocol> SupportedProtocols { get; }
+
+    void ApplyConfiguration(SettingsConfig settings);
     
     event EventHandler? VpnEnabled;
     event EventHandler? VpnDisabled;

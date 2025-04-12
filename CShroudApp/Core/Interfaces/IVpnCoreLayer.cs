@@ -1,5 +1,6 @@
 ﻿using CShroudApp.Core.Entities.Vpn;
 using CShroudApp.Core.Entities.Vpn.Bounds;
+using CShroudApp.Infrastructure.Data.Config;
 
 namespace CShroudApp.Core.Interfaces;
 
@@ -14,6 +15,8 @@ public interface IVpnCoreLayer
 
     public Task StartProcessAsync();
     public Task KillProcessAsync();
+
+    public void ConcatConfigs(SettingsConfig settings);
     
     public List<VpnProtocol> SupportedProtocols { get; }
 

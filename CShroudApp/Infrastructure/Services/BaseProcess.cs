@@ -10,10 +10,10 @@ public class BaseProcess : IProcess
     public bool IsRunning => _isRunning;
     private bool _isRunning = false;
 
-    public StreamWriter StandardInput => _process.StandardInput;
 
     public event EventHandler ProcessExited = delegate { };
     public event EventHandler ProcessStarted = delegate { };
+    public StreamWriter StandardInput => _process.StandardInput;
 
     public BaseProcess(ProcessStartInfo processStartInfo, DebugMode debug = DebugMode.None)
     {

@@ -9,8 +9,7 @@ public class SingBoxConfig
     public LogObject Log { get; set; } = new();
     public DnsObject Dns { get; set; } = new();
     public Dictionary<string, object> Ntp { get; set; } = new();
-    public Dictionary<string, object> Certificate { get; set; } = new();
-    public Dictionary<string, object> Endpoints { get; set; } = new();
+    public List<object> Endpoints { get; set; } = new();
     public List<BoundObject> Inbounds { get; set; } = new();
     public List<BoundObject> Outbounds { get; set; } = new();
     public Dictionary<string, object> Route { get; set; } = new();
@@ -20,7 +19,7 @@ public class SingBoxConfig
     {
         public bool Disabled { get; set; } = false;
         public string Level { get; set; } = "info";
-        public string Output { get; set; } = "box.log";
+        public string? Output { get; set; }
         public bool Timestamp { get; set; } = true;
     }
 
@@ -28,15 +27,15 @@ public class SingBoxConfig
     {
         public List<object> Servers { get; set; } = new();
         public List<object> Rules { get; set; } = new();
-        public string Final { get; set; } = "";
-        public string Strategy  { get; set; } = "";
-        public bool DisableCache { get; set; } = false;
-        public bool DisableExpire { get; set; } = false;
-        public bool IndependentCache { get; set; } = false;
-        public int CacheCapacity { get; set; } = 0;
-        public bool ReverseMapping { get; set; } = false;
-        public string ClientSubnet { get; set; } = "";
-        public Dictionary<string, object> Fakeip { get; set; } = new();
+        public string? Final { get; set; }
+        public string? Strategy  { get; set; }
+        public bool? DisableCache { get; set; }
+        public bool? DisableExpire { get; set; }
+        public bool? IndependentCache { get; set; }
+        public int? CacheCapacity { get; set; }
+        public bool? ReverseMapping { get; set; }
+        public string? ClientSubnet { get; set; }
+        public Dictionary<string, object>? Fakeip { get; set; }
     }
 
     public class BoundObject
@@ -47,5 +46,21 @@ public class SingBoxConfig
         [JsonExtensionData]
         public JObject Extra { get; set; } = new();
         
+    }
+
+    public class RouteObject
+    {
+        public List<object> Rules { get; set; } = new();
+        public List<object> RuleSet { get; set; } = new();
+        public string? Final { get; set; }
+        public bool? AutoDetectInterface { get; set; }
+        public bool? OverrideAndroidVpn { get; set; }
+        public string? DefaultInterface { get; set; }
+        public int? DefaultMark { get; set; }
+        public string? DefaultDomainResolver { get; set; }
+        public string? DefaultNetworkStrategy { get; set; }
+        public List<object>? DefaultNetworkType { get; set; }
+        public List<object>? DefaultFallbackNetworkType { get; set; }
+        public string? DefaultFallbackDelay { get; set; }
     }
 }

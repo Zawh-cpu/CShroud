@@ -24,6 +24,11 @@ public class VpnCore : IVpnCore
         _vpnCoreLayer.ProcessExited += OnProcessStopped;
     }
 
+    public void ApplyConfiguration(SettingsConfig settings)
+    {
+        _vpnCoreLayer.ConcatConfigs(settings);
+    }
+    
     public async Task EnableAsync()
     {
         if (!IsRunning)

@@ -2,9 +2,11 @@
 using CShroudApp.Core.Entities.Vpn;
 using CShroudApp.Core.Entities.Vpn.Bounds;
 using CShroudApp.Core.Interfaces;
+using CShroudApp.Infrastructure.Data.Config;
 using CShroudApp.Infrastructure.Data.Json.Policies;
 using CShroudApp.Infrastructure.Services;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace CShroudApp.Infrastructure.VpnLayers.SingBox;
@@ -15,7 +17,7 @@ public partial class SingBoxLayer : IVpnCoreLayer
     public event EventHandler? ProcessExited;
     public List<VpnProtocol> SupportedProtocols { get; } = new()
     {
-        VpnProtocol.Vless, VpnProtocol.Http, VpnProtocol.Tun
+        VpnProtocol.Vless, VpnProtocol.Http, VpnProtocol.Socks, VpnProtocol.Tun
     };
     
     public bool IsProtocolSupported(VpnProtocol protocol) => SupportedProtocols.Contains(protocol);
@@ -36,14 +38,15 @@ public partial class SingBoxLayer : IVpnCoreLayer
         var processStartInfo = new ProcessStartInfo
         {
             FileName = Path.Combine(Environment.CurrentDirectory, "Binaries", "Cores", "SingBox", "sing-box.exe"),
-            Arguments = "-c stdin",
+            Arguments = "run -c stdin",
+            RedirectStandardInput = true,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
             CreateNoWindow = false
         };
         
-        _process = new BaseProcess(processStartInfo);
+        _process = new BaseProcess(processStartInfo, DebugMode.Debug);
         _process.ProcessExited += OnProcessExited;
         _process.ProcessStarted += OnProcessStarted;
         
@@ -88,15 +91,67 @@ public partial class SingBoxLayer : IVpnCoreLayer
             {
                 NamingStrategy = new SnakeCaseNamingStrategy()
             },
+            NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.Indented
         };
 
-        await _process.StandardInput.WriteAsync(JsonConvert.SerializeObject(_configuration, settings));
-        _process.StandardInput.Close();
-        Console.WriteLine("AFAFWQEFWEFWF");
+        var x = JsonConvert.SerializeObject(_configuration, settings);
+        
+        Console.WriteLine(x);
+        
         _process.Start();
+        await _process.StandardInput.WriteAsync(x);
+        _process.StandardInput.Close();
     }
 
+    public void ConcatConfigs(SettingsConfig settings)
+    {
+        _configuration.Log.Disabled = settings.DebugMode == DebugMode.None ? true : false;
+        _configuration.Log.Level = settings.DebugMode.ToString().ToLowerInvariant();
+        
+        _configuration.Dns.Servers.Add(new JObject()
+        {
+            ["tag"] = "remote",
+            ["address"] = "1.1.1.1",
+            ["detour"] = "main-net-outbound"
+        });
+        
+        _configuration.Dns.Servers.Add(new JObject()
+        {
+            ["tag"] = "block",
+            ["address"] = "rcode://success"
+        });
+        
+        _configuration.Dns.Servers.Add(new JObject()
+        {
+            ["tag"] = "local",
+            ["address"] = "1.1.1.1",
+            ["detour"] = "direct"
+        });
+
+        _configuration.Dns.Final = "remote";
+        
+        _configuration.Outbounds.Add(new SingBoxConfig.BoundObject()
+        {
+            Type = "direct",
+            Tag = "direct"
+        });
+        
+        _configuration.Outbounds.Add(new SingBoxConfig.BoundObject()
+        {
+            Type = "block",
+            Tag = "block"
+        });
+        
+        _configuration.Outbounds.Add(new SingBoxConfig.BoundObject()
+        {
+            Type = "dns",
+            Tag = "dns_out"
+        });
+        
+        _configuration.Route
+    }
+    
     public async Task KillProcessAsync()
     {
         if (!IsRunning) return;
@@ -105,7 +160,11 @@ public partial class SingBoxLayer : IVpnCoreLayer
 
     public void FixDnsIssues(List<string> transparentHosts)
     {
-        throw new NotImplementedException();
+        _configuration.Dns.Rules.Add(new JObject()
+        {
+            ["server"] = "local",
+            ["domain"] = JArray.FromObject(transparentHosts)
+        });
     }
 
     public bool IsRunning => _process.IsRunning;

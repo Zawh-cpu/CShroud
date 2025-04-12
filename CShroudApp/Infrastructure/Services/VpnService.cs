@@ -41,14 +41,14 @@ public class VpnService : IVpnService
         
         var outbound = IVpnBoundFactory.CreateFromCredentials(credentials);
         _vpnCore.ChangeMainOutbound(outbound);
-
-        _vpnCore.ClearMainInbounds();
+        
         if (mode == VpnMode.Proxy || mode == VpnMode.ProxyAndTun)
         {
             if (_vpnCore.IsSupportProtocol(VpnProtocol.Http))
             {
                 var bound = new Http()
                 {
+                    Tag = "main-net-inbound-http",
                     Host = _settingsConfig.Network.Proxy.Http.Host,
                     Port = _settingsConfig.Network.Proxy.Http.Port,
                     Sniff = true,
@@ -62,6 +62,7 @@ public class VpnService : IVpnService
             {
                 var bound = new Socks()
                 {
+                    Tag = "main-net-inbound-socks",
                     Host = _settingsConfig.Network.Proxy.Socks.Host,
                     Port = _settingsConfig.Network.Proxy.Socks.Port,
                     Sniff = true,
@@ -84,7 +85,9 @@ public class VpnService : IVpnService
                 
             }
         }
-
+        
+        _vpnCore.ApplyConfiguration(_settingsConfig);
+        _vpnCore.FixDnsIssues(credentials.TransparentHosts);
         await _vpnCore.EnableAsync();
     }
 

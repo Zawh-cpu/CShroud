@@ -21,6 +21,7 @@ public interface IVpnCoreLayer
     public List<VpnProtocol> SupportedProtocols { get; }
 
     public void FixDnsIssues(List<string> transparentHosts);
+    void ApplySplitTunneling(SettingsConfig.SplitTunnelingObject splitTunnelingObject);
     
     public event EventHandler? ProcessStarted;
     public event EventHandler? ProcessExited;

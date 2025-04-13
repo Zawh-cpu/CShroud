@@ -22,6 +22,7 @@ public class SettingsConfig
 {
     public DebugMode DebugMode { get; set; } = DebugMode.None;
     public NetworkObject Network { get; set; } = new();
+    public SplitTunnelingObject SplitTunneling { get; set; } = new();
 
     public class NetworkObject
     {
@@ -42,5 +43,14 @@ public class SettingsConfig
                 public uint Port { get; set; } = 1000;
             }
         }
+    }
+
+    public class SplitTunnelingObject
+    {
+        public bool Enabled { get; set; } = true;
+        public bool WhiteList { get; set; } = false;
+        public List<string> Applications { get; set; } = new();
+        public List<string> Paths { get; set; } = new();
+        public List<string> Domains { get; set; } = new();
     }
 }

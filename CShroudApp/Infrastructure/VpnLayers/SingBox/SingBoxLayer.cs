@@ -32,6 +32,7 @@ public partial class SingBoxLayer : IVpnCoreLayer
         { VpnProtocol.Vless, inbound => ParseVlessBound((Vless)inbound) },
         { VpnProtocol.Http, inbound => ParseHttpBound((Http)inbound) },
         { VpnProtocol.Socks, inbound => ParseSocksBound((Socks)inbound) },
+        { VpnProtocol.Tun, inbound => ParseTunBound((Tun)inbound) },
     };
     
     public SingBoxLayer(IProcessManager processManager, IOptions<SettingsConfig> settings)
@@ -113,7 +114,7 @@ public partial class SingBoxLayer : IVpnCoreLayer
         _configuration.Dns.Servers.Add(new JObject()
         {
             ["tag"] = "remote",
-            ["address"] = "1.1.1.1",
+            ["address"] = "8.8.8.8",
             ["detour"] = "main-net-outbound"
         });
         
@@ -126,7 +127,7 @@ public partial class SingBoxLayer : IVpnCoreLayer
         _configuration.Dns.Servers.Add(new JObject()
         {
             ["tag"] = "local",
-            ["address"] = "1.1.1.1",
+            ["address"] = "8.8.8.8",
             ["detour"] = "direct"
         });
 
@@ -149,18 +150,6 @@ public partial class SingBoxLayer : IVpnCoreLayer
             Type = "dns",
             Tag = "dns_out"
         });
-        
-        _configuration.Route.Rules.Add(new JObject()
-        {
-            ["outbound"] = "dns_out",
-            ["protocol"] = new JArray() { "dns" }
-        });
-        
-        _configuration.Route.Rules.Add(new JObject()
-        {
-            ["outbound"] = "main-net-outbound",
-            ["port_range"] = "0:65535"
-        });
     }
     
     public async Task KillProcessAsync()
@@ -171,13 +160,106 @@ public partial class SingBoxLayer : IVpnCoreLayer
 
     public void FixDnsIssues(List<string> transparentHosts)
     {
+        _configuration.Route.AutoDetectInterface = true;
+        
         _configuration.Dns.Rules.Add(new JObject()
         {
             ["server"] = "local",
             ["domain"] = JArray.FromObject(transparentHosts)
         });
+
+        _configuration.Route.Rules.Add(new JObject()
+        {
+            ["outbound"] = "dns_out",
+            ["protocol"] = new JArray() { "dns" }
+        });
+
+
+        _configuration.Route.Rules.Add(new JObject()
+        {
+            ["outbound"] = "direct",
+            ["process_name"] = new JArray() { "wv2ray.exe",
+                //"CShroudApp.exe",
+                "v2ray.exe",
+                "SagerNet.exe",
+                "v2ray.exe",
+                "v2ray.exe",
+                "xray.exe",
+                "wxray.exe",
+                "tuic-client.exe",
+                "tuic.exe",
+                "sing-box-client.exe",
+                "sing-box.exe" }
+        });
+
+        _configuration.Route.Rules.Add(new JObject()
+        {
+            ["outbound"] = "dns_out",
+            ["port"] = 53,
+            ["process_name"] = new JArray() { "wv2ray.exe",
+                //"CShroudApp.exe",
+                "v2ray.exe",
+                "SagerNet.exe",
+                "v2ray.exe",
+                "v2ray.exe",
+                "xray.exe",
+                "wxray.exe",
+                "tuic-client.exe",
+                "tuic.exe",
+                "sing-box-client.exe",
+                "sing-box.exe" }
+        });
+        
+        _configuration.Route.Final = "main-net-outbound";
     }
 
+    public void ApplySplitTunneling(SettingsConfig.SplitTunnelingObject splitTunnelingObject)
+    {
+        Console.WriteLine("Applied");
+
+        if (splitTunnelingObject.Applications.Any())
+            _configuration.Route.Rules.Add(new JObject()
+            {
+                ["outbound"] = "direct",
+                ["process_name"] = JArray.FromObject(splitTunnelingObject.Applications)
+            });
+        
+        if (splitTunnelingObject.Domains.Any())
+            _configuration.Route.Rules.Add(new JObject()
+            {
+                ["outbound"] = "direct",
+                ["domain"] = JArray.FromObject(splitTunnelingObject.Domains)
+            });
+        
+        if (splitTunnelingObject.Paths.Any())
+            _configuration.Route.Rules.Add(new JObject()
+            {
+                ["outbound"] = "direct",
+                ["process_path"] = JArray.FromObject(splitTunnelingObject.Domains)
+            });
+        
+        /*_configuration.Route.Rules.Insert(1, new JObject()
+        {
+            ["type"] = "logical",
+            ["mode"] = "or",
+            ["rules"] = new JArray()
+            {
+                new JObject()
+                {
+                    ["process_name"] = JArray.FromObject(splitTunnelingObject.Applications),
+                    ["outbound"] = "direct",
+                }, 
+                new JObject()
+                {
+                    ["domain"] = JArray.FromObject(splitTunnelingObject.Domains),
+                    ["outbound"] = "direct",
+                }, 
+            },
+            ["action"] = "route",
+            ["outbound"] = "direct",
+        });*/
+    }
+    
     public bool IsRunning => _process.IsRunning;
 
     private void OnProcessExited(object? sender, EventArgs e)

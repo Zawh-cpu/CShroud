@@ -32,7 +32,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Infrastructure\Platforms\Linux\Services\" />
       <Folder Include="Presentation\DTOs\" />
     </ItemGroup>
 

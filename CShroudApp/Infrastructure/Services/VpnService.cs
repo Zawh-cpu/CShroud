@@ -81,12 +81,23 @@ public class VpnService : IVpnService
         if (mode == VpnMode.Tun || mode == VpnMode.ProxyAndTun)
         {
             // NEEDS TO IMPLEMENT
+            Console.WriteLine("SSTTART");
             if (_vpnCore.IsSupportProtocol(VpnProtocol.Tun))
             {
-                //var bound = new Tun()
-                //{
-                //
-                //};
+                Console.WriteLine("fwefwefwefwefwefewfewfwfwe");
+                var bound = new Tun()
+                {
+                    Tag = "main-net-inbound-tun",
+                    InterfaceName = "CrimsonShroud",
+                    Address = new List<string>() { "172.18.0.1/30" },
+                    Mtu = 9000,
+                    AutoRoute = true,
+                    StrictRoute = true,
+                    Stack = "gvisor",
+                    Sniff = true
+                };
+                
+                _vpnCore.AddInbound(bound);
             }
             else
             {
@@ -96,6 +107,10 @@ public class VpnService : IVpnService
         
         _vpnCore.ApplyConfiguration(_settingsConfig);
         _vpnCore.FixDnsIssues(credentials.TransparentHosts);
+        
+        if (_settingsConfig.SplitTunneling.Enabled == true)
+            _vpnCore.ApplySplitTunneling(_settingsConfig.SplitTunneling);
+        
         await _vpnCore.EnableAsync();
         
         CurrentMode = mode;
@@ -110,16 +125,19 @@ public class VpnService : IVpnService
     private void OnVpnEnabled(object? sender, EventArgs e)
     {
         string proxyAddress;
-        if (_settingsConfig.Network.Proxy.Default == VpnProtocol.Socks)
+        if (CurrentMode == VpnMode.Proxy)
         {
-            proxyAddress = $"socks={_settingsConfig.Network.Proxy.Socks.Host}:{_settingsConfig.Network.Proxy.Socks.Port}";
-        }
-        else
-        {
-            proxyAddress = $"{_settingsConfig.Network.Proxy.Http.Host}:{_settingsConfig.Network.Proxy.Http.Port}";
-        }
+            if (_settingsConfig.Network.Proxy.Default == VpnProtocol.Socks)
+            {
+                proxyAddress = $"socks={_settingsConfig.Network.Proxy.Socks.Host}:{_settingsConfig.Network.Proxy.Socks.Port}";
+            }
+            else
+            {
+                proxyAddress = $"{_settingsConfig.Network.Proxy.Http.Host}:{_settingsConfig.Network.Proxy.Http.Port}";
+            }
         
-        _proxyManager.EnableAsync(proxyAddress, _settingsConfig.Network.Proxy.ExcludedHosts).GetAwaiter().GetResult();
+            _proxyManager.EnableAsync(proxyAddress, _settingsConfig.Network.Proxy.ExcludedHosts).GetAwaiter().GetResult();
+        }
         VpnEnabled?.Invoke(sender, e);
     }
 

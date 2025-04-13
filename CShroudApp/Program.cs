@@ -57,7 +57,7 @@ var service = services.BuildServiceProvider();
 var vpnService = service.GetRequiredService<IVpnService>();
 vpnService.VpnEnabled += Aboba;
 vpnService.VpnDisabled += AbobaOff;
-vpnService.EnableAsync(VpnMode.Proxy).GetAwaiter().GetResult();
+vpnService.EnableAsync(VpnMode.Tun).GetAwaiter().GetResult();
 while (true)
 {
     

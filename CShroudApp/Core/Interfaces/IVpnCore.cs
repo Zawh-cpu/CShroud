@@ -22,6 +22,7 @@ public interface IVpnCore
     List<VpnProtocol> SupportedProtocols { get; }
 
     void ApplyConfiguration(SettingsConfig settings);
+    void ApplySplitTunneling(SettingsConfig.SplitTunnelingObject splitTunnelingObject);
     
     event EventHandler? VpnEnabled;
     event EventHandler? VpnDisabled;

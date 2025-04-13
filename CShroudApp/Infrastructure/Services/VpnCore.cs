@@ -28,6 +28,11 @@ public class VpnCore : IVpnCore
     {
         _vpnCoreLayer.ConcatConfigs(settings);
     }
+
+    public void ApplySplitTunneling(SettingsConfig.SplitTunnelingObject splitTunnelingObject)
+    {
+        _vpnCoreLayer.ApplySplitTunneling(splitTunnelingObject);
+    }
     
     public async Task EnableAsync()
     {

@@ -6,6 +6,7 @@ public class ProcessManager : IProcessManager
 {
     private List<IProcess> _activeProcesses = new();
     private List<IProcess> _linkedProcesses = new();
+    private List<IProcess> _elevatedProcesses = new();
 
     public void Register(IProcess process)
     {

@@ -1,6 +1,7 @@
 ﻿using CShroudApp.Core.Entities.Vpn;
 using CShroudApp.Core.Interfaces;
 using CShroudApp.Infrastructure.Data.Config;
+using CShroudApp.Infrastructure.Platforms.Linux.Services;
 using CShroudApp.Infrastructure.Platforms.Windows.Services;
 using CShroudApp.Infrastructure.Services;
 using CShroudApp.Infrastructure.VpnLayers.SingBox;
@@ -31,17 +32,20 @@ services.AddSingleton<IProcessManager, ProcessManager>();
 services.AddSingleton<IApiRepository, ApiRepository>();
 services.AddSingleton<IVpnCore, VpnCore>();
 
-if (OperatingSystem.IsWindows())
+switch (PlatformService.GetPlatform())
 {
-    services.AddSingleton<IProxyManager, WindowsProxyManager>();
-} else if (OperatingSystem.IsLinux())
-{
+    case "Windows":
+        services.AddSingleton<IProxyManager, WindowsProxyManager>();
+        break;
     
-}
-else
-{
-    Console.WriteLine("This platform currently is not supported. Sorry :(");
-    Environment.Exit(1);
+    case "Linux":
+        services.AddSingleton<IProxyManager, LinuxProxyManager>();
+        break;
+    
+    default:
+        Console.WriteLine("This platform currently is not supported. Sorry :(");
+        Environment.Exit(1);
+        break;
 }
 
 services.AddSingleton<IVpnService, VpnService>();

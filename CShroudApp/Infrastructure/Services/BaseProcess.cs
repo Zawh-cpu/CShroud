@@ -10,18 +10,22 @@ public class BaseProcess : IProcess
     public bool IsRunning => _isRunning;
     private bool _isRunning = false;
 
-
     public event EventHandler ProcessExited = delegate { };
     public event EventHandler ProcessStarted = delegate { };
     public StreamWriter StandardInput => _process.StandardInput;
-
-    public BaseProcess(ProcessStartInfo processStartInfo, DebugMode debug = DebugMode.None)
+    
+    private readonly IElevationManager _elevationManager;
+    private readonly IProcessManager _processManager;
+    
+    public BaseProcess(ProcessStartInfo processStartInfo, DebugMode debug = DebugMode.None, IElevationManager elevationManager, IProcessManager processManager)
     {
+        _elevationManager = elevationManager;
+        _processManager = processManager;
+        
         _process = new Process();
         _process.StartInfo = processStartInfo;
         _process.EnableRaisingEvents = true;
         _process.Exited += OnProcessExited!;
-        // _process.Disposed += OnProcessExited!;
 
         if (debug != DebugMode.None)
         {
@@ -42,9 +46,21 @@ public class BaseProcess : IProcess
             });
 
         }
+        
+        _processManager.Register(this);
+        
     }
 
     public void Start()
+    {
+        _isRunning = true;
+        ProcessStarted?.Invoke(this, EventArgs.Empty);
+        _process.Start();
+        _process.BeginOutputReadLine();
+        _process.BeginErrorReadLine();
+    }
+    
+    public void StartAsRoot()
     {
         _isRunning = true;
         ProcessStarted?.Invoke(this, EventArgs.Empty);

@@ -37,9 +37,22 @@ public partial class SingBoxLayer : IVpnCoreLayer
     
     public SingBoxLayer(IProcessManager processManager, IOptions<SettingsConfig> settings)
     {
+        string runtimeName;
+        switch (PlatformService.GetPlatform())
+        {
+            case "Windows":
+                runtimeName = "sing-box.exe";
+                break;
+            case "Linux":
+                runtimeName = "sing-box";
+                break;
+            default:
+                runtimeName = "sing-box";
+                break;
+        }
         var processStartInfo = new ProcessStartInfo
         {
-            FileName = Path.Combine(Environment.CurrentDirectory, "Binaries", "Cores", "SingBox", "sing-box.exe"),
+            FileName = Path.Combine(Environment.CurrentDirectory, "Binaries", "Cores", "SingBox", PlatformService.GetFullname(), runtimeName),
             Arguments = "run -c stdin",
             RedirectStandardInput = true,
             RedirectStandardOutput = true,

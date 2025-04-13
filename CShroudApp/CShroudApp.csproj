@@ -32,6 +32,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Binaries\Cores\SingBox\LinuxX64\" />
       <Folder Include="Presentation\DTOs\" />
     </ItemGroup>
 
@@ -41,6 +42,12 @@
         </None>
         <None Update="appsettings.json">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Binaries\Cores\SingBox\Windows64\config.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Binaries\Cores\SingBox\Windows64\sing-box.exe">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
     

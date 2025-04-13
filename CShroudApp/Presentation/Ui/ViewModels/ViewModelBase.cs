@@ -1,7 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace AvaloniaApplication1.ViewModels;
+namespace CShroudApp.Presentation.Ui.ViewModels;
 
 public class ViewModelBase : ObservableObject
 {
+    
 }

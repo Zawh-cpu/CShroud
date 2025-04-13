@@ -33,7 +33,7 @@
 
     <ItemGroup>
       <Folder Include="Binaries\Cores\SingBox\LinuxX64\" />
-      <Folder Include="Presentation\Models\" />
+      <Folder Include="Presentation\Ui\Models\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -53,5 +53,13 @@
     
     <ItemGroup>
         <AvaloniaResource Include="Presentation\Assets\**"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Presentation\Views\MainWindow.axaml" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <AdditionalFiles Include="Presentation\Ui\Views\MainWindow.axaml" />
     </ItemGroup>
 </Project>

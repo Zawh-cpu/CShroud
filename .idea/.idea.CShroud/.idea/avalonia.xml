@@ -4,6 +4,7 @@
     <option name="projectPerEditor">
       <map>
         <entry key="CShroudApp/Presentation/Ui/App.axaml" value="CShroudApp/CShroudApp.csproj" />
+        <entry key="CShroudApp/Presentation/Ui/Styles/Auth.axaml" value="CShroudApp/CShroudApp.csproj" />
         <entry key="CShroudApp/Presentation/Ui/Views/MainWindow.axaml" value="CShroudApp/CShroudApp.csproj" />
       </map>
     </option>

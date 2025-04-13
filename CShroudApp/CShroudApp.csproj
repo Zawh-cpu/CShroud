@@ -33,7 +33,7 @@
 
     <ItemGroup>
       <Folder Include="Binaries\Cores\SingBox\LinuxX64\" />
-      <Folder Include="Presentation\DTOs\" />
+      <Folder Include="Presentation\Models\" />
     </ItemGroup>
 
     <ItemGroup>

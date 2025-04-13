@@ -8,17 +8,15 @@ namespace CShroudApp.Infrastructure.Services;
 public class ProcessFactory : IProcessFactory
 {
     private readonly IProcessManager _processManager;
-    private readonly IElevationManager _elevationManager;
     
-    public ProcessFactory(IElevationManager elevationManager, IProcessManager processManager)
+    public ProcessFactory(IProcessManager processManager)
     {
-        _elevationManager = elevationManager;
         _processManager = processManager;
     }
     
-    public void Create(ProcessStartInfo processStartInfo, DebugMode debug = DebugMode.None)
+    public BaseProcess Create(ProcessStartInfo processStartInfo, DebugMode debug = DebugMode.None)
     {
-        var process = new BaseProcess(processStartInfo, debug, _elevationManager, _processManager);
-        return process
+        var process = new BaseProcess(processStartInfo, _processManager, debug);
+        return process;
     }
 }

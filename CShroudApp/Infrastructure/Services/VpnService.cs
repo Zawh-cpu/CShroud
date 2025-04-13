@@ -110,10 +110,9 @@ public class VpnService : IVpnService
         
         if (_settingsConfig.SplitTunneling.Enabled == true)
             _vpnCore.ApplySplitTunneling(_settingsConfig.SplitTunneling);
-        
-        await _vpnCore.EnableAsync();
-        
+
         CurrentMode = mode;
+        await _vpnCore.EnableAsync();
     }
 
 

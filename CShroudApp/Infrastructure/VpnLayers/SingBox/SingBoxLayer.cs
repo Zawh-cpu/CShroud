@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using CShroudApp.Application.Factories;
 using CShroudApp.Core.Entities.Vpn;
 using CShroudApp.Core.Entities.Vpn.Bounds;
 using CShroudApp.Core.Interfaces;
@@ -35,7 +36,7 @@ public partial class SingBoxLayer : IVpnCoreLayer
         { VpnProtocol.Tun, inbound => ParseTunBound((Tun)inbound) },
     };
     
-    public SingBoxLayer(IProcessManager processManager, IOptions<SettingsConfig> settings)
+    public SingBoxLayer(IProcessFactory processFactory, IOptions<SettingsConfig> settings)
     {
         string runtimeName;
         switch (PlatformService.GetPlatform())
@@ -61,11 +62,9 @@ public partial class SingBoxLayer : IVpnCoreLayer
             CreateNoWindow = false
         };
         
-        _process = new BaseProcess(processStartInfo, settings.Value.DebugMode);
+        _process = processFactory.Create(processStartInfo, settings.Value.DebugMode);
         _process.ProcessExited += OnProcessExited;
         _process.ProcessStarted += OnProcessStarted;
-        
-        processManager.Register(_process);
     }
 
     public void AddInbound(IVpnBound bound, int index = Int32.MaxValue)
@@ -128,7 +127,8 @@ public partial class SingBoxLayer : IVpnCoreLayer
         {
             ["tag"] = "remote",
             ["address"] = "8.8.8.8",
-            ["detour"] = "main-net-outbound"
+            ["detour"] = "main-net-outbound",
+            ["strategy"] = "ipv4_only"
         });
         
         _configuration.Dns.Servers.Add(new JObject()
@@ -228,26 +228,24 @@ public partial class SingBoxLayer : IVpnCoreLayer
 
     public void ApplySplitTunneling(SettingsConfig.SplitTunnelingObject splitTunnelingObject)
     {
-        Console.WriteLine("Applied");
-
         if (splitTunnelingObject.Applications.Any())
             _configuration.Route.Rules.Add(new JObject()
             {
-                ["outbound"] = "direct",
+                ["outbound"] = splitTunnelingObject.WhiteList is true ? "direct" : "main-net-outbound",
                 ["process_name"] = JArray.FromObject(splitTunnelingObject.Applications)
             });
         
         if (splitTunnelingObject.Domains.Any())
             _configuration.Route.Rules.Add(new JObject()
             {
-                ["outbound"] = "direct",
+                ["outbound"] = splitTunnelingObject.WhiteList is true ? "direct" : "main-net-outbound",
                 ["domain"] = JArray.FromObject(splitTunnelingObject.Domains)
             });
         
         if (splitTunnelingObject.Paths.Any())
             _configuration.Route.Rules.Add(new JObject()
             {
-                ["outbound"] = "direct",
+                ["outbound"] = splitTunnelingObject.WhiteList is true ? "direct" : "main-net-outbound",
                 ["process_path"] = JArray.FromObject(splitTunnelingObject.Domains)
             });
         
@@ -271,6 +269,9 @@ public partial class SingBoxLayer : IVpnCoreLayer
             ["action"] = "route",
             ["outbound"] = "direct",
         });*/
+        
+        if (!splitTunnelingObject.WhiteList)
+            _configuration.Route.Final = "direct";
     }
     
     public bool IsRunning => _process.IsRunning;

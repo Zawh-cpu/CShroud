@@ -1,4 +1,5 @@
-﻿using CShroudApp.Core.Entities.Vpn;
+﻿using CShroudApp.Application.Factories;
+using CShroudApp.Core.Entities.Vpn;
 using CShroudApp.Core.Interfaces;
 using CShroudApp.Infrastructure.Data.Config;
 using CShroudApp.Infrastructure.Platforms.Linux.Services;
@@ -29,6 +30,7 @@ var services = new ServiceCollection();
 services.Configure<SettingsConfig>(config.GetSection("Settings"));
 
 services.AddSingleton<IProcessManager, ProcessManager>();
+services.AddTransient<IProcessFactory, ProcessFactory>();
 services.AddSingleton<IApiRepository, ApiRepository>();
 services.AddSingleton<IVpnCore, VpnCore>();
 
@@ -61,7 +63,7 @@ var service = services.BuildServiceProvider();
 var vpnService = service.GetRequiredService<IVpnService>();
 vpnService.VpnEnabled += Aboba;
 vpnService.VpnDisabled += AbobaOff;
-vpnService.EnableAsync(VpnMode.Tun).GetAwaiter().GetResult();
+vpnService.EnableAsync(VpnMode.Proxy).GetAwaiter().GetResult();
 while (true)
 {
     

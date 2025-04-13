@@ -14,12 +14,11 @@ public class BaseProcess : IProcess
     public event EventHandler ProcessStarted = delegate { };
     public StreamWriter StandardInput => _process.StandardInput;
     
-    private readonly IElevationManager _elevationManager;
     private readonly IProcessManager _processManager;
     
-    public BaseProcess(ProcessStartInfo processStartInfo, DebugMode debug = DebugMode.None, IElevationManager elevationManager, IProcessManager processManager)
+    public BaseProcess(ProcessStartInfo processStartInfo,
+        IProcessManager processManager, DebugMode debug = DebugMode.None)
     {
-        _elevationManager = elevationManager;
         _processManager = processManager;
         
         _process = new Process();
@@ -52,15 +51,6 @@ public class BaseProcess : IProcess
     }
 
     public void Start()
-    {
-        _isRunning = true;
-        ProcessStarted?.Invoke(this, EventArgs.Empty);
-        _process.Start();
-        _process.BeginOutputReadLine();
-        _process.BeginErrorReadLine();
-    }
-    
-    public void StartAsRoot()
     {
         _isRunning = true;
         ProcessStarted?.Invoke(this, EventArgs.Empty);

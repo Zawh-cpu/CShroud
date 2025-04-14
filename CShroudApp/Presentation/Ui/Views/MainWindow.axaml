@@ -8,7 +8,7 @@
         x:Class="CShroudApp.Presentation.Ui.Views.MainWindow"
         x:DataType="viewModels:MainWindowViewModel"
         TransparencyLevelHint="AcrylicBlur"
-        Background="#121418"
+        Background="#161616"
         Title="AvaloniaApplication1">
     
     <Window.Styles>
@@ -16,45 +16,136 @@
         
         <Style Selector="TextBox.inputField">
             <Setter Property="Background" Value="#222222"></Setter>
-            <Setter Property="Foreground" Value="#7A7A7A"></Setter>
-            <Setter Property="Height" Value="40"></Setter>
+            <Setter Property="BorderThickness" Value="0"></Setter>
+            <Setter Property="Foreground" Value="#989898"></Setter>
+            <Setter Property="Padding" Value="22 15 22 15"></Setter>
+        </Style>
+        
+        <Style Selector="Button.inputButton">
+            <Setter Property="BorderThickness" Value="0"></Setter>
+            <Setter Property="Foreground" Value="#fff"></Setter>
+            <Setter Property="Padding" Value="22 15 22 15"></Setter>
+            
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                        <GradientStop Color="#A53889" Offset="0.0"/>
+                        <GradientStop Color="#F02E39" Offset="0.75"/>
+                        <GradientStop Color="#F67E47" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.2"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        
+        <Style Selector="Button.inputButton:pointerover /template/ ContentPresenter">
+            <Setter Property="Cursor" Value="Hand"></Setter>
+            <Setter Property="BorderThickness" Value="0"></Setter>
+            <Setter Property="Foreground" Value="#fff"></Setter>
+            <Setter Property="Padding" Value="22 15 22 15"></Setter>
+            
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                        <GradientStop Color="#A53889" Offset="0.5"/>  
+                        <GradientStop Color="#F02E39" Offset="0.7"/>
+                        <GradientStop Color="#F67E47" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style Selector="Button.externalLogin">
+            <Setter Property="Padding" Value="22 15 22 15"></Setter>
+            <Setter Property="Foreground" Value="#fff"></Setter>
+            <Setter Property="Background" Value="Transparent"></Setter>
+            <Setter Property="BorderThickness" Value="1"></Setter>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                        <GradientStop Color="#A53889" Offset="0.5"/>  
+                        <GradientStop Color="#F02E39" Offset="0.7"/>
+                        <GradientStop Color="#F67E47" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style Selector="Button.externalLogin:pointerover /template/ ContentPresenter">
+            <Setter Property="Cursor" Value="Hand"></Setter>
+            <Setter Property="Padding" Value="22 15 22 15"></Setter>
+            <Setter Property="Foreground" Value="#fff"></Setter>
+            <Setter Property="Background" Value="Transparent"></Setter>
+            <Setter Property="BorderThickness" Value="1"></Setter>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                        <GradientStop Color="#F67E47" Offset="0.5"/>
+                        <GradientStop Color="#A53889" Offset="0.7"/>
+                        <GradientStop Color="#F02E39" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
         </Style>
 
     </Window.Styles>
     
-    <Grid RowDefinitions="*, *, Auto, Auto">
-        <StackPanel Spacing="10" VerticalAlignment="Center">
-            <TextBlock Foreground="#fff" HorizontalAlignment="Center">Login to Your Account</TextBlock>
-            <TextBlock Foreground="#fff" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="80 0 80 0">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium?</TextBlock>
-        </StackPanel>
+    <Grid RowDefinitions="2*, * Auto, *, 2*">
         
-        <Border Grid.Row="1" Padding="80 0 80 0" Background="red">
-            <Grid Grid.Row="1" ColumnDefinitions="*, 20, *" Background="Yellow">
+        <Grid>
+            
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                <TextBlock HorizontalAlignment="Center" Foreground="#fff" FontSize="26" FontWeight="Bold">Login to Your Account</TextBlock>
+                <!--<TextBlock HorizontalAlignment="Center" Foreground="#fff">In city, I feel my spirit is contained
+                    Like neon inside the glass, they form my brain</TextBlock>-->
+            </StackPanel>
+            
+        </Grid>
+        
+        <Grid Grid.Row="2" ColumnDefinitions="*, 2*, 80, 2*, *">
+            <TextBlock Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center" Foreground="#6E6E6E" FontWeight="Bold">/</TextBlock>
+            
+            <Grid Grid.Column="1" RowDefinitions="Auto, 15, Auto, 15, Auto">
+                <TextBox Classes="inputField" Watermark="Username / Email"></TextBox>
                 
-                <Grid RowDefinitions="Auto, Auto, Auto" Background="Black">
-                    <TextBox Classes="inputField"></TextBox>
-                    <TextBox Grid.Row="1" Classes="inputField"></TextBox>
-                    <Button></Button>
-                </Grid>
-                
-                <Grid Grid.Column="2" RowDefinitions="Auto, Auto, Auto" Background="Chartreuse">
-                    <Button Classes="inputField" HorizontalAlignment="Stretch">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Image Source="avares://CShroudApp/Assets/icons/png/Artboard.png" Width="16" Height="16"></Image>
-                            <TextBlock>Login with Telegram</TextBlock>
-                        </StackPanel>
+                <Grid Grid.Row="2" ColumnDefinitions="*, Auto">
+                    <TextBox Classes="inputField" Watermark="Password" CornerRadius="5 0 0 5"></TextBox>
+                    <Button Grid.Column="1" VerticalAlignment="Stretch" Background="#222222" BorderThickness="0" CornerRadius="0 5 5 0">
+                        <Svg Grid.Column="1" Path="/Assets/icons/svg/eye-closed.svg" HorizontalAlignment="Right" Width="18" Height="18"></Svg>
                     </Button>
                 </Grid>
                 
+                <Button Grid.Row="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Classes="inputButton">
+                    <Grid ColumnDefinitions="*, Auto" VerticalAlignment="Center">
+                        <TextBlock>Login to Your Account</TextBlock>
+                        <Svg Grid.Column="1" Path="/Assets/icons/svg/arrow-right--.svg" HorizontalAlignment="Right" Width="16" Height="16"></Svg>
+                    </Grid>
+                </Button>
+            </Grid>
+            
+            <Grid Grid.Column="3">
+                <Button Classes="externalLogin" HorizontalAlignment="Stretch">
+                    <Grid ColumnDefinitions="Auto, 20, *">
+                        <Svg Path="Assets/icons/svg/Artboard.svg" Width="16" Height="16"></Svg>
+                        <TextBlock Grid.Column="2">Login using Telegram</TextBlock>
+                    </Grid>
+                </Button>
+            </Grid>
+            
+        </Grid>
+        
+        <Border Grid.Row="4" Padding="15 15 15 15">
+            <Grid RowDefinitions="Auto, *, Auto">
+                <TextBlock HorizontalAlignment="Center" TextDecorations="Underline" Foreground="#ccc" Cursor="Hand">Forgot a password?</TextBlock>
+                <TextBlock Grid.Row="2" Foreground="#ccc">Privacy Police</TextBlock>
             </Grid>
         </Border>
         
-        <StackPanel Grid.Row="2" Background="Coral">
-            <TextBox>Forgot Password?</TextBox>
-        </StackPanel>
-        <StackPanel Grid.Row="3" Background="Brown">
-            <TextBox>Privacy Police</TextBox>
-        </StackPanel>
     </Grid>
     
     <Design.DataContext>

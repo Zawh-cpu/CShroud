@@ -28,17 +28,24 @@
             <TextBlock Foreground="#fff" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="80 0 80 0">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium?</TextBlock>
         </StackPanel>
         
-        <Border Grid.Row="1" Padding="80 0 80 0">
-            <Grid Grid.Row="1" ColumnDefinitions="*, *" Background="Aqua">
+        <Border Grid.Row="1" Padding="80 0 80 0" Background="red">
+            <Grid Grid.Row="1" ColumnDefinitions="*, 20, *" Background="Yellow">
+                
                 <Grid RowDefinitions="Auto, Auto, Auto" Background="Black">
                     <TextBox Classes="inputField"></TextBox>
                     <TextBox Grid.Row="1" Classes="inputField"></TextBox>
                     <Button></Button>
                 </Grid>
                 
-                <Grid Grid.Column="1" Background="Chartreuse">
-                
+                <Grid Grid.Column="2" RowDefinitions="Auto, Auto, Auto" Background="Chartreuse">
+                    <Button Classes="inputField" HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Image Source="avares://CShroudApp/Assets/icons/png/Artboard.png" Width="16" Height="16"></Image>
+                            <TextBlock>Login with Telegram</TextBlock>
+                        </StackPanel>
+                    </Button>
                 </Grid>
+                
             </Grid>
         </Border>
         

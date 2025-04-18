@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:CShroudApp.Presentation.Ui.ViewModels"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="CShroudApp.Presentation.Ui.Views.MainWindow"
-        x:DataType="viewModels:MainWindowViewModel"
+        x:Class="CShroudApp.Presentation.Ui.Views.AuthWindow"
+        x:DataType="viewModels:AuthWindowViewModel"
         TransparencyLevelHint="AcrylicBlur"
         Background="#161616"
         Title="AvaloniaApplication1">
@@ -15,10 +15,20 @@
         <!--<StyleInclude Source="/Presentation/Ui/Styles/Auth.axaml"/>-->
         
         <Style Selector="TextBox.inputField">
-            <Setter Property="Background" Value="#222222"></Setter>
+            <Setter Property="Background" Value="Red"></Setter>
             <Setter Property="BorderThickness" Value="0"></Setter>
             <Setter Property="Foreground" Value="#989898"></Setter>
             <Setter Property="Padding" Value="22 15 22 15"></Setter>
+            
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="#12F42C"/>
+            </Style>
+        </Style>
+        
+        <Style Selector="Button.inputField_FieldButton">
+            <Setter Property="Background" Value="#222"></Setter>
+            <Setter Property="BorderThickness" Value="0"></Setter>
+            <Setter Property="CornerRadius" Value="0 5 5 0"></Setter>
         </Style>
         
         <Style Selector="Button.inputButton">
@@ -111,12 +121,12 @@
             <TextBlock Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center" Foreground="#6E6E6E" FontWeight="Bold">/</TextBlock>
             
             <Grid Grid.Column="1" RowDefinitions="Auto, 15, Auto, 15, Auto">
-                <TextBox Classes="inputField" Watermark="Username / Email"></TextBox>
+                <TextBox Classes="inputField" Watermark="Username / Email">Zawh</TextBox>
                 
                 <Grid Grid.Row="2" ColumnDefinitions="*, Auto">
-                    <TextBox Classes="inputField" Watermark="Password" CornerRadius="5 0 0 5"></TextBox>
-                    <Button Grid.Column="1" VerticalAlignment="Stretch" Background="#222222" BorderThickness="0" CornerRadius="0 5 5 0">
-                        <Svg Grid.Column="1" Path="/Assets/icons/svg/eye-closed.svg" HorizontalAlignment="Right" Width="18" Height="18"></Svg>
+                    <MaskedTextBox Classes="inputField" Name="PasswordMaskedBox" PasswordChar="{Binding PasswordChar, UpdateSourceTrigger=PropertyChanged}" Watermark="Password" CornerRadius="5 0 0 5">dafwqeq</MaskedTextBox>
+                    <Button Grid.Column="1" Classes="inputField_FieldButton" Command="{Binding TogglePasswordVisibilityCommand}" VerticalAlignment="Stretch">
+                        <Svg Grid.Column="1" Path="{Binding EyeIcon, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Right" Width="18" Height="18"></Svg>
                     </Button>
                 </Grid>
                 
@@ -141,15 +151,19 @@
         
         <Border Grid.Row="4" Padding="15 15 15 15">
             <Grid RowDefinitions="Auto, *, Auto">
-                <TextBlock HorizontalAlignment="Center" TextDecorations="Underline" Foreground="#ccc" Cursor="Hand">Forgot a password?</TextBlock>
-                <TextBlock Grid.Row="2" Foreground="#ccc">Privacy Police</TextBlock>
+                <HyperlinkButton HorizontalAlignment="Center" Cursor="Hand" NavigateUri="https://google.com/">
+                    <TextBlock TextDecorations="Underline" Foreground="#ccc">Forgot a password?</TextBlock>
+                </HyperlinkButton>
+                <HyperlinkButton Grid.Row="2" HorizontalAlignment="Left" Cursor="Hand" NavigateUri="https://google.com/">
+                    <TextBlock Foreground="#636363">Privacy Policy</TextBlock>
+                </HyperlinkButton>
             </Grid>
         </Border>
         
     </Grid>
     
     <Design.DataContext>
-        <viewModels:MainWindowViewModel/>
+        <viewModels:AuthWindowViewModel/>
     </Design.DataContext>
     
     

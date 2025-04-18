@@ -63,8 +63,4 @@
     <ItemGroup>
       <UpToDateCheckInput Remove="Presentation\Views\MainWindow.axaml" />
     </ItemGroup>
-    
-    <ItemGroup>
-      <AdditionalFiles Include="Presentation\Ui\Views\MainWindow.axaml" />
-    </ItemGroup>
 </Project>

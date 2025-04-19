@@ -8,6 +8,6 @@ public partial class VpnController
     [HttpPost("connect")]
     public async Task ConnectAsync([FromBody] VpnConnectionRequest request)
     {
-        if 
+        // if 
     }
 }

@@ -1,0 +1,7 @@
+﻿services:
+  cshroudgateway:
+    image: cshroudgateway
+    build:
+      context: .
+      dockerfile: CShroudGateway/Dockerfile
+

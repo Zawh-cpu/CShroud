@@ -27,4 +27,34 @@
       </Compile>
     </ItemGroup>
 
+    <ItemGroup>
+      <Protobuf Include="Presentation\DeprecatedApi\gRPC\v1\Protos\Server\control.proto">
+        <GrpcServices>Server</GrpcServices>
+        <Access>Public</Access>
+        <ProtoCompile>True</ProtoCompile>
+        <ProtoRoot>Presentation/Protos</ProtoRoot>
+        <CompileOutputs>True</CompileOutputs>
+        <OutputDir>obj\Debug\net9.0\</OutputDir>
+        <Generator>MSBuild:Compile</Generator>
+      </Protobuf>
+      <Protobuf Include="Presentation\DeprecatedApi\gRPC\v1\Protos\Server\machine.proto">
+        <GrpcServices>Server</GrpcServices>
+        <Access>Public</Access>
+        <ProtoCompile>True</ProtoCompile>
+        <ProtoRoot>Presentation/Protos</ProtoRoot>
+        <CompileOutputs>True</CompileOutputs>
+        <OutputDir>obj\Debug\net9.0\</OutputDir>
+        <Generator>MSBuild:Compile</Generator>
+      </Protobuf>
+      <Protobuf Include="Presentation\DeprecatedApi\gRPC\v1\Protos\Server\update.proto">
+        <GrpcServices>Server</GrpcServices>
+        <Access>Public</Access>
+        <ProtoCompile>True</ProtoCompile>
+        <ProtoRoot>Presentation/Protos</ProtoRoot>
+        <CompileOutputs>True</CompileOutputs>
+        <OutputDir>obj\Debug\net9.0\</OutputDir>
+        <Generator>MSBuild:Compile</Generator>
+      </Protobuf>
+    </ItemGroup>
+
 </Project>

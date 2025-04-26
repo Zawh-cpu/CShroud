@@ -1,70 +1,53 @@
-using CShroud.Core.Domain.Interfaces;
-using CShroud.Core.Domain.Services;
-using CShroud.Infrastructure.Data;
-using CShroud.Infrastructure.Data.Entities;
-using CShroud.Infrastructure.Interfaces;
-using CShroud.Presentation.Protos.Server;
+using CShroudGateway.Core.Interfaces;
+using CShroudGateway.Infrastructure.Data.Entities;
+using CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Protos;
 using Google.Protobuf.WellKnownTypes;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic.CompilerServices;
-
-namespace CShroud.Presentation.gRPC.v1;
-
 using Grpc.Core;
-using Grpc.Net.Client;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Xray.App.Proxyman.Command;
+
+namespace CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Services;
 
 public class ControlService : Control.ControlBase
 {
     private readonly ILogger<ControlService> _logger;
     private readonly IBaseRepository _baseRepository;
-    private readonly IVpnRepository _vpnRepository;
-    private readonly IKeyService _keyService;
-    private readonly IProtocolHandlerFactory _protocolHandlerFactory;
+    private readonly IVpnService _vpnService;
 
-    public ControlService(ILogger<ControlService> logger, IVpnRepository vpnRepository, IBaseRepository baseRepository, IProtocolHandlerFactory protocolHandlerFactory, IKeyService keyService)
+    public ControlService(ILogger<ControlService> logger, IBaseRepository baseRepository, IVpnService vpnService)
     {
         _logger = logger;
-        _vpnRepository = vpnRepository;
         _baseRepository = baseRepository;
-        _protocolHandlerFactory = protocolHandlerFactory;
-        _keyService = keyService;
+        _vpnService = vpnService;
     }
 
     public override async Task<Empty> CreateUser(CreateUserRequest request, ServerCallContext context)
     {
-        var dbContext = new ApplicationContext();
-        if (await _baseRepository.UserExistsAsync(dbContext, request.TelegramId))
-        {
+        if (await _baseRepository.IsUserWithThisTelegramIdExistsAsync(request.TelegramId))
             throw new RpcException(new Status(StatusCode.Cancelled, "User already exists"));
-        }
 
         var user = new User()
         {
             Nickname = request.Nickname.Substring(0, Math.Min(request.Nickname.Length, 96)),
             TelegramId = request.TelegramId
         };
-        
-        await dbContext.Users.AddAsync(user);
-        await dbContext.SaveChangesAsync();
+
+        await _baseRepository.AddWithSaveAsync(user);
         
         return new Empty();
     }
     
     public override async Task<AddClientResponse> AddClient(AddClientRequest request, ServerCallContext context)
     {
-        var dbContext = new ApplicationContext();
+        if (!Guid.TryParse(request.UserId, out Guid userId))
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "UserId is invalid"));
         
-        User? user = await _baseRepository.GetUserAsync(dbContext, request.UserId, x => x.Keys, x => x.Rate!);
+        User? user = await _baseRepository.GetUserByIdAsync(userId, x => x.Include(x => x.Rate).Include(x => x.Keys));
         if (user == null)
         {
             throw new RpcException(new Status(StatusCode.Unauthenticated, "User with this id doesn't exists"));
         }
         
-        if (user.Keys.Count >= user.Rate!.MaxKeys)
+        if (user.Rate != null && user.Keys.Count >= user.Rate.MaxKeys)
         {
             throw new RpcException(new Status(StatusCode.Cancelled, "Max keys reached"));
         }

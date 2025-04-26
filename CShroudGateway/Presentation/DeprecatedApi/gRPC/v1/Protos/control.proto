@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "CShroud.Presentation.Protos.Server";
+option csharp_namespace = "CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Protos";
 
 package control;
 
@@ -21,7 +21,7 @@ message CreateUserRequest {
 }
 
 message AddClientRequest {
-  uint32 userId = 1;
+  string userId = 1;
   string protocolId = 2;
   string args = 3;
   string name = 4;
@@ -32,11 +32,11 @@ message AddClientResponse {
 }
 
 message RemClientRequest {
-  uint32 userId = 1;
-  uint32 keyId = 2;
+  string userId = 1;
+  string keyId = 2;
 }
 
 message KeyRequest {
-  uint32 userId = 1;
-  uint32 keyId = 2;
+  string userId = 1;
+  string keyId = 2;
 }

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "CShroud.Presentation.Protos.Server";
+option csharp_namespace = "CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Protos";
 
 package update;
 

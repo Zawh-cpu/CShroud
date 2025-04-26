@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class User
 {
     [Key]
-    public uint Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     
     [MaxLength(96)]
     public string? Nickname { get; set; }
@@ -19,6 +19,19 @@ public class User
     
     
     public ulong? TelegramId { get; set; }
+    
+    [Required] public uint RoleId { get; set; } = 1;
+    
+    [ForeignKey("RoleId")]
+    public Role? Role { get; set; }
+    
+    [Required] public uint RateId { get; set; } = 1;
+    
+    [ForeignKey("RateId")]
+    public Entities.Rate? Rate { get; set; }
+    
+    public List<Entities.Key> Keys { get; set; } = new();
+    
     public DateTime? PayedUntil { get; set; }
     
     public DateTime JoinedAt { get; set; } = DateTime.UtcNow;

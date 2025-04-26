@@ -1,11 +1,9 @@
-using CShroud.Infrastructure.Interfaces;
-using CShroud.Presentation.Protos.Server;
+using CShroudGateway.Core.Interfaces;
+using CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Protos;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Grpc.Net.Client;
-using Microsoft.Extensions.Logging;
 
-namespace CShroud.Presentation.gRPC.v1;
+namespace CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Services;
 
 public class MachineService : Machine.MachineBase
 {
@@ -21,21 +19,5 @@ public class MachineService : Machine.MachineBase
     public override Task<PingAnswer> Ping(Empty request, ServerCallContext context)
     {
         return Task.FromResult(new PingAnswer() { Status = 1});
-    }
-    
-    public override async Task<Xray.App.Stats.Command.SysStatsResponse> GetSysStat(Empty request, ServerCallContext context)
-    // public override Task<Xray.App.Stats.Command.SysStatsResponse> GetSysStat(Empty request, ServerCallContext context)
-    {
-        // throw new RpcException(new Status(StatusCode.Unimplemented, "offline"));
-        
-        
-        var resp = await _vpnRepository.GetSysStat();
-        if (resp == null)
-        {
-            throw new RpcException(new Status(StatusCode.Unavailable, "Service is unavailable"));
-        }
-
-        return resp;
-        
     }
 }

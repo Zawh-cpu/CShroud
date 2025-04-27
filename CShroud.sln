@@ -9,6 +9,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{31C65111-9A67-4A55-9737-C6D9A16809B3}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yaml = compose.yaml
+		.env = .env
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CShroudDAW", "CShroudDAW\CShroudDAW.csproj", "{03FC4839-9945-4F93-A724-BF9DE7D47E1F}"

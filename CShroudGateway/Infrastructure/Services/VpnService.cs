@@ -1,4 +1,9 @@
+using Ardalis.Result;
+using CShroudGateway.Core.Entities;
 using CShroudGateway.Core.Interfaces;
+using CShroudGateway.Infrastructure.Data.Entities;
+using Microsoft.EntityFrameworkCore;
+using Key = Microsoft.EntityFrameworkCore.Metadata.Internal.Key;
 
 namespace CShroudGateway.Infrastructure.Services;
 
@@ -6,24 +11,15 @@ public class VpnService : IVpnService
 {
     public Dictionary<Guid, List<string>> Connections { get; set; } = new();
 
-    public Task AddKey()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DelKey()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DisableKey()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task EnableKey()
-    {
-        throw new NotImplementedException();
-    }
     // { UUID: [ServerUUID, ServerUUID, ...] }
+
+    private readonly IBaseRepository _baseRepository;
+
+    private readonly IVpnRepository _vpnRepository;
+
+    public VpnService(IBaseRepository baseRepository, IVpnRepository vpnRepository)
+    {
+        _baseRepository = baseRepository;
+        _vpnRepository = vpnRepository;
+    }
 }

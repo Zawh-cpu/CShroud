@@ -16,7 +16,7 @@ public class UpdatePrimitive : IUpdatePrimitive
     public string GlobalParamsHash { get; }
     public UpdateBytes ProtoGlobalParams { get; }
 
-    public UpdatePrimitive(GlobalParams globalParams)
+    /*public UpdatePrimitive(GlobalParams globalParams)
     {
         var serializedGlobalParams = JsonConvert.SerializeObject(globalParams);
         GlobalParamsHash = ComputeJsonHash(serializedGlobalParams);
@@ -24,7 +24,7 @@ public class UpdatePrimitive : IUpdatePrimitive
         {
             Data = ByteString.CopyFrom(Encoding.UTF8.GetBytes(serializedGlobalParams))
         };
-    }
+    }*/
     
     string CanonicalizeJson(string json)
     {

@@ -1,11 +1,9 @@
-﻿namespace CShroudGateway.Core.Interfaces;
+﻿using Ardalis.Result;
+using CShroudGateway.Core.Entities;
+using CShroudGateway.Infrastructure.Data.Entities;
+
+namespace CShroudGateway.Core.Interfaces;
 
 public interface IVpnService
 {
-    Dictionary<Guid, List<string>> Connections { get; set; }
-
-    Task AddKey();
-    Task DelKey();
-    Task DisableKey();
-    Task EnableKey();
 }

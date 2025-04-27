@@ -12,7 +12,7 @@ public class Rate
     
     public Decimal Cost { get; set; }
 
-    public uint VPNLevel { get; set; } = 0;
+    public uint VpnLevel { get; set; } = 0;
     
     public int MaxKeys { get; set; } = 0;
     

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using CShroudGateway.Core.Entities;
 
 namespace CShroudGateway.Infrastructure.Data.Entities;
 
@@ -7,17 +8,16 @@ using System.ComponentModel.DataAnnotations;
 public class Key
 {
     [System.ComponentModel.DataAnnotations.Key]
-    public uint Id { get; set; }
-    
-    public required string Uuid { get; set; }
+    public Guid Id { get; set; }
     
     [MaxLength(64)]
     public string? Name { get; set; }
     
-    public required string LocationId { get; set; } = "frankfurt";
+    [ForeignKey(nameof(Server))]
+    public required Guid ServerId { get; set; }
+    public Server? Server { get; set; }
     
-    public required string ProtocolId { get; set; }
-    public Protocol? Protocol { get; set; }
+    public required VpnProtocol Protocol { get; set; }
     
     
     [ForeignKey(nameof(User))]

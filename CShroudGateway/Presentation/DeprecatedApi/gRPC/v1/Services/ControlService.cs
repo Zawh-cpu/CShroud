@@ -3,7 +3,6 @@ using CShroudGateway.Infrastructure.Data.Entities;
 using CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Protos;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Microsoft.EntityFrameworkCore;
 
 namespace CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Services;
 
@@ -11,12 +10,14 @@ public class ControlService : Control.ControlBase
 {
     private readonly ILogger<ControlService> _logger;
     private readonly IBaseRepository _baseRepository;
+    private readonly IVpnKeyService _vpnKeyService;
     private readonly IVpnService _vpnService;
 
-    public ControlService(ILogger<ControlService> logger, IBaseRepository baseRepository, IVpnService vpnService)
+    public ControlService(ILogger<ControlService> logger, IBaseRepository baseRepository, IVpnKeyService vpnKeyService, IVpnService vpnService)
     {
         _logger = logger;
         _baseRepository = baseRepository;
+        _vpnKeyService = vpnKeyService;
         _vpnService = vpnService;
     }
 
@@ -36,48 +37,26 @@ public class ControlService : Control.ControlBase
         return new Empty();
     }
     
-    public override async Task<AddClientResponse> AddClient(AddClientRequest request, ServerCallContext context)
+    /*public override async Task<AddClientResponse> AddClient(AddClientRequest request, ServerCallContext context)
     {
         if (!Guid.TryParse(request.UserId, out Guid userId))
             throw new RpcException(new Status(StatusCode.InvalidArgument, "UserId is invalid"));
-        
-        User? user = await _baseRepository.GetUserByIdAsync(userId, x => x.Include(x => x.Rate).Include(x => x.Keys));
-        if (user == null)
-        {
-            throw new RpcException(new Status(StatusCode.Unauthenticated, "User with this id doesn't exists"));
-        }
-        
-        if (user.Rate != null && user.Keys.Count >= user.Rate.MaxKeys)
-        {
-            throw new RpcException(new Status(StatusCode.Cancelled, "Max keys reached"));
-        }
-        
-        Protocol? protocol = await _baseRepository.GetProtocolAsync(dbContext, request.ProtocolId);
-        if (protocol == null)
-        {
-            throw new RpcException(new Status(StatusCode.InvalidArgument, "Protocol with this id doesn't exists"));
-        }
-        
-        var key = new Infrastructure.Data.Entities.Key()
-        {
-            UserId = user.Id,
-            Uuid = Guid.NewGuid().ToString(),
-            LocationId = "frankfurt",
-            ProtocolId = protocol.Id,
-            Name = request.Name.Substring(0, Math.Min(request.Name.Length, 96))
-        };
 
-        await dbContext.Keys.AddAsync(key);
-        await dbContext.SaveChangesAsync();
-        await _vpnRepository.AddKey(user.Rate.VPNLevel, key.Uuid, key.ProtocolId);
+        if (!Guid.TryParse(request.ProtocolId, out Guid protocol))
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid protocol specified"));
+
+        var availableServers = await _vpnService.GetAvailableServerAsync("frankfurt", protocol);
+        
+        var result = await _vpnKeyService.AddKey(userId, request.ProtocolId, ser);
         
         return new AddClientResponse()
         {
             Id = key.Id
         };
     }
-
+    */
     
+    /*
     public override async Task<Empty> DelClient(RemClientRequest request, ServerCallContext context)
     {
         var dbContext = new ApplicationContext();
@@ -150,4 +129,5 @@ public class ControlService : Control.ControlBase
                 
         return new Empty();
     }
+    */
 }

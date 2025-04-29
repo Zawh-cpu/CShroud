@@ -31,7 +31,7 @@ public class VpnRepository : IVpnRepository
 
             return response;
         }
-        catch (RpcException _) { }
+        catch (RpcException) { }
 
         return Result.Error();
     }

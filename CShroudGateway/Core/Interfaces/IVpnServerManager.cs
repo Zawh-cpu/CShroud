@@ -5,5 +5,5 @@ namespace CShroudGateway.Core.Interfaces;
 
 public interface IVpnServerManager
 {
-    Task <Server> GetAvailableServerAsync(string location, VpnProtocol protocol);
+    Task <Server?> GetAvailableServerAsync(string location, VpnProtocol protocol);
 }

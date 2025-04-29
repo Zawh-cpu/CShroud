@@ -1,8 +1,10 @@
+using CShroudGateway.Core.Entities;
 using CShroudGateway.Core.Interfaces;
 using CShroudGateway.Infrastructure.Data.Entities;
 using CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Protos;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Enum = System.Enum;
 
 namespace CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Services;
 
@@ -12,13 +14,15 @@ public class ControlService : Control.ControlBase
     private readonly IBaseRepository _baseRepository;
     private readonly IVpnKeyService _vpnKeyService;
     private readonly IVpnService _vpnService;
+    private readonly IVpnServerManager _vpnServerManager;
 
-    public ControlService(ILogger<ControlService> logger, IBaseRepository baseRepository, IVpnKeyService vpnKeyService, IVpnService vpnService)
+    public ControlService(ILogger<ControlService> logger, IBaseRepository baseRepository, IVpnKeyService vpnKeyService, IVpnService vpnService, IVpnServerManager vpnServerManager)
     {
         _logger = logger;
         _baseRepository = baseRepository;
         _vpnKeyService = vpnKeyService;
         _vpnService = vpnService;
+        _vpnServerManager = vpnServerManager;
     }
 
     public override async Task<Empty> CreateUser(CreateUserRequest request, ServerCallContext context)
@@ -37,97 +41,72 @@ public class ControlService : Control.ControlBase
         return new Empty();
     }
     
-    /*public override async Task<AddClientResponse> AddClient(AddClientRequest request, ServerCallContext context)
+    public override async Task<AddClientResponse> AddClient(AddClientRequest request, ServerCallContext context)
     {
         if (!Guid.TryParse(request.UserId, out Guid userId))
             throw new RpcException(new Status(StatusCode.InvalidArgument, "UserId is invalid"));
 
-        if (!Guid.TryParse(request.ProtocolId, out Guid protocol))
+        if (!Enum.TryParse(request.ProtocolId, out VpnProtocol protocol))
             throw new RpcException(new Status(StatusCode.InvalidArgument, "Invalid protocol specified"));
 
-        var availableServers = await _vpnService.GetAvailableServerAsync("frankfurt", protocol);
+        var server = await _vpnServerManager.GetAvailableServerAsync("frankfurt", protocol);
+        if (server is null) throw new RpcException(new Status(StatusCode.NotFound, "Server not found or its under maintenance"));
         
-        var result = await _vpnKeyService.AddKey(userId, request.ProtocolId, ser);
+        var result = await _vpnKeyService.AddKey(userId, protocol, server);
+        if (!result.IsSuccess)
+            throw new RpcException(new Status(StatusCode.Internal, "Internal error or invalid arguments. Please, try later"));
         
         return new AddClientResponse()
         {
-            Id = key.Id
+            Id = result.Value.Id.ToString()
         };
     }
-    */
     
-    /*
+    
+    
     public override async Task<Empty> DelClient(RemClientRequest request, ServerCallContext context)
     {
-        var dbContext = new ApplicationContext();
+        if (!Guid.TryParse(request.UserId, out Guid userId))
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "UserId is invalid"));
         
-        Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(dbContext, request.KeyId);
-        if (key == null)
-        {
-            return new Empty();
-        }
-
-        if (key.UserId != request.UserId)
-        {
-            return new Empty();
-        }
-
-        _ = await _vpnRepository.DelKey(key.Uuid, key.ProtocolId);
-        dbContext.Remove(key);
-        await dbContext.SaveChangesAsync();
+        if (!Guid.TryParse(request.KeyId, out Guid keyId))
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "KeyId is invalid"));
+        
+        var result = await _vpnKeyService.DelKey(userId, keyId);
+        if (!result.IsSuccess)
+            throw new RpcException(new Status(StatusCode.Internal, "Internal error, unauthorized access or invalid arguments. Please, try later"));
         
         return new Empty();
     }
     
     public override async Task<Empty> EnableKey(KeyRequest request, ServerCallContext context)
     {
-        var dbContext = new ApplicationContext();
+        if (!Guid.TryParse(request.UserId, out Guid userId))
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "UserId is invalid"));
         
-        Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(dbContext, request.KeyId);
-        if (key == null || key.UserId != request.UserId) throw new RpcException(new Status(StatusCode.InvalidArgument, "Key with this id doesn't exists"));
-
-        User? user = await _baseRepository.GetUserAsync(dbContext, request.UserId, x => x.Rate!);
-        if (user == null) throw new RpcException(new Status(StatusCode.InvalidArgument, "User with this id doesn't exists"));
-
-        int enabledKeys = await _baseRepository.CountKeysAsync(dbContext, user.Id);
-        if (enabledKeys >= user.Rate!.MaxKeys) throw new RpcException(new Status(StatusCode.Cancelled, "Max enabled keys reached"));
-
-        if (!key.IsActive)
-        {
-            
-            if (!await _keyService.EnableKey(user, key))
-            {
-                throw new RpcException((new Status(StatusCode.Aborted, "Unknown error occured.")));
-            }
-            
-            await dbContext.SaveChangesAsync();
-        }
-                
+        if (!Guid.TryParse(request.KeyId, out Guid keyId))
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "KeyId is invalid"));
+        
+        var result = await _vpnKeyService.EnableKey(userId, keyId);
+        if (!result.IsSuccess)
+            throw new RpcException(new Status(StatusCode.Internal, "Internal error, unauthorized access or invalid arguments. Please, try later"));
+        
         return new Empty();
     }
     
     
     public override async Task<Empty> DisableKey(KeyRequest request, ServerCallContext context)
     {
-        var dbContext = new ApplicationContext();
+        if (!Guid.TryParse(request.UserId, out Guid userId))
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "UserId is invalid"));
         
-        Infrastructure.Data.Entities.Key? key = await _baseRepository.GetKeyAsync(dbContext, request.KeyId);
-        if (key == null || key.UserId != request.UserId) throw new RpcException(new Status(StatusCode.InvalidArgument, "Key with this id doesn't exists"));
-
-        User? user = await _baseRepository.GetUserAsync(dbContext, request.UserId, x => x.Rate!);
-        if (user == null) throw new RpcException(new Status(StatusCode.InvalidArgument, "User with this id doesn't exists"));
-
-        if (key.IsActive)
-        {
-            if (!await _keyService.DisableKey(key))
-            {
-                throw new RpcException((new Status(StatusCode.Aborted, "Unknown error occured.")));
-            }
-            
-            await dbContext.SaveChangesAsync();
-        }
-                
+        if (!Guid.TryParse(request.KeyId, out Guid keyId))
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "KeyId is invalid"));
+        
+        var result = await _vpnKeyService.DisableKey(userId, keyId);
+        if (!result.IsSuccess)
+            throw new RpcException(new Status(StatusCode.Internal, "Internal error, unauthorized access or invalid arguments. Please, try later"));
+        
         return new Empty();
     }
-    */
 }

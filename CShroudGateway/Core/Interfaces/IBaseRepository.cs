@@ -4,6 +4,7 @@ using CShroudGateway.Infrastructure.Data.Entities;
 namespace CShroudGateway.Core.Interfaces;
 
 public record UserWithKeys(User User, int KeysCount);
+public record UserKeyActiveKeysCount(User User, int KeysCount, int ActiveKeysCount);
 
 public interface IBaseRepository
 {
@@ -16,7 +17,10 @@ public interface IBaseRepository
     Task<UserWithKeys?> GetUserByIdWithKeyCountAsync(Guid userId, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers);
 
     Task<Key?> GetKeyByIdAsync(Guid keyId, params Func<IQueryable<Key>, IQueryable<Key>>[] queryModifiers);
-    Task<List<Server>?> GetServersByLocationAndProtocolsAsync(string location, HashSet<VpnProtocol> protocols, uint limit = 3, params Func<IQueryable<Server>, IQueryable<Server>>[] queryModifiers);
+    Task<List<Server>?> GetServersByLocationAndProtocolsAsync(string location, HashSet<VpnProtocol> protocols, int limit = 3, params Func<IQueryable<Server>, IQueryable<Server>>[] queryModifiers);
 
+    Task<UserKeyActiveKeysCount?> GetUserKeysActiveKeysCountByIdsAsync(Guid userId,
+        params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers);
+    
     Task SaveContextAsync();
 }

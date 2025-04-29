@@ -15,6 +15,6 @@ public interface IUpdatePrimitive
         }
     }
     
-    string GlobalParamsHash { get; }
-    UpdateBytes ProtoGlobalParams { get; }
+    /*string GlobalParamsHash { get; }
+    UpdateBytes ProtoGlobalParams { get; }*/
 }

@@ -1,6 +1,7 @@
 using CShroudGateway.Core.Interfaces;
 using CShroudGateway.Infrastructure.Data;
 using CShroudGateway.Infrastructure.Services;
+using CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,18 +18,18 @@ builder.Services.AddScoped<IVpnRepository, VpnRepository>();
 builder.Services.AddScoped<IVpnService, VpnService>();
 builder.Services.AddScoped<IVpnKeyService, VpnKeyService>();
 
+builder.Services.AddGrpc();
 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+
+// builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
 
-app.UseHttpsRedirection();
-app.MapControllers();
+// app.UseHttpsRedirection();
+//app.MapGrpcService<ControlService>();
+app.MapGrpcService<UpdateService>();
+//app.MapGrpcService<MachineService>();
+
 app.Run();

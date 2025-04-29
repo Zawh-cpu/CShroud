@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CShroudGateway.Core.Entities;
 
 namespace CShroudGateway.Infrastructure.Data.Entities;
 
@@ -11,5 +12,5 @@ public class Server
     [StringLength(15)]
     public required string IpV4Address { get; set; }
 
-    public List<Protocol> SupportedProtocols { get; set; } = new();
+    public List<VpnProtocol> SupportedProtocols { get; set; } = new();
 }

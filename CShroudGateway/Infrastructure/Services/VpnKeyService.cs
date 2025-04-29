@@ -54,15 +54,14 @@ public class VpnKeyService : IVpnKeyService
 
     public async Task<Result> EnableKey(Guid userId, Guid keyId)
     {
-        var key = await _baseRepository.GetKeyByIdAsync(keyId, x => x.Include(k => k.Server));
-        if (key is null || key.UserId != userId) return Result.Unauthorized();
-        if (key.IsRevoked || key.Server is null) return Result.Forbidden();
-        if (key.IsActive) return Result.Success();
+        var projection = await _baseRepository.GetUserKeysActiveKeysCountByIdsAsync(userId, x => x.Include(u => u.Rate));
+        if (projection?.User.Rate is null) return Result.Unauthorized();
+        if (projection.ActiveKeysCount >= projection.User.Rate.MaxKeys) return Result.Forbidden();
         
-        var user = await _baseRepository.GetUserByIdAsync(userId, x => x.Include(u => u.Rate));
-        if (user?.Rate is null) return Result.Unauthorized();
+        var key = await _baseRepository.GetKeyByIdAsync(userId, x => x.Include(k => k.Server));
+        if (key?.Server is null || key.UserId != userId) return Result.Unauthorized();
         
-        var result = await _vpnRepository.AddKey(key.Server, key.Id, key.Protocol, user.Rate.VpnLevel, "{}");
+        var result = await _vpnRepository.AddKey(key.Server, key.Id, key.Protocol, projection.User.Rate.VpnLevel, "{}");
         if (!result.IsSuccess) return Result.Error();
         
         key.IsActive = true;

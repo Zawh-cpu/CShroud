@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using CShroudGateway.Core.Entities;
+﻿using CShroudGateway.Core.Entities;
 using CShroudGateway.Core.Interfaces;
 using CShroudGateway.Infrastructure.Data;
 using CShroudGateway.Infrastructure.Data.Entities;
@@ -61,6 +60,17 @@ public class BaseRepository : IBaseRepository
         return await query.Select(u => new UserWithKeys(u, u.Keys.Count)).FirstOrDefaultAsync();
     }
 
+    public async Task<UserKeyActiveKeysCount?> GetUserKeysActiveKeysCountByIdsAsync(Guid userId, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers)
+    {
+        var query = _context.Users.Where(user => user.Id == userId);
+        foreach (var modifier in queryModifiers)
+        {
+            query = modifier(query);
+        }
+        
+        return await query.Select(u => new UserKeyActiveKeysCount(u, u.Keys.Count, u.Keys.Count(k => k.IsActive))).FirstOrDefaultAsync();
+    }
+
     public async Task<Key?> GetKeyByIdAsync(Guid keyId, params Func<IQueryable<Key>, IQueryable<Key>>[] queryModifiers)
     {
         var query = _context.Keys.Where(key => key.Id == keyId);
@@ -73,10 +83,15 @@ public class BaseRepository : IBaseRepository
     }
 
     public async Task<List<Server>?> GetServersByLocationAndProtocolsAsync(string location, HashSet<VpnProtocol> protocols,
-        uint limit = 3, params Func<IQueryable<Server>, IQueryable<Server>>[] queryModifiers)
+        int limit = 3, params Func<IQueryable<Server>, IQueryable<Server>>[] queryModifiers)
     {
-        //var query = _context.Servers.Where(server => server.Location == location && EF.Functions.);
-        throw new NotImplementedException();
+        var query = _context.Servers.Where(server => server.Location == location && protocols.Any(p => server.SupportedProtocols.Contains(p)));
+        foreach (var modifier in queryModifiers)
+        {
+            query = modifier(query);
+        }
+        
+        return await query.Take(limit).ToListAsync();
     }
     
     public async Task SaveContextAsync() => await _context.SaveChangesAsync();

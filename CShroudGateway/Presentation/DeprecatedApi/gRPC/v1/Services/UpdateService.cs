@@ -19,11 +19,12 @@ public class UpdateService : Update.UpdateBase
         ServerCallContext context)
     {
         throw new RpcException(new Status(StatusCode.AlreadyExists, "Your version is up to date already!"));
-        if (request.CurrentHash == _updatePrimitive.GlobalParamsHash)
+        /*if (request.CurrentHash == _updatePrimitive.GlobalParamsHash)
         {
             throw new RpcException(new Status(StatusCode.AlreadyExists, "Your version is up to date already!"));
         }
         
         return Task.FromResult(_updatePrimitive.ProtoGlobalParams);
+        */
     }
 }

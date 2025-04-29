@@ -13,10 +13,10 @@ namespace CShroudGateway.Infrastructure.Services;
 public class UpdatePrimitive : IUpdatePrimitive
 {
     
-    public string GlobalParamsHash { get; }
+    /*public string GlobalParamsHash { get; }
     public UpdateBytes ProtoGlobalParams { get; }
 
-    /*public UpdatePrimitive(GlobalParams globalParams)
+    public UpdatePrimitive(GlobalParams globalParams)
     {
         var serializedGlobalParams = JsonConvert.SerializeObject(globalParams);
         GlobalParamsHash = ComputeJsonHash(serializedGlobalParams);

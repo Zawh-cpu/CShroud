@@ -8,6 +8,7 @@ public partial class VpnController
     [HttpPost("connect")]
     public async Task ConnectAsync([FromBody] VpnConnectionRequest request)
     {
+        await Task.CompletedTask;
         // if 
     }
 }

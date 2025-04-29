@@ -17,10 +17,4 @@ public class ApplicationDbContext : DbContext
     public DbSet<Protocol> Protocols { get; set; }
     public DbSet<Key> Keys { get; set; }
     public DbSet<Server> Servers { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql(
-            "Host=localhost;Port=5432;Database=server;Username=zwhnet;Password=billieguess2Aikvbvj.kiaRH!iHOghi483ih1!89539709ih0!");
-    }
 }

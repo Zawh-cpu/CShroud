@@ -1,7 +1,6 @@
 ﻿using CShroudGateway.Core.Entities;
 using CShroudGateway.Core.Interfaces;
 using CShroudGateway.Infrastructure.Data.Entities;
-using IBaseRepository = CShroud.Infrastructure.Interfaces.IBaseRepository;
 
 namespace CShroudGateway.Infrastructure.Services;
 
@@ -14,9 +13,10 @@ public class VpnServerManager : IVpnServerManager
         _baseRepository = baseRepository;
     }
     
-    public Task<Server> GetAvailableServerAsync(string location, VpnProtocol protocol)
+    public async Task<Server?> GetAvailableServerAsync(string location, VpnProtocol protocol)
     {
-        var server = await _baseRepository.GetServerByLocationAndProtocolsAsync(location, [protocol]);
-        throw new NotImplementedException();
+        //var servers = await _baseRepository.GetS
+        var servers = await _baseRepository.GetServersByLocationAndProtocolsAsync(location, [protocol]) ?? new List<Server>();
+        return servers.FirstOrDefault();
     }
 }

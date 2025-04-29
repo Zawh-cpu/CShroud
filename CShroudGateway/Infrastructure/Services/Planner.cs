@@ -1,4 +1,4 @@
-using CShroud.Infrastructure.Interfaces;
+using CShroudGateway.Core.Interfaces;
 
 namespace CShroudGateway.Infrastructure.Services;
 

@@ -17,6 +17,8 @@ builder.Services.AddSingleton<IUpdatePrimitive, UpdatePrimitive>();
 builder.Services.AddScoped<IVpnRepository, VpnRepository>();
 builder.Services.AddScoped<IVpnService, VpnService>();
 builder.Services.AddScoped<IVpnKeyService, VpnKeyService>();
+builder.Services.AddScoped<IVpnServerManager, VpnServerManager>();
+builder.Services.AddScoped<IVpnStorage, VpnStorage>();
 
 builder.Services.AddGrpc();
 
@@ -26,10 +28,14 @@ builder.Services.AddGrpc();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
 
 // app.UseHttpsRedirection();
-//app.MapGrpcService<ControlService>();
+app.MapGrpcService<ControlService>();
 app.MapGrpcService<UpdateService>();
-//app.MapGrpcService<MachineService>();
+app.MapGrpcService<MachineService>();
 
 app.Run();

@@ -1,9 +1,9 @@
 ﻿using Ardalis.Result;
+using CShroudGateway.Application.Mappers.Protocols;
 using CShroudGateway.Core.Entities;
 using CShroudGateway.Core.Interfaces;
 using CShroudGateway.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Key = Microsoft.EntityFrameworkCore.Metadata.Internal.Key;
 
 namespace CShroudGateway.Infrastructure.Services;
 
@@ -12,27 +12,37 @@ public class VpnKeyService : IVpnKeyService
     private readonly IBaseRepository _baseRepository;
     private readonly IVpnRepository _vpnRepository;
     
+    private readonly Dictionary<VpnProtocol, Func<Guid, string>> _protocolMappers = new()
+    {
+        [VpnProtocol.Vless] = VlessMapper.MakeOptions
+    };
+    
     public VpnKeyService(IBaseRepository baseRepository, IVpnRepository vpnRepository)
     {
         _baseRepository = baseRepository;
         _vpnRepository = vpnRepository;
     }
     
-    public async Task<Result<Data.Entities.Key>> AddKey(Guid userId, VpnProtocol protocol, Server server)
+    public async Task<Result<Key>> AddKey(Guid userId, VpnProtocol protocol, Server server)
     {
         var projection = await _baseRepository.GetUserByIdWithKeyCountAsync(userId, x => x.Include(u => u.Rate));
         if (projection is null) return Result.Unauthorized();
 
         if (projection.User.Rate?.MaxKeys is null || projection.KeysCount >= projection.User.Rate.MaxKeys) return Result.Forbidden();
 
-        var key = new Data.Entities.Key()
+        var key = new Key()
         {
+            Id = Guid.NewGuid(),
             UserId = userId,
             ServerId = server.Id,
             Protocol = protocol,
         };
 
-        var result = await _vpnRepository.AddKey(server, key.Id, key.Protocol, projection.User.Rate.VpnLevel, "{}");
+        if (!_protocolMappers.TryGetValue(protocol, out var mapper))
+            return Result.Unavailable();
+
+        var result = await _vpnRepository.AddKey(server, key.Id, key.Protocol, projection.User.Rate.VpnLevel, mapper(key.Id));
+        Console.WriteLine($"KeyService status: {result.Status} / {result.IsSuccess}");
         if (!result.IsSuccess) return Result.Error();
 
         await _baseRepository.AddWithSaveAsync(key);

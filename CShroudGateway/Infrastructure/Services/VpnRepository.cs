@@ -20,10 +20,12 @@ public class VpnRepository : IVpnRepository
     {
         try
         {
+            Console.WriteLine("\n\n\nFAWEWEFWEF\n\n\n");
             var call = grpcMethod(request, new CallOptions());
             var response = await call.ResponseAsync;
             var status = call.GetStatus();
 
+            Console.WriteLine($"Status: {status.StatusCode}");
             if (status.StatusCode != StatusCode.OK)
             {
                 return Result.Error();
@@ -31,14 +33,17 @@ public class VpnRepository : IVpnRepository
 
             return response;
         }
-        catch (RpcException) { }
+        catch (RpcException ex)
+        {
+            Console.WriteLine($"RPC Error: {ex}");
+        }
 
         return Result.Error();
     }
     
     public async Task<Result<object>> AddKey(Server server, Guid keyId, VpnProtocol protocol, uint vpnLevel, string options)
     {
-        var channel = _grpcPool.Get(server.IpV4Address);
+        var channel = _grpcPool.Get("http://" + server.IpV4Address);
 
         var client = new KeyService.KeyServiceClient(channel);
 
@@ -51,12 +56,12 @@ public class VpnRepository : IVpnRepository
         };
         
         var result = await MakeRequest(client.AddKeyAsync, keyCommand);
-        return result;
+        return result.Map();
     }
 
     public async Task DelKey(Server server, Guid keyId, VpnProtocol protocol)
     {
-        var channel = _grpcPool.Get(server.IpV4Address);
+        var channel = _grpcPool.Get("http://" + server.IpV4Address);
 
         var client = new KeyService.KeyServiceClient(channel);
 

@@ -16,7 +16,7 @@ public class VpnServerManager : IVpnServerManager
     public async Task<Server?> GetAvailableServerAsync(string location, VpnProtocol protocol)
     {
         //var servers = await _baseRepository.GetS
-        var servers = await _baseRepository.GetServersByLocationAndProtocolsAsync(location, [protocol]) ?? new List<Server>();
-        return servers.FirstOrDefault();
+        var servers = await _baseRepository.GetServersByLocationAndProtocolsAsync(location, [protocol]);
+        return (servers ?? new List<Server>()).FirstOrDefault();
     }
 }

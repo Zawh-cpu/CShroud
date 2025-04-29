@@ -1,8 +1,10 @@
 
 
 
+using CShroudGateway.Core.Entities;
 using CShroudGateway.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CShroudGateway.Infrastructure.Data;
 
@@ -17,4 +19,19 @@ public class ApplicationDbContext : DbContext
     public DbSet<Protocol> Protocols { get; set; }
     public DbSet<Key> Keys { get; set; }
     public DbSet<Server> Servers { get; set; }
+    
+    /*protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        var listToArrayConverter = new ValueConverter<List<VpnProtocol>, string[]>(
+            v => v.Select(e => e.ToString()).ToArray(),
+            v => v.Select(e => Enum.Parse<VpnProtocol>(e)).ToList());
+        
+        modelBuilder.Entity<Server>(entity =>
+        {
+            var property = entity.Property(e => e.SupportedProtocols);
+            property.HasConversion(listToArrayConverter);
+            property.Metadata.SetValueComparer(listComparer); // Вызов отдельно
+            property.HasColumnType("text[]"); // PostgreSQL массив строк
+        });
+    }*/
 }

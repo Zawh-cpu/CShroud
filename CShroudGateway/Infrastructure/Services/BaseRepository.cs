@@ -85,13 +85,14 @@ public class BaseRepository : IBaseRepository
     public async Task<List<Server>?> GetServersByLocationAndProtocolsAsync(string location, HashSet<VpnProtocol> protocols,
         int limit = 3, params Func<IQueryable<Server>, IQueryable<Server>>[] queryModifiers)
     {
-        var query = _context.Servers.Where(server => server.Location == location && protocols.Any(p => server.SupportedProtocols.Contains(p)));
+        
+        var query = _context.Servers.Where(server => server.Location == location && server.SupportedProtocols.Any(p => protocols.Contains(p)));
         foreach (var modifier in queryModifiers)
         {
             query = modifier(query);
         }
         
-        return await query.Take(limit).ToListAsync();
+        return await query.OrderByDescending(s => s.Id).Take(limit).ToListAsync();
     }
     
     public async Task SaveContextAsync() => await _context.SaveChangesAsync();

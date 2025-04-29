@@ -10,7 +10,7 @@
     <ItemGroup>
         <PackageReference Include="Ardalis.Result" Version="10.1.0" />
         <PackageReference Include="Google.Protobuf" Version="3.30.2" />
-        <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.64.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.4" />
@@ -32,10 +32,6 @@
     <ItemGroup>
         <Protobuf Include="Infrastructure\Protos\**\*.proto" GrpcServices="Client" ProtoRoot="Infrastructure/Protos/" />
         <Protobuf Include="Presentation\DeprecatedApi\gRPC\v1\Protos\**\*.proto" GrpcServices="Server" ProtoRoot="Presentation/DeprecatedApi/gRPC/v1/Protos/" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\CShroud\CShroud.csproj" />
     </ItemGroup>
 
 </Project>

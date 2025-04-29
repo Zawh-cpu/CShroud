@@ -1,3 +1,4 @@
+using Ardalis.Result;
 using CShroudGateway.Core.Entities;
 using CShroudGateway.Core.Interfaces;
 using CShroudGateway.Infrastructure.Data.Entities;
@@ -54,7 +55,13 @@ public class ControlService : Control.ControlBase
         
         var result = await _vpnKeyService.AddKey(userId, protocol, server);
         if (!result.IsSuccess)
+        {
+            if (result.IsUnavailable())
+                throw new RpcException(new Status(StatusCode.Unavailable, "This DAW server is unavailable"));
+            else if (result.IsForbidden())
+                throw new RpcException(new Status(StatusCode.PermissionDenied, "You've reached the maximum amount of keys"));
             throw new RpcException(new Status(StatusCode.Internal, "Internal error or invalid arguments. Please, try later"));
+        }
         
         return new AddClientResponse()
         {

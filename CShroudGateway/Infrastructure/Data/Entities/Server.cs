@@ -9,8 +9,11 @@ public class Server
     
     public required string Location { get; set; }
     
-    [StringLength(15)]
+    [StringLength(21)]
     public required string IpV4Address { get; set; }
+    
+    [StringLength(49)]
+    public required string IpV6Address { get; set; }
 
     public List<VpnProtocol> SupportedProtocols { get; set; } = new();
 }

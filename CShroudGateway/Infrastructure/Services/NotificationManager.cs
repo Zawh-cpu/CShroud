@@ -6,12 +6,12 @@ public class NotificationManager : INotificationManager
 {
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public NotificationManager()
+    public NotificationManager(IHttpClientFactory httpClientFactory)
     {
-        _httpClientFactory = new();
+        _httpClientFactory = httpClientFactory;
     }
     
-    private void SendInTelegram(Notification notification)
+    private void SendNotifyToDestination(Notification notification)
     {
         
     }

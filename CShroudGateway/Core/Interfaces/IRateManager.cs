@@ -5,5 +5,5 @@ namespace CShroudGateway.Core.Interfaces;
 
 public interface IRateManager
 {
-    Task<Result> ChangeRate(Rate rate);
+    Task<Result> ChangeRateAsync(User user, bool saveChanges = true);
 }

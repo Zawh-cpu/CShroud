@@ -1,6 +1,9 @@
+using CShroudGateway.Core.Constants;
 using CShroudGateway.Core.Interfaces;
 using CShroudGateway.Infrastructure.Data;
+using CShroudGateway.Infrastructure.Data.Entities;
 using CShroudGateway.Infrastructure.Services;
+using CShroudGateway.Infrastructure.Tasks;
 using CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,9 +50,25 @@ internal static class Program
         return 0;
     }
 
+    public static async Task CheckForReservedConstants(BaseRepository baseRepository)
+    {
+        if (await baseRepository.GetUserByIdAsync(ReservedUsers.System) == null)
+        {
+            var user = new User()
+            {
+                Id = ReservedUsers.System,
+                IsActive = true,
+                Nickname = "System",
+                IsVerified = true,
+            };
+            
+            await baseRepository.AddWithSaveAsync(user);
+        }
+    }
+
     public static int RunTasks()
     {
-        var paymentsCheckTask = new 
+        var paymentsCheckTask = new PaymentsCheckTask()
         
         return 0;
     }

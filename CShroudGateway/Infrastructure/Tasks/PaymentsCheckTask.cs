@@ -12,7 +12,7 @@ public class PaymentsCheckTask : IPlannedTask
     private IRateManager _rateManager;
     private INotificationManager _notifyManager;
     
-    public HashSet<int> triggeredDates = new() { 1, 2, 3 };
+    public HashSet<int> triggeredDates = new() { 0, 1, 3 };
     
     public PaymentsCheckTask(DateTime plannedTime, IBaseRepository baseRepository, IVpnKeyService keyService, IRateManager rateManager, INotificationManager notifyManager)
     {
@@ -25,45 +25,39 @@ public class PaymentsCheckTask : IPlannedTask
 
     public virtual async Task Action(IPlanner planner, DateTime currentTime)
     {
-        var checkingTime = currentTime.AddDays(-3);
-        var users = await _baseRepository.GetUsersPayedUntilAsync(checkingTime);
-        bool changes = false;
+        var users = await _baseRepository.GetUsersPayedUntilAsync(x => currentTime.AddDays(-3) <= x.PayedUntil && x.PayedUntil <= currentTime);
+        var expiredUsers = await _baseRepository.GetUsersPayedUntilAsync(x => x.PayedUntil <= currentTime.AddDays(1));
 
         var notifiesLift = new List<Notification>();
-        
-        foreach (var user in users)
-        {
-            var different = user.PayedUntil - currentTime;
-            if (different.Days < 0)
-            {
-                user.RateId = 1;
-                user.PayedUntil = null;
-                await _rateManager.ChangeRate(user, saveChanges: false);
-                notifiesLift.Add(new Notification()
-                {
-                    Type = Notification.NotificationType.RateExpired,
-                    User = user
-                });
-                
-                changes = true;
-            }
 
-            if (triggeredDates.Contains(different.Days))
+        foreach (var user in expiredUsers)
+        {
+            user.RateId = 1;
+            await _rateManager.ChangeRateAsync(user, saveChanges: false);
+            notifiesLift.Add(new Notification()
             {
-                notifiesLift.Add(new Notification()
-                {
-                    Type = Notification.NotificationType.RateExpiration,
-                    User = user,
-                    ExtraData = new Dictionary<string, object>()
-                    {
-                        ["DaysLeft"] = different.Days,
-                    }
-                });
-            }
+                Type = Notification.NotificationType.RateExpired,
+                User = user
+            });
         }
 
-        if (changes)
+        if (users.Any())
             await _baseRepository.SaveContextAsync();
+
+        foreach (var user in users)
+        {
+            if (user.PayedUntil is null ) continue;
+
+            notifiesLift.Add(new Notification()
+            {
+                Type = Notification.NotificationType.RateExpiration,
+                User = user,
+                ExtraData = new Dictionary<string, object>()
+                {
+                    ["DaysLeft"] = user.PayedUntil - currentTime
+                }
+            });
+        }
 
         _notifyManager.ExecuteAndForget(notifiesLift);
         

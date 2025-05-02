@@ -1,4 +1,5 @@
-﻿using CShroudGateway.Core.Entities;
+﻿using System.Linq.Expressions;
+using CShroudGateway.Core.Entities;
 using CShroudGateway.Infrastructure.Data.Entities;
 
 namespace CShroudGateway.Core.Interfaces;
@@ -21,6 +22,8 @@ public interface IBaseRepository
 
     Task<UserKeyActiveKeysCount?> GetUserKeysActiveKeysCountByIdsAsync(Guid userId,
         params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers);
+    
+    Task<User[]> GetUsersPayedUntilAsync(Expression<Func<User, bool>> predicate, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers);
     
     Task SaveContextAsync();
 }

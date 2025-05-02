@@ -38,5 +38,5 @@ public class User
     public DateTime? TelegramJoinedAt { get; set; } = DateTime.UtcNow;
     
     public bool IsActive { get; set; } = true;
-
+    public bool IsVerified { get; set; } = false;
 }

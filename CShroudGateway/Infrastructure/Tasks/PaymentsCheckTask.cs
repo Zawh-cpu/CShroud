@@ -1,39 +1,37 @@
 ﻿using System.Collections;
+using CShroudGateway.Core.Constants;
 using CShroudGateway.Core.Interfaces;
+using CShroudGateway.Infrastructure.Data.Entities;
 
 namespace CShroudGateway.Infrastructure.Tasks;
 
+
 public class PaymentsCheckTask : IPlannedTask
 {
-    public DateTime PlannedTime { get; set; }
-    
-    private IBaseRepository _baseRepository;
-    private IVpnKeyService _keyService;
-    private IRateManager _rateManager;
-    private INotificationManager _notifyManager;
-    
     public HashSet<int> triggeredDates = new() { 0, 1, 3 };
+    public DateTime PlannedDate { get; private set; }
     
-    public PaymentsCheckTask(DateTime plannedTime, IBaseRepository baseRepository, IVpnKeyService keyService, IRateManager rateManager, INotificationManager notifyManager)
+    
+    public PaymentsCheckTask(DateTime plannedTime)
     {
-        PlannedTime = plannedTime;
-        _baseRepository = baseRepository;
-        _keyService = keyService;
-        _rateManager = rateManager;
-        _notifyManager = notifyManager;
+        PlannedDate = plannedTime;
     }
 
-    public virtual async Task Action(IPlanner planner, DateTime currentTime)
+    public virtual async Task ActionAsync(IPlanner planner, DateTime currentTime, IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {
-        var users = await _baseRepository.GetUsersPayedUntilAsync(x => currentTime.AddDays(-3) <= x.PayedUntil && x.PayedUntil <= currentTime);
-        var expiredUsers = await _baseRepository.GetUsersPayedUntilAsync(x => x.PayedUntil <= currentTime.AddDays(1));
+        var baseRepository = serviceProvider.GetRequiredService<IBaseRepository>();
+        var rateManager = serviceProvider.GetRequiredService<IRateManager>();
+        var notifyManager = serviceProvider.GetRequiredService<INotificationManager>();
+        
+        var users = await baseRepository.GetUsersPayedUntilAsync(x => currentTime.AddDays(-3) <= x.PayedUntil && x.PayedUntil <= currentTime);
+        var expiredUsers = await baseRepository.GetUsersPayedUntilAsync(x => x.PayedUntil <= currentTime.AddDays(1));
 
-        var notifiesLift = new List<Notification>();
+        var notifiesLift = new List<Mail>();
 
         foreach (var user in expiredUsers)
         {
             user.RateId = 1;
-            await _rateManager.ChangeRateAsync(user, saveChanges: false);
+            await rateManager.ChangeRateAsync(user, saveChanges: false);
             notifiesLift.Add(new Notification()
             {
                 Type = Notification.NotificationType.RateExpired,
@@ -42,16 +40,17 @@ public class PaymentsCheckTask : IPlannedTask
         }
 
         if (users.Any())
-            await _baseRepository.SaveContextAsync();
+            await baseRepository.SaveContextAsync();
 
         foreach (var user in users)
         {
             if (user.PayedUntil is null ) continue;
 
-            notifiesLift.Add(new Notification()
+            notifiesLift.Add(new Mail()
             {
-                Type = Notification.NotificationType.RateExpiration,
-                User = user,
+                Type = MailType.RateExpiration,
+                RecipientId = user.Id,
+                SenderId = ReservedUsers.System,
                 ExtraData = new Dictionary<string, object>()
                 {
                     ["DaysLeft"] = user.PayedUntil - currentTime
@@ -59,9 +58,11 @@ public class PaymentsCheckTask : IPlannedTask
             });
         }
 
-        _notifyManager.ExecuteAndForget(notifiesLift);
+        notifyManager.ExecuteAndForget(notifiesLift);
         
         PlannedTime = currentTime.AddHours(24);
         planner.AddTask(this);
     }
+
+    public DateTime PlannedTime { get; set; }
 }

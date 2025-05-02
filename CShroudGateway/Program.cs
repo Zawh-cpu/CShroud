@@ -44,14 +44,19 @@ internal static class Program
         app.MapGrpcService<UpdateService>();
         app.MapGrpcService<MachineService>();
 
+        Task.WhenEach(CheckForReservedConstants(app.Services));
+        RunTasks(app.Services);
+        
         app.Run();
 
         
         return 0;
     }
 
-    public static async Task CheckForReservedConstants(BaseRepository baseRepository)
+    public static async Task CheckForReservedConstants(IServiceProvider serviceProvider)
     {
+        var baseRepository = serviceProvider.GetRequiredService<IBaseRepository>();
+        
         if (await baseRepository.GetUserByIdAsync(ReservedUsers.System) == null)
         {
             var user = new User()
@@ -66,10 +71,10 @@ internal static class Program
         }
     }
 
-    public static int RunTasks()
+    public static void RunTasks(IServiceProvider serviceProvider)
     {
-        var paymentsCheckTask = new PaymentsCheckTask()
+        var planner = serviceProvider.GetRequiredService<IPlanner>();
         
-        return 0;
+        planner.AddTask(new PaymentsCheckTask(DateTime.UtcNow.AddMinutes(5)));
     }
 }

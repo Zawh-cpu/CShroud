@@ -19,6 +19,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Protocol> Protocols { get; set; }
     public DbSet<Key> Keys { get; set; }
     public DbSet<Server> Servers { get; set; }
+    public DbSet<Mail> Mails { get; set; }
     
     /*protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

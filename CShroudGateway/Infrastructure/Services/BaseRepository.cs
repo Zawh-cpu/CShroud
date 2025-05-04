@@ -16,9 +16,13 @@ public class BaseRepository : IBaseRepository
         _context = context;
     }
     
-    public async Task<int> CountKeysAsync(Guid userId)
+    public async Task<int> CountKeysAsync(Guid userId, Expression<Func<Key, bool>>? predicate)
     {
-        return await _context.Keys.Where(key => key.UserId == userId).CountAsync();
+        var query = _context.Keys.Where(key => key.UserId == userId);
+        if (predicate is not null)
+            query = query.Where(predicate);
+        
+        return await query.CountAsync();
     }
     
     public async Task<User?> GetUserByIdAsync(Guid userId, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers)
@@ -37,6 +41,17 @@ public class BaseRepository : IBaseRepository
     {
         await _context.Set<TEntity>().AddAsync(entity);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task AddRangeAsync<TEntity>(TEntity entity, bool saveChanges = true) where TEntity : class
+    {
+        await _context.Set<TEntity>().AddRangeAsync(entity);
+        if (saveChanges) await _context.SaveChangesAsync();
+    }
+
+    public async Task<Rate?> GetFirstDefaultRateAsync()
+    {
+        return await _context.Rates.OrderBy(r => r.Id).FirstOrDefaultAsync();
     }
     
     public async Task DelWithSaveAsync<TEntity>(TEntity entity) where TEntity : class
@@ -69,7 +84,7 @@ public class BaseRepository : IBaseRepository
             query = modifier(query);
         }
         
-        return await query.Select(u => new UserKeyActiveKeysCount(u, u.Keys.Count, u.Keys.Count(k => k.IsActive))).FirstOrDefaultAsync();
+        return await query.Select(u => new UserKeyActiveKeysCount(u, u.Keys.Count, u.Keys.Count(k => k.Status == KeyStatus.Enabled))).FirstOrDefaultAsync();
     }
 
     public Task<User[]> GetUsersPayedUntilAsync(Expression<Func<User, bool>> predicate, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers)

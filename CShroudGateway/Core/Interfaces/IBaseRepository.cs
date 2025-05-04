@@ -10,7 +10,7 @@ public record UserKeyActiveKeysCount(User User, int KeysCount, int ActiveKeysCou
 public interface IBaseRepository
 {
     Task<bool> IsUserWithThisTelegramIdExistsAsync(ulong telegramId);
-    Task<int> CountKeysAsync(Guid userId);
+    Task<int> CountKeysAsync(Guid userId, Expression<Func<Key, bool>>? predicate);
     Task<User?> GetUserByIdAsync(Guid userId, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers);
     Task AddWithSaveAsync<TEntity>(TEntity entity) where TEntity : class;
     Task DelWithSaveAsync<TEntity>(TEntity entity) where TEntity : class;
@@ -18,6 +18,10 @@ public interface IBaseRepository
     Task<UserWithKeys?> GetUserByIdWithKeyCountAsync(Guid userId, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers);
 
     Task<Key?> GetKeyByIdAsync(Guid keyId, params Func<IQueryable<Key>, IQueryable<Key>>[] queryModifiers);
+
+    Task<Rate?> GetFirstDefaultRateAsync();
+    Task AddRangeAsync<TEntity>(TEntity entity, bool saveChanges = true) where TEntity : class;
+    
     Task<List<Server>?> GetServersByLocationAndProtocolsAsync(string location, HashSet<VpnProtocol> protocols, int limit = 3, params Func<IQueryable<Server>, IQueryable<Server>>[] queryModifiers);
 
     Task<UserKeyActiveKeysCount?> GetUserKeysActiveKeysCountByIdsAsync(Guid userId,

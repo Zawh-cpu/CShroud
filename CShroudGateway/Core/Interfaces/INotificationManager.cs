@@ -4,5 +4,5 @@ namespace CShroudGateway.Core.Interfaces;
 
 public interface INotificationManager
 {
-    Task ExecuteAndForget(List<Notification> notifications);
+    void CallAndForget(List<Mail> notifications);
 }

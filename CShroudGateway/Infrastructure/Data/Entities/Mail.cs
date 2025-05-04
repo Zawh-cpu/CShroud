@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 
 namespace CShroudGateway.Infrastructure.Data.Entities;
 
@@ -24,12 +25,12 @@ public class Mail
     public MailType Type { get; set; } = MailType.Message;
     
     [MaxLength(100)]
-    public required string? Title { get; set; }
+    public string? Title { get; set; }
     
     [MaxLength(500)]
-    public required string? Content { get; set; }
+    public string? Content { get; set; }
     
-    public Dictionary<string, object> ExtraData { get; set; } = new();
+    public JsonDocument? ExtraData { get; set; }
     
     
 }

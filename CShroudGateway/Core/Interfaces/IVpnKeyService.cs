@@ -6,8 +6,13 @@ namespace CShroudGateway.Core.Interfaces;
 
 public interface IVpnKeyService
 {
-    Task<Result<Key>> AddKey(Guid userId, VpnProtocol protocol, Server server);
-    Task<Result> DelKey(Guid userId, Guid keyId);
-    Task<Result> DisableKey(Guid userId, Guid keyId);
-    Task<Result> EnableKey(Guid userId, Guid keyId);
+    Task<Result> ForceAddKeyAsync(Key key, uint vpnLevel);
+    Task<Result> AddKeyAsync(Key key, User user);
+    
+    Task<Result> DelKeyAsync(Key key);
+    
+    Task<Result> ForceEnableKeyAsync(Key key, uint vpnLevel, bool saveChanges = true);
+    Task<Result> EnableKeyAsync(Key key, User user, bool saveChanges = true);
+    
+    Task<Result> DisableKeyAsync(Key key, bool saveChanges = true);
 }

@@ -5,6 +5,13 @@ namespace CShroudGateway.Infrastructure.Data.Entities;
 
 using System.ComponentModel.DataAnnotations;
 
+public enum KeyStatus
+{
+    Disabled = 0,
+    Enabled = 1,
+    Revoked = 2,
+}
+
 public class Key
 {
     [System.ComponentModel.DataAnnotations.Key]
@@ -26,7 +33,6 @@ public class Key
     
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    
-    public bool IsActive { get; set; } = true;
-    public bool IsRevoked { get; set; } = false;
+
+    public KeyStatus Status { get; set; } = KeyStatus.Enabled;
 }

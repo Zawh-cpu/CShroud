@@ -21,7 +21,11 @@ public class RateManager : IRateManager
         if (activeKeys >= user.Rate.MaxKeys)
         {
             var action = user.Keys.Where(k => k.Status == KeyStatus.Enabled).Skip(user.Rate.MaxKeys).ToArray();
-            foreach (var key in action) await _keyService.DisableKeyAsync(key, saveChanges: saveChanges);
+            foreach (var key in action)
+            {
+                await _keyService.DisableKeyAsync(key, saveChanges: saveChanges);
+                key.Status = KeyStatus.Revoked;
+            }
         }
         else
         {

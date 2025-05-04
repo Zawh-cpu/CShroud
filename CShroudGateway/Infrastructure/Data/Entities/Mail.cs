@@ -32,5 +32,7 @@ public class Mail
     
     public JsonDocument? ExtraData { get; set; }
     
+    public bool IsRead { get; set; } = false;
+    
     
 }

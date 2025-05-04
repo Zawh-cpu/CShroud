@@ -20,7 +20,7 @@ public interface IBaseRepository
     Task<Key?> GetKeyByIdAsync(Guid keyId, params Func<IQueryable<Key>, IQueryable<Key>>[] queryModifiers);
 
     Task<Rate?> GetFirstDefaultRateAsync();
-    Task AddRangeAsync<TEntity>(TEntity entity, bool saveChanges = true) where TEntity : class;
+    Task AddRangeAsync<TEntity>(IEnumerable<TEntity> entity, bool saveChanges = true) where TEntity : class;
     
     Task<List<Server>?> GetServersByLocationAndProtocolsAsync(string location, HashSet<VpnProtocol> protocols, int limit = 3, params Func<IQueryable<Server>, IQueryable<Server>>[] queryModifiers);
 

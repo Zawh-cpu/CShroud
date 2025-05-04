@@ -3,6 +3,7 @@ using System.Text.Json;
 using CShroudGateway.Core.Constants;
 using CShroudGateway.Core.Interfaces;
 using CShroudGateway.Infrastructure.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CShroudGateway.Infrastructure.Tasks;
 
@@ -34,7 +35,7 @@ public class PaymentsCheckTask : IPlannedTask
         }
         
         var users = await baseRepository.GetUsersPayedUntilAsync(x => currentTime.AddDays(-3) <= x.PayedUntil && x.PayedUntil <= currentTime);
-        var expiredUsers = await baseRepository.GetUsersPayedUntilAsync(x => x.PayedUntil <= currentTime.AddDays(1));
+        var expiredUsers = await baseRepository.GetUsersPayedUntilAsync(x => x.PayedUntil <= currentTime.AddDays(1), x => x.Include(u => u.Keys));
 
         var notifiesLift = new List<Mail>();
 
@@ -42,6 +43,7 @@ public class PaymentsCheckTask : IPlannedTask
         {
             user.RateId = baseRate.Id;
             user.Rate = baseRate;
+            user.PayedUntil = null;
             await rateManager.ChangeRateAsync(user, saveChanges: false);
             notifiesLift.Add(new Mail()
             {

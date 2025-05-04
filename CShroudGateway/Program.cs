@@ -28,6 +28,7 @@ internal static class Program
         builder.Services.AddSingleton<IGrpcPool, GrpcPool>();
         builder.Services.AddSingleton<IUpdatePrimitive, UpdatePrimitive>();
         builder.Services.AddSingleton<INotificationManager, NotificationManager>();
+        builder.Services.AddSingleton<IPlanner, Planner>();
         builder.Services.AddScoped<IVpnRepository, VpnRepository>();
         builder.Services.AddScoped<IVpnService, VpnService>();
         builder.Services.AddScoped<IVpnKeyService, VpnKeyService>();

@@ -43,7 +43,7 @@ public class BaseRepository : IBaseRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task AddRangeAsync<TEntity>(TEntity entity, bool saveChanges = true) where TEntity : class
+    public async Task AddRangeAsync<TEntity>(IEnumerable<TEntity>  entity, bool saveChanges = true) where TEntity : class
     {
         await _context.Set<TEntity>().AddRangeAsync(entity);
         if (saveChanges) await _context.SaveChangesAsync();

@@ -32,12 +32,6 @@ namespace CShroudGateway.Infrastructure.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsRevoked")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
@@ -47,6 +41,9 @@ namespace CShroudGateway.Infrastructure.Data.Migrations
 
                     b.Property<Guid>("ServerId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -58,6 +55,42 @@ namespace CShroudGateway.Infrastructure.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Keys");
+                });
+
+            modelBuilder.Entity("CShroudGateway.Infrastructure.Data.Entities.Mail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<JsonDocument>("ExtraData")
+                        .HasColumnType("jsonb");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid?>("RecipientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecipientId");
+
+                    b.ToTable("Mails");
                 });
 
             modelBuilder.Entity("CShroudGateway.Infrastructure.Data.Entities.Protocol", b =>
@@ -174,6 +207,9 @@ namespace CShroudGateway.Infrastructure.Data.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("JoinedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -230,6 +266,15 @@ namespace CShroudGateway.Infrastructure.Data.Migrations
                     b.Navigation("Server");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CShroudGateway.Infrastructure.Data.Entities.Mail", b =>
+                {
+                    b.HasOne("CShroudGateway.Infrastructure.Data.Entities.User", "Recipient")
+                        .WithMany()
+                        .HasForeignKey("RecipientId");
+
+                    b.Navigation("Recipient");
                 });
 
             modelBuilder.Entity("CShroudGateway.Infrastructure.Data.Entities.User", b =>

@@ -5,6 +5,7 @@ using CShroudGateway.Infrastructure.Data.Entities;
 using CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Protos;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Microsoft.EntityFrameworkCore;
 using Enum = System.Enum;
 
 namespace CShroudGateway.Presentation.DeprecatedApi.gRPC.v1.Services;
@@ -52,20 +53,34 @@ public class ControlService : Control.ControlBase
 
         var server = await _vpnServerManager.GetAvailableServerAsync("frankfurt", protocol);
         if (server is null) throw new RpcException(new Status(StatusCode.NotFound, "Server not found or its under maintenance"));
+
+        var user = await _baseRepository.GetUserByIdAsync(userId, x => x.Include(u => u.Rate));
+        if (user is null) throw new RpcException(new Status(StatusCode.NotFound, "User not found"));
+
+        var key = new Key()
+        {
+            Id = Guid.NewGuid(),
+            ServerId = server.Id,
+            Server = server,
+            UserId = user.Id,
+            User = user,
+            Protocol = protocol,
+            Name = request.Name
+        };
         
-        var result = await _vpnKeyService.AddKey(userId, protocol, server);
+        var result = await _vpnKeyService.AddKeyAsync(key, user);
         if (!result.IsSuccess)
         {
             if (result.IsUnavailable())
                 throw new RpcException(new Status(StatusCode.Unavailable, "This DAW server is unavailable"));
-            else if (result.IsForbidden())
+            if (result.IsForbidden())
                 throw new RpcException(new Status(StatusCode.PermissionDenied, "You've reached the maximum amount of keys"));
             throw new RpcException(new Status(StatusCode.Internal, "Internal error or invalid arguments. Please, try later"));
         }
         
         return new AddClientResponse()
-        {
-            Id = result.Value.Id.ToString()
+        {   
+            Id = key.Id.ToString()
         };
     }
     
@@ -78,8 +93,11 @@ public class ControlService : Control.ControlBase
         
         if (!Guid.TryParse(request.KeyId, out Guid keyId))
             throw new RpcException(new Status(StatusCode.InvalidArgument, "KeyId is invalid"));
+
+        var key = await _baseRepository.GetKeyByIdAsync(keyId, x => x.Include(k => k.Server));
+        if (key is null || key.UserId != userId) throw new RpcException(new Status(StatusCode.NotFound, "Key not found"));
         
-        var result = await _vpnKeyService.DelKey(userId, keyId);
+        var result = await _vpnKeyService.DelKeyAsync(key);
         if (!result.IsSuccess)
             throw new RpcException(new Status(StatusCode.Internal, "Internal error, unauthorized access or invalid arguments. Please, try later"));
         
@@ -94,7 +112,11 @@ public class ControlService : Control.ControlBase
         if (!Guid.TryParse(request.KeyId, out Guid keyId))
             throw new RpcException(new Status(StatusCode.InvalidArgument, "KeyId is invalid"));
         
-        var result = await _vpnKeyService.EnableKey(userId, keyId);
+        var key = await _baseRepository.GetKeyByIdAsync(keyId, x => x.Include(k => k.Server),
+            x => x.Include(k => k.User).ThenInclude(u => u.Rate));
+        if (key is null || key.User?.Id != userId) throw new RpcException(new Status(StatusCode.NotFound, "Key not found"));
+        
+        var result = await _vpnKeyService.EnableKeyAsync(key, key.User);
         if (!result.IsSuccess)
             throw new RpcException(new Status(StatusCode.Internal, "Internal error, unauthorized access or invalid arguments. Please, try later"));
         
@@ -110,7 +132,10 @@ public class ControlService : Control.ControlBase
         if (!Guid.TryParse(request.KeyId, out Guid keyId))
             throw new RpcException(new Status(StatusCode.InvalidArgument, "KeyId is invalid"));
         
-        var result = await _vpnKeyService.DisableKey(userId, keyId);
+        var key = await _baseRepository.GetKeyByIdAsync(keyId, x => x.Include(k => k.Server));
+        if (key is null || key.UserId != userId) throw new RpcException(new Status(StatusCode.NotFound, "Key not found"));
+        
+        var result = await _vpnKeyService.DisableKeyAsync(key);
         if (!result.IsSuccess)
             throw new RpcException(new Status(StatusCode.Internal, "Internal error, unauthorized access or invalid arguments. Please, try later"));
         

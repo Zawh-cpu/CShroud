@@ -17,17 +17,23 @@ internal static class Program
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-        builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Scoped);
+        builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString),
+            ServiceLifetime.Scoped);
+
+        builder.Services.AddHttpClient("TelegramHook",
+            client => client.BaseAddress = new Uri("https://api.test.org/"));
 
         builder.Services.AddScoped<IBaseRepository, BaseRepository>();
 
         builder.Services.AddSingleton<IGrpcPool, GrpcPool>();
         builder.Services.AddSingleton<IUpdatePrimitive, UpdatePrimitive>();
+        builder.Services.AddSingleton<INotificationManager, NotificationManager>();
         builder.Services.AddScoped<IVpnRepository, VpnRepository>();
         builder.Services.AddScoped<IVpnService, VpnService>();
         builder.Services.AddScoped<IVpnKeyService, VpnKeyService>();
         builder.Services.AddScoped<IVpnServerManager, VpnServerManager>();
         builder.Services.AddScoped<IVpnStorage, VpnStorage>();
+        builder.Services.AddScoped<IRateManager, RateManager>();
 
         builder.Services.AddGrpc();
 
@@ -46,17 +52,17 @@ internal static class Program
 
         Task.WhenEach(CheckForReservedConstants(app.Services));
         RunTasks(app.Services);
-        
+
         app.Run();
 
-        
+
         return 0;
     }
 
     public static async Task CheckForReservedConstants(IServiceProvider serviceProvider)
     {
         var baseRepository = serviceProvider.GetRequiredService<IBaseRepository>();
-        
+
         if (await baseRepository.GetUserByIdAsync(ReservedUsers.System) == null)
         {
             var user = new User()
@@ -66,7 +72,7 @@ internal static class Program
                 Nickname = "System",
                 IsVerified = true,
             };
-            
+
             await baseRepository.AddWithSaveAsync(user);
         }
     }
@@ -74,7 +80,7 @@ internal static class Program
     public static void RunTasks(IServiceProvider serviceProvider)
     {
         var planner = serviceProvider.GetRequiredService<IPlanner>();
-        
+
         planner.AddTask(new PaymentsCheckTask(DateTime.UtcNow.AddMinutes(5)));
     }
 }

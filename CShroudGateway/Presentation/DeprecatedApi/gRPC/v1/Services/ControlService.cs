@@ -29,13 +29,13 @@ public class ControlService : Control.ControlBase
 
     public override async Task<Empty> CreateUser(CreateUserRequest request, ServerCallContext context)
     {
-        if (await _baseRepository.IsUserWithThisTelegramIdExistsAsync(request.TelegramId))
+        if (await _baseRepository.IsUserWithThisExpressionExistsAsync(u => u.TelegramId == Convert.ToInt64(request.TelegramId)))
             throw new RpcException(new Status(StatusCode.Cancelled, "User already exists"));
 
         var user = new User()
         {
             Nickname = request.Nickname.Substring(0, Math.Min(request.Nickname.Length, 96)),
-            TelegramId = request.TelegramId
+            TelegramId = Convert.ToInt64(request.TelegramId)
         };
 
         await _baseRepository.AddWithSaveAsync(user);
@@ -113,7 +113,7 @@ public class ControlService : Control.ControlBase
             throw new RpcException(new Status(StatusCode.InvalidArgument, "KeyId is invalid"));
         
         var key = await _baseRepository.GetKeyByIdAsync(keyId, x => x.Include(k => k.Server),
-            x => x.Include(k => k.User).ThenInclude(u => u.Rate));
+            x => x.Include(k => k.User).ThenInclude(u => u!.Rate));
         if (key is null || key.User?.Id != userId) throw new RpcException(new Status(StatusCode.NotFound, "Key not found"));
         
         var result = await _vpnKeyService.EnableKeyAsync(key, key.User);

@@ -83,9 +83,9 @@ public class BaseRepository : IBaseRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> IsUserWithThisTelegramIdExistsAsync(ulong telegramId)
+    public async Task<bool> IsUserWithThisExpressionExistsAsync(Expression<Func<User, bool>> predicate)
     {
-        return await _context.Users.Where(user => user.TelegramId == telegramId).AnyAsync();
+        return await _context.Users.AnyAsync(predicate);
     }
 
     public async Task<UserWithKeys?> GetUserByIdWithKeyCountAsync(Guid userId, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers)

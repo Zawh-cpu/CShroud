@@ -18,7 +18,7 @@ public class User
     public string? Password { get; set; }
     
     
-    public ulong? TelegramId { get; set; }
+    public long? TelegramId { get; set; }
     
     [Required] public uint RoleId { get; set; } = 1;
     

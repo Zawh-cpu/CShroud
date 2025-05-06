@@ -13,5 +13,7 @@ public class Role
 
     public int RoleLevel { get; set; } = 0;
 
-    public bool AdminAccess { get; set; } = false;
+    // 00000000 00000000 00000000 00000000
+    //                                   1 - Admin Rights
+    public UInt32 Permissions { get; set; } = 0;
 }

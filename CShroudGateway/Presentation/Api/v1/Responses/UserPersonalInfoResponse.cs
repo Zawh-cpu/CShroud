@@ -10,7 +10,7 @@ public class UserPersonalInfoResponse
     
     public string? Login { get; set; }
     
-    public ulong? TelegramId { get; set; }
+    public long? TelegramId { get; set; }
     
     public required Role? Role { get; set; }
     

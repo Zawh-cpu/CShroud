@@ -54,6 +54,12 @@
       <Compile Update="Presentation\Api\v1\Controllers\UserController.Me.cs">
         <DependentUpon>UserController.cs</DependentUpon>
       </Compile>
+      <Compile Update="Presentation\Api\v1\Controllers\TelegramController.SignIn.cs">
+        <DependentUpon>TelegramController.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Presentation\Api\v1\Controllers\TelegramController.SignUp.cs">
+        <DependentUpon>TelegramController.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

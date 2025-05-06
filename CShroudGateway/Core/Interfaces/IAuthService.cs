@@ -6,5 +6,5 @@ namespace CShroudGateway.Core.Interfaces;
 
 public interface IAuthService
 {
-    Task<Result<AuthResultDto>> SignIn(User user, string? userAgent, string? ipAddress);
+    Task<Result<AuthResultDto>> SignInAsync(User user, string? userAgent, string? ipAddress);
 }

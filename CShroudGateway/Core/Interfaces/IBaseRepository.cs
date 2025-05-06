@@ -9,7 +9,7 @@ public record UserKeyActiveKeysCount(User User, int KeysCount, int ActiveKeysCou
 
 public interface IBaseRepository
 {
-    Task<bool> IsUserWithThisTelegramIdExistsAsync(ulong telegramId);
+    Task<bool> IsUserWithThisExpressionExistsAsync(Expression<Func<User, bool>> predicate);
     Task<int> CountKeysAsync(Guid userId, Expression<Func<Key, bool>>? predicate);
     Task<User?> GetUserByIdAsync(Guid userId, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers);
     Task<User?> GetUserByExpressionAsync(Expression<Func<User, bool>> predicate, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers);

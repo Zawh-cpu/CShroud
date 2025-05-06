@@ -1,20 +1,18 @@
 ﻿using CShroudGateway.Presentation.Api.v1.DataAnnotations;
 using CShroudGateway.Presentation.Api.v1.Responses;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CShroudGateway.Presentation.Api.v1.Controllers;
 
-public partial class AuthController
+public partial class TelegramController
 {
     [HttpPost("signin")]
-    public async Task<IActionResult> SignInAsync([FromBody] SignInRequest request)
+    public async Task<IActionResult> SignIn([FromBody] TelegramSignInRequest request)
     {
-        var user = await _baseRepository.GetUserByExpressionAsync(x => x.Login == request.Login && x.Password == request.Password);
-        if (user is null) return new UnauthorizedResult();
-
-        var authDto = await _authService.SignInAsync(user, Request.Headers["User-Agent"].ToString(),
-            HttpContext.Connection.RemoteIpAddress?.ToString());
+        var user = await _baseRepository.GetUserByExpressionAsync(u => u.TelegramId == request.TelegramId);
+        if (user is null) return Unauthorized();
+        
+        var authDto = await _authService.SignInAsync(user, Request.Headers["User-Agent"].ToString(), HttpContext.Connection.RemoteIpAddress?.ToString());
         if (!authDto.IsSuccess) return new UnauthorizedResult();
         
         return new OkObjectResult(new SignInResponse

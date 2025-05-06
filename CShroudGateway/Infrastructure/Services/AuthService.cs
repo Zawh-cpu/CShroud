@@ -16,7 +16,7 @@ public class AuthService : IAuthService
         _tokenService = tokenService;
     }
     
-    public async Task<Result<AuthResultDto>> SignIn(User user, string? userAgent, string? ipAddress)
+    public async Task<Result<AuthResultDto>> SignInAsync(User user, string? userAgent, string? ipAddress)
     {
         var refreshToken = _tokenService.GenerateJwtToken(user.Id, TokenType.Refresh);
         var actionToken = _tokenService.GenerateJwtToken(user.Id, TokenType.Action);

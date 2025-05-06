@@ -13,4 +13,5 @@
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AVotepyg_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003Fzawha_003FAppData_003FLocal_003FTemp_003FSandboxFiles_003FBafubih_003FVotepyg_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AZigawig_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FUsers_003Fzawha_003FAppData_003FLocal_003FTemp_003FSandboxFiles_003FPocybub_003FZigawig_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=fb85b439_002D2881_002D4b68_002D8445_002D036273981f33_0023CShroud/@EntryIndexedValue">True</s:Boolean>
+	
 	</wpf:ResourceDictionary>

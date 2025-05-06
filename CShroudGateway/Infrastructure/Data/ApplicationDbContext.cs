@@ -21,6 +21,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<Server> Servers { get; set; }
     public DbSet<Mail> Mails { get; set; }
     
+    public DbSet<Token> Tokens { get; set; }
+    public DbSet<LoginHistory> LoginHistories { get; set; }
+    
     /*protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         var listToArrayConverter = new ValueConverter<List<VpnProtocol>, string[]>(

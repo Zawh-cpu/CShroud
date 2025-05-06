@@ -37,10 +37,33 @@ public class BaseRepository : IBaseRepository
         return await query.FirstOrDefaultAsync();
     }
 
+    public Task<User?> GetUserByExpressionAsync(Expression<Func<User, bool>> predicate, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers)
+    {
+        IQueryable<User> query = _context.Users.Where(predicate);
+        
+        foreach (var modifier in queryModifiers)
+        {
+            query = modifier(query);
+        }
+        
+        return query.FirstOrDefaultAsync();
+    }
+
+    public Task<Token?> GetTokenByIdAsync(Guid tokenId)
+    {
+        return _context.Tokens.Where(token => token.Id == tokenId).FirstOrDefaultAsync();
+    }
+
     public async Task AddWithSaveAsync<TEntity>(TEntity entity) where TEntity : class
     {
         await _context.Set<TEntity>().AddAsync(entity);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task AddEntityAsync<TEntity>(TEntity entity, bool saveChanges = true) where TEntity : class
+    {
+        await _context.Set<TEntity>().AddAsync(entity);
+        if (saveChanges) await _context.SaveChangesAsync();
     }
 
     public async Task AddRangeAsync<TEntity>(IEnumerable<TEntity>  entity, bool saveChanges = true) where TEntity : class

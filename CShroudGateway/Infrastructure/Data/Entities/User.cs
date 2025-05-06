@@ -15,7 +15,7 @@ public class User
     public string? Login { get; set; }
     
     [MaxLength(128)]
-    public String? Password { get; set; }
+    public string? Password { get; set; }
     
     
     public ulong? TelegramId { get; set; }
@@ -33,9 +33,12 @@ public class User
     public List<Entities.Key> Keys { get; set; } = new();
     
     public DateTime? PayedUntil { get; set; }
-    
-    public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
+
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
     public DateTime? TelegramJoinedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? LastLogin { get; set; }
     
     public bool IsActive { get; set; } = true;
     public bool IsVerified { get; set; } = false;

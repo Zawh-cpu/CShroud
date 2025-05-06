@@ -16,5 +16,8 @@ public class Rate
     
     public int MaxKeys { get; set; } = 0;
     
+    public uint TrafficSpeedLimit { get; set; } = 0;
+    public uint MaxConnections { get; set; } = 0;
+    
     public bool IsPrivate { get; set; } = false;
 }

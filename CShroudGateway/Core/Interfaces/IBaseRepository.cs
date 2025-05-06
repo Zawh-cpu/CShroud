@@ -12,7 +12,10 @@ public interface IBaseRepository
     Task<bool> IsUserWithThisTelegramIdExistsAsync(ulong telegramId);
     Task<int> CountKeysAsync(Guid userId, Expression<Func<Key, bool>>? predicate);
     Task<User?> GetUserByIdAsync(Guid userId, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers);
+    Task<User?> GetUserByExpressionAsync(Expression<Func<User, bool>> predicate, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers);
+    Task<Token?> GetTokenByIdAsync(Guid tokenId);
     Task AddWithSaveAsync<TEntity>(TEntity entity) where TEntity : class;
+    Task AddEntityAsync<TEntity>(TEntity entity, bool saveChanges = true) where TEntity : class;
     Task DelWithSaveAsync<TEntity>(TEntity entity) where TEntity : class;
 
     Task<UserWithKeys?> GetUserByIdWithKeyCountAsync(Guid userId, params Func<IQueryable<User>, IQueryable<User>>[] queryModifiers);

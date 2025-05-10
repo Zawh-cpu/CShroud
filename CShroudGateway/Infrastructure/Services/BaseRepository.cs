@@ -121,13 +121,25 @@ public class BaseRepository : IBaseRepository
         return query.ToArrayAsync();
     }
 
+    public async Task<Rate[]> GetRatesByExpressionAsync(Expression<Func<Rate, bool>> predicate)
+    {
+        return await _context.Rates.Where(predicate).ToArrayAsync();
+    }
+
+    public Task<Key[]> GetKeysByExpressionAsync(Expression<Func<Key, bool>> predicate, params Func<IQueryable<Key>, IQueryable<Key>>[] queryModifiers)
+    {
+        var query = _context.Keys.Where(predicate);
+        foreach (var modifier in queryModifiers)
+            query = modifier(query);
+        
+        return query.ToArrayAsync();
+    }
+
     public async Task<Key?> GetKeyByIdAsync(Guid keyId, params Func<IQueryable<Key>, IQueryable<Key>>[] queryModifiers)
     {
         var query = _context.Keys.Where(key => key.Id == keyId);
         foreach (var modifier in queryModifiers)
-        {
             query = modifier(query);
-        }
         
         return await query.FirstOrDefaultAsync();
     }

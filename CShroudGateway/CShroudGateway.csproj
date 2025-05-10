@@ -60,6 +60,12 @@
       <Compile Update="Presentation\Api\v1\Controllers\TelegramController.SignUp.cs">
         <DependentUpon>TelegramController.cs</DependentUpon>
       </Compile>
+      <Compile Update="Presentation\Api\v1\Controllers\RateController.GetRates.cs">
+        <DependentUpon>RateController.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Presentation\Api\v1\Controllers\KeyController.GetMyKeys.cs">
+        <DependentUpon>KeyController.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
 </Project>

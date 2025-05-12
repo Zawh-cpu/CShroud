@@ -16,7 +16,7 @@ public class BaseRepository : IBaseRepository
         _context = context;
     }
     
-    public async Task<int> CountKeysAsync(Guid userId, Expression<Func<Key, bool>>? predicate)
+    public async Task<int> CountKeysAsync(Guid userId, Expression<Func<Key, bool>>? predicate = null)
     {
         var query = _context.Keys.Where(key => key.UserId == userId);
         if (predicate is not null)

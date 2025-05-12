@@ -66,6 +66,16 @@
       <Compile Update="Presentation\Api\v1\Controllers\KeyController.GetMyKeys.cs">
         <DependentUpon>KeyController.cs</DependentUpon>
       </Compile>
+      <Compile Update="Presentation\Api\v1\Controllers\ProtocolController.GetProtocols.cs">
+        <DependentUpon>ProtocolController.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Presentation\Api\v1\Controllers\KeyController.AddKey.cs">
+        <DependentUpon>KeyController.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Application\DTOs\Keys\" />
     </ItemGroup>
 
 </Project>

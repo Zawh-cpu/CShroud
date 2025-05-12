@@ -35,7 +35,6 @@ public class VpnRepository : IVpnRepository
         }
         catch (RpcException ex)
         {
-            Console.WriteLine($"RPC Error: {ex}");
         }
 
         return Result.Error();

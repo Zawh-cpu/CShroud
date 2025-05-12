@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using CShroudGateway.Core.Constants;
 using CShroudGateway.Core.Interfaces;
 using CShroudGateway.Infrastructure.Data;
@@ -110,6 +111,10 @@ internal static class Program
         
         builder.Services.AddGrpc();
         builder.Services.AddControllers();
+        /*.AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });*/
         
         var app = builder.Build();
 
